@@ -1,0 +1,12 @@
+[
+    "(Module (Assign x 1) (Assign y (UnaryOp USub 2)) (Expr (Call print (BinOp x Add y))))",
+    "(Module (Assign x 2) (Assign y (UnaryOp USub x)) (Expr (Call print x)) (Expr (Call print y)))",
+    "(Module (Expr (Call print (BinOp (BinOp (BinOp (BinOp 1 Add 2) Add 3) Add 4) Add 5))))",
+    "(Module (Expr (Call print 1)))",
+    "(Module (Expr (Call print (UnaryOp USub 1))))",
+    "(Module (Assign x (Call eval (Call input))) (Expr (Call print (BinOp x Add 1))))",
+    "(Module (Expr (Call print (BinOp 1 Add (UnaryOp USub 2)))))",
+    "(Module (Expr (Call print (BinOp 1 Add 2))))",
+    "(Module (Assign x 1) (Assign y 2) (Expr (Call print (BinOp x Add y))))",
+    "(Module (Expr (Call print (BinOp (Call eval (Call input)) Add (Call eval (Call input))))))"
+]

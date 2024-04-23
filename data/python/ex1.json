@@ -1,4 +1,5 @@
 [
     "Module (Assign (z 20) Assign (x 5) Assign (k BinOp (BinOp (x Add z) Add 10)) Expr (Call (print z)) Expr (Call (print x)))",
-    "Module (Assign (x 1) Assign (y 1) Assign (z BinOp (x Add y)) Expr (Call (print z)))"
+    "Module (Assign (x 1) Assign (y 1) Assign (z BinOp (x Add y)) Expr (Call (print z)))",
+    "Module (Assign (x 1) Assign (y 1) Assign (z BinOp (x Add y)) If (Compare (x Lt 0) Expr (Call (print x)) Expr (Call (print y))) Expr (Call (print z)))"
 ]
