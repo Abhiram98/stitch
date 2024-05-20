@@ -5,6 +5,7 @@ use rustc_hash::{FxHashMap,FxHashSet};
 use std::convert::TryInto;
 use std::fmt::{self, Formatter, Display};
 use std::hash::Hash;
+use std::process::Command;
 use itertools::Itertools;
 use serde_json::json;
 use clap::{Parser};
@@ -227,6 +228,16 @@ pub struct CompressionStepConfig {
     // Fused lambda tags
     #[clap(long, value_parser = clap::value_parser!(FusedLambdaTags), default_value="")]
     pub fused_lambda_tags: FusedLambdaTags,
+
+    /// Whether to prune incomplete/macro abstractions. This works if input data has lispy stuff with complete function calls.
+    #[clap(long)]
+    pub prune_macro_abstractions: bool,
+
+    /// minimum number of nodes in an abstraction. 
+    #[clap(long, default_value="0")]
+    pub min_nodes_invention: i32,
+
+    
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -393,7 +404,7 @@ impl Pattern {
                 }
             }
         }
-
+        // TODO: EDIT here to define valid match locations?
         match_locations.retain(|node|
             !invalid_match_location(set,
                                     &cfg.fused_lambda_tags.tags,
@@ -1025,6 +1036,8 @@ fn stitch_search(
                         continue 'expansion; // free var
                     }
                 }
+                //TODO: Prune here??
+
 
                 // update the body utility
                 let body_utility = original_pattern.body_utility +  match &expands_to {
@@ -1136,6 +1149,16 @@ fn stitch_search(
                     // it's a finished pattern
 
                     let mut finished_pattern = FinishedPattern::new(new_pattern, &shared);
+                    let expr_owned = finished_pattern.to_expr(&shared);
+                    let mut num_nodes = AnalyzedExpr::new(ExprCost::num_terminals());
+                    // num_nodes.analyze(&expr_owned.set);
+                    let num_terminals = *num_nodes.analyze_get(expr_owned.set.get(expr_owned.set.len()-1));
+                    println!("Exporession: {}", expr_owned);
+                    println!("size: {}", num_terminals);
+                    if num_terminals< shared.cfg.min_nodes_invention{
+                        println!("Pruning!");
+                        continue 'expansion;
+                    }
 
                     if !shared.cfg.no_stats { shared.stats.lock().calc_final_utility += 1; };
 
@@ -1144,6 +1167,14 @@ fn stitch_search(
                     // on total utility.
                     if finished_pattern.compressive_utility <= weak_utility_pruning_cutoff {
                         continue 'expansion // todo could add a tracked{} printing thing here
+                    }
+
+                    if shared.cfg.prune_macro_abstractions {
+                        let abstraction = finished_pattern.to_expr(&shared);
+                        if is_macro_like_invention(abstraction.clone()){
+                            println!("Pruning macro-like: {}", abstraction);
+                            continue 'expansion;
+                        }
                     }
 
                     if !shared.cfg.no_stats { shared.stats.lock().calc_unargcap += 1; };
@@ -1176,6 +1207,7 @@ fn stitch_search(
 
                 } else {
                     // it's a partial pattern so just add it to the worklist
+                    // TODO: Edit these too
                     if tracked && !shared.cfg.quiet { println!("{} pushed {} to work list (bound: {})", "[TRACK]".green().bold(), original_pattern.show_track_expansion(hole_zid, &shared), new_pattern.utility_upper_bound) }
                     worklist_buf.push(HeapItem::new(new_pattern))
                 }
@@ -1191,6 +1223,29 @@ fn stitch_search(
         }
     }
 
+}
+
+fn is_macro_like_invention(abstraction: ExprOwned) -> bool {
+    let python_path = "python";
+    let py_file = "pybrary_extraction/lisp2python.py";
+
+    let arg = format!("(ProgramStatements {})", 
+            abstraction.to_string().replace("??", "ProgramStatements"));
+    println!("{}", arg);
+
+    let mut binding = Command::new(python_path);
+    let command = &mut binding
+        .arg(py_file)
+        .arg(arg);
+    let output = command
+        .output()
+        .expect("failed to run py command");
+    // println!("status: {}", output.status);
+    // println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+    // println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+    // println!("return: {}", output.status.success());
+
+    return output.status.success()==false;
 }
 
 //#[inline(never)]
@@ -2062,6 +2117,8 @@ pub fn compression_step(
                 continue;
             }
 
+            // TODO: Prune macro like abstractions here??
+
             // Note that "single use" pruning is intentionally not done here,
             // since any invention specific to a node will by definition only
             // be useful at that node
@@ -2255,6 +2312,7 @@ pub fn compression_step(
     if !shared.cfg.quiet { println!("Cost before: {}", shared.init_cost) }
     for (i,done) in donelist.iter().enumerate() {
         let res = CompressionStepResult::new(done.clone(), new_inv_name, &mut shared, very_first_cost, name_mapping, dc_comparison_millis);
+        // TODO: Check if valid abstractions.
         if !shared.cfg.quiet { println!("{i}: {res}") }
         results.push(res);
     }
