@@ -120,5 +120,5 @@ class Py2Lisp(ast.NodeVisitor):
 
 
 if __name__ == '__main__':
-    print(f"{sys.argv=}")
+    # print(f"{sys.argv=}")
     print(Py2Lisp.fromFilePath(sys.argv[1]))

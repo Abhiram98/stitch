@@ -48,7 +48,7 @@ class Leroy:
         subprocess.run(
             [
                 "cargo", "run",
-                "--manifest-path", f"{self.project_base_dir}/stitch/Cargo.toml",
+                "--manifest-path", f"{self.project_base_dir}/Cargo.toml",
                 "--release", '--bin=compress',
                 '--', f'{self.temp_dir}/{self.temp_filename}',
                 f'--iterations={self.iterations}',
@@ -106,7 +106,10 @@ class Leroy:
             f.write("\n\n".join(library_functions))
 
     def clear_temp_dir(self):
-        shutil.rmtree(self.temp_dir)
+        try:
+            shutil.rmtree(self.temp_dir)
+        except FileNotFoundError:
+            pass
         os.makedirs(self.temp_dir)
         if self.stitch_out:
             with open(f"{self.temp_dir}/{self.stitch_outfile}", "w") as f:

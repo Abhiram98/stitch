@@ -8,6 +8,7 @@ flamegraph.svg
 perf.data
 
 out/
+temp
 
 bindings/
 experiments/artifact.zip
