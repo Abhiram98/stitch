@@ -12,19 +12,52 @@ This ReadMe is focuses on using _Leroy_ via commandline (Rust).
 - Install `rust` from [here](https://www.rust-lang.org/tools/install)
 - Clone this repo
 - ensure that `cargo run --release --bin=compress -- data/cogsci/nuts-bolts.json` runs without crashing
+- Install `pybrary_extration` module: `pip install -e .`
 - For a more thorough test, run `make test`
 
-# Benchmarking (changes to Stitch)
-See [benchmarking.md](benchmarking.md)
+## Running Leroy
+Run `pybrary_extraction/leroy.py`
 
-## Quickstart
+```
+python pybrary_extraction/leroy.py --py_files_dir data/python/ex1 --min-nodes-abstraction 0
+```
+
+Output goes into a temp directory at the level of this repository.
+
+-  `leroy_library.py` contains the abstracted library functions.
+- rewritten programs are also present in this directory.
+
+
+## All command line arguments
+
+From `python pybrary_extraction/leroy.py --help`
+
+```
+Usage: leroy.py [OPTIONS]
+
+Options:
+  --py_files_dir TEXT             directory containing python files to run
+                                  leroy on.
+  --iterations INTEGER            Number of iterations to run stitch for.
+  --max-arity INTEGER             maximum number of parameters for an
+                                  abstraction.
+  --min-nodes-abstraction INTEGER
+                                  minimum number of ast nodes in the
+                                  abstraction
+  --help                          Show this message and exit.
+```
+
+[!NOTE]  
+> Information below details the modifications to stitch, to work for python programs.
+
+
+## Running Stitch modded for python
 
 Lets take a look at some simple examples of the `stitch` input format. Put the following in a new file `data/python/ex1.json`:
 ```json
 [
     "Module (Assign (x 5) Expr (Call (print x)))",
-    "Module (Assign (x 1) Assign (y 1) Assign (z BinOp (x Add y)) Expr (Call (print z)))",
-    ...
+    "Module (Assign (x 1) Assign (y 1) Assign (z BinOp (x Add y)) Expr (Call (print z)))"
 ]
 ```
 As above, stitch input format is a json file containing a list of input programs, where each program is a string written in a lisp-like lambda calculus syntax.
@@ -80,7 +113,7 @@ Primer on the output format:
 - `uses: 2`
   - the abstraction is used twice in the set of programs
 - `body: [fn_0 arity=1: (Expr (Call print (__list__ #0)))]`
-  - this is the abstraction itself! `(#0 #0 #0)` is equivalent to 
+  - this is the abstraction itself is equivalent to 
   ```python
   def fn_0(x):
       print(x)
