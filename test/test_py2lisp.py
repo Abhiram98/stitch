@@ -10,6 +10,24 @@ def test_example_1():
     code_ast = ast.parse(code_str)
     lisp_str = Py2Lisp().visit(code_ast)
     print(lisp_str)
+    assert lisp_str == "(ProgramStatements (Assign (__list__ x) 1) (Assign (__list__ y) 1) (Assign (__list__ z) (" \
+                       "BinOp x Add y)) (If (Compare x (__list__ Lt) (__list__ 0)) (__list__ (Expr (Call print (" \
+                       "__list__ x)))) (__list__ (Expr (Call print (__list__ y))))) (Expr (Call print (__list__ z))))"
+
+
+def test_example_2():
+    code_str = "x=5\nprint(x)"
+    code_ast = ast.parse(code_str)
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call print (__list__ x))))"
+
+def test_example_3():
+    code_str = "x=1\ny=1\nz=x+y\nprint(z)"
+    code_ast = ast.parse(code_str)
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (Assign (__list__ x) 1) (Assign (__list__ y) 1) (Assign (__list__ z) (BinOp x Add y)) (Expr (Call print (__list__ z))))"
 
 
 def test_from_directory_image_processing():

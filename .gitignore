@@ -2,6 +2,7 @@ target
 Cargo.lock
 flamegraph.svg
 .vscode
+.idea
 *.svg
 .DS_Store
 perf.data
