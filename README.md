@@ -1,5 +1,5 @@
 
-This repo attempts to extend tool `stitch` (presented in the POPL 2023 paper [Top-Down Synthesis For Library Learning](https://arxiv.org/abs/2211.16605)) to perform library extraction over a Python project, in a tool called `Leroy`.
+This repo attempts to extend tool `stitch`  '''' exp stitch here '''' (presented in the POPL 2023 paper [Top-Down Synthesis For Library Learning](https://arxiv.org/abs/2211.16605)) to perform library extraction over a Python project, in a tool called `Leroy`.
 
 # Leroy
 
