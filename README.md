@@ -12,7 +12,7 @@ This ReadMe is focuses on using _Leroy_ via commandline (Rust).
 - Install `rust` from [here](https://www.rust-lang.org/tools/install)
 - Clone this repo
 - ensure that `cargo run --release --bin=compress -- data/cogsci/nuts-bolts.json` runs without crashing
-- Install `pybrary_extration` module: `pip install -e .`
+- Install `pybrary_extraction` module from setup.py, from the root of the repo: `pip install .`
 - For a more thorough test, run `make test`
 
 ## Running Leroy
