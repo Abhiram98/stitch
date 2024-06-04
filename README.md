@@ -51,7 +51,9 @@ Options:
 > Information below details the modifications to stitch, to work for python programs.
 
 
-## Running Stitch modded for python
+## Running Stitch4Leroy
+
+This section detials the modified version of stitch used internally by Leroy. 
 
 Lets take a look at some simple examples of the `stitch` input format. Put the following in a new file `data/python/ex1.json`:
 ```json
@@ -78,7 +80,7 @@ z=x+y
 print(z)
 ```
 
-To run _Leroy_:
+To run _Stitch4Leroy_:
 ```
 cargo run --release --bin=compress -- data/python/ex1.json --max-arity=3 --iterations=3 --prune-macro-abstractions
 ```
