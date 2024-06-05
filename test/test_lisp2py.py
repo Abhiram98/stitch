@@ -1,5 +1,6 @@
 import pytest
-from pybrary_extraction.lisp2python import Lisp2Py, Abstraction2Py, Rewrite2Py
+from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py
+from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 
 
 def test_basic():
@@ -72,6 +73,8 @@ def test_rewrite_to_py_3():
 
 
 def test_rewrite_to_py_4():
+    # TODO: this test is failing. Figure out why is was created in the first place.
+    #  This is not a valid rewrite.
     lisp_str = '(ProgramStatements (If (Compare #2 (__list__ #1) (__list__ #0))))'
     assert Rewrite2Py(lisp_str).convert() \
            == 'z = #1\nw = #0'
@@ -81,6 +84,8 @@ def test_rewrite_to_py_5():
 
 
 def test_rewrite_to_py_import():
+    # TODO: this test is failing. Figure out why is was created in the first place.
+    #  This is not a valid rewrite.
     lisp_str = '(ProgramStatements (fn_0 (Attribute doctest testmod) (Import (__list__ (alias doctest)))))'
     assert Rewrite2Py(lisp_str).convert() \
            == 'z = #1\nw = #0'
