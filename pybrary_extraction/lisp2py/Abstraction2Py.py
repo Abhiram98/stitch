@@ -2,13 +2,13 @@ import ast
 import copy
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
-from pybrary_extraction.lisp2py.utils import has_return_stmnt
+from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
 
 
 class Abstraction2Py:
 
-    def __init__(self, abtraction):
-        self.abstraction = abtraction
+    def __init__(self, abstraction):
+        self.abstraction = abstraction
         self.param_count = 0
         self.args_map = {}
 
@@ -16,7 +16,7 @@ class Abstraction2Py:
         py_ast = Lisp2Py(self.abstraction).get_py_ast()
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
-        self.set_param_names(py_ast)
+        self.find_parameters(py_ast)
         fn_def = ast.FunctionDef(
             name=fn_name,
             args=ast.arguments(
@@ -32,6 +32,19 @@ class Abstraction2Py:
         self.add_return_value(fn_def)
         ast.fix_missing_locations(fn_def)
         return ast.unparse(fn_def)
+
+    def find_parameters(self, py_ast):
+        self.set_param_names(py_ast)
+        self.get_additional_params(py_ast)
+
+    def get_additional_params(self, py_ast):
+        """find additional parameters used by the py_ast, which are not defined within"""
+        py_ast_str = ast.unparse(py_ast)
+        undef_vars = get_undef_vars(py_ast_str)
+        for var in undef_vars:
+            self.args_map[var] = var
+
+
 
     def set_param_names(self, py_ast):
         for node in ast.walk(py_ast):

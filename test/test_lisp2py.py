@@ -15,7 +15,9 @@ def test_unaryop():
 
 def test_annotated_funcdef():
     lisp_str = '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
-    assert Lisp2Py(lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
+    assert Lisp2Py(
+        lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
+
 
 def test_empty():
     lisp_str = "(ProgramStatements )"
@@ -34,6 +36,7 @@ def test_abstraction_to_py_2():
     assert Abstraction2Py(lisp_str).convert('abs0') \
            == 'def abs0(_param0):\n    if _param0:\n        return _param0'
 
+
 def test_abstraction_to_py_addition_return():
     lisp_str = "(BinOp #0 Add #1)"
     assert Abstraction2Py(lisp_str).convert('abs0') \
@@ -50,8 +53,11 @@ def test_abstraction_to_py_3():
         return
     raise Exception("Should've error out.")
 
-    # assert Rewrite2Py(lisp_str).convert() \
-    #        == 'def abs0(_param0):\n    if _param0:\n        return _param0'
+
+def test_abstraction_to_py_simple_expressions():
+    lisp_str = "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call print (__list__ y))))"
+    assert Abstraction2Py(lisp_str).convert() == 'def fn_0(y):\n    return \n    x = 5\n    print(y)'
+
 
 
 def test_rewrite_to_py():
@@ -78,6 +84,7 @@ def test_rewrite_to_py_4():
     lisp_str = '(ProgramStatements (If (Compare #2 (__list__ #1) (__list__ #0))))'
     assert Rewrite2Py(lisp_str).convert() \
            == 'z = #1\nw = #0'
+
 
 def test_rewrite_to_py_5():
     lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod 2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript merged (BinOp (BinOp total FloorDiv 2) Sub 1)) middle1) (fn_2 (Subscript merged (BinOp total FloorDiv 2)) middle2) (Return (BinOp (BinOp (fn_0 middle1 float) Add (fn_0 middle2 float)) Div 2.0))) float) (If (fn_1 STRING_3 __name__) (__list__ (Import (__list__ (alias doctest))) (Expr (Call (Attribute doctest testmod))))))"

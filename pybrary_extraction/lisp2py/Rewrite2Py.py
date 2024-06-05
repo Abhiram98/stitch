@@ -8,7 +8,7 @@ from pybrary_extraction.python2lisp import Py2Lisp
 
 class Rewrite2Py:
     '''
-    Convert stitch rewritten code to python.
+    Convert stitch rewritten code_str to python.
     '''
 
     def __init__(self, lisp_str, abstraction_prefix='fn_'):
