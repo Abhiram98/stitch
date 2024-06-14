@@ -1,6 +1,5 @@
 import pytest
-from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py
-from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
+from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
 
 
 def test_basic():
@@ -59,11 +58,25 @@ def test_abstraction_to_py_simple_expressions():
     assert Abstraction2Py(lisp_str).convert() == 'def fn_0(y):\n    return \n    x = 5\n    print(y)'
 
 
+def test_abstraction_to_py_func_as_param():
+    lisp_str = "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call custom_function (__list__ y))))"
+    assert Abstraction2Py(
+        lisp_str).convert() == 'def fn_0(custom_function, y):\n    return \n    x = 5\n    custom_function(y)'
+
 
 def test_rewrite_to_py():
     lisp_str = "(fn_0 1 2)"
     assert Rewrite2Py(lisp_str).convert() \
            == 'fn_0(1, 2)'
+
+
+def test_rewrite_to_py_function_def():
+    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0)))) __list__)"
+    assert Rewrite2Py(lisp_str).convert() \
+           == """def main():
+    print(STRING_0)"""
+
+    print("done")
 
 
 def test_rewrite_to_py_2():

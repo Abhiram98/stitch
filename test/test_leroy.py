@@ -2,6 +2,15 @@ import pytest
 from pybrary_extraction.leroy import run_leroy, Leroy
 
 
+def test_simple_duplicate_files():
+    run_leroy(
+        [
+            "--py_files_dir", "resources/simple_project/duplicate_files"
+        ],
+        standalone_mode=False
+    )
+
+
 def test_Leroy_data_structures_arrays():
     run_leroy(
         [

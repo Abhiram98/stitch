@@ -4,7 +4,7 @@ from pyparsing import OneOrMore, nestedExpr
 
 from pybrary_extraction.lisp2py.utils import MyList
 from pybrary_extraction.python2lisp import Py2Lisp
-
+from pybrary_extraction.ast_utils import get_all_ast_classes
 
 class Lisp2Py:
     def __init__(self, lisp_str):
@@ -98,11 +98,12 @@ class Lisp2Py:
             else:
                 return ast.Name(id=lisp_root)
         except:
-            ast_class = getattr(ast, lisp_root, None)
-            if ast_class is None:
-                return ast.Name(id=lisp_root)
-            else:
-                return ast_class()
+            if lisp_root in get_all_ast_classes():
+                ast_class = getattr(ast, lisp_root, None)
+                if ast_class is None:
+                    return ast.Name(id=lisp_root)
+                return Lisp2Py.create_ast_node(ast_class)
+            return ast.Name(id=lisp_root)
 
     @staticmethod
     def construct_ast_node(child_list):
@@ -117,3 +118,9 @@ class Lisp2Py:
             new_lisp_parts = [Py2Lisp.module_keyword, lisp_parts]
             return new_lisp_parts
         return lisp_parts
+
+    @classmethod
+    def create_ast_node(cls, ast_class):
+        if ast_class is ast.arguments:
+            return ast.arguments(posonlyargs=[], args=[], defaults=[], kwonlyargs=[])
+        return ast_class()
