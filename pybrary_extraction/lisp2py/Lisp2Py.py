@@ -44,6 +44,8 @@ class Lisp2Py:
         elif isinstance(node, ast.FunctionDef):
             if isinstance(node.name, ast.Name):
                 node.name = node.name.id
+            if not hasattr(node, 'decorator_list'):
+                node.decorator_list = []
         elif isinstance(node, ast.arguments):
             if getattr(node, 'args', None) is None:
                 node.args = node.posonlyargs

@@ -78,6 +78,17 @@ def test_rewrite_to_py_function_def():
 
     print("done")
 
+#
+
+def test_rewrite_to_py_function_def_two_lines():
+     #TODO: fix this failing test.
+    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0))) (Expr (Call print (__list__ STRING_1)))))"
+    assert Rewrite2Py(lisp_str).convert() \
+           == """def main():
+    print(STRING_0)
+    print(STRING_1)"""
+
+    print("done")
 
 def test_rewrite_to_py_2():
     lisp_str = "(fn_0 1 (fn_2 5 6)))"
