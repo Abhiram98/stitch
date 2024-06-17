@@ -17,6 +17,8 @@ def try_make_parent_dir(new_file_path):
 
 
 class Leroy:
+    LIBRARY_NAME = "leroy_library"
+
     def __init__(self, py_files_dir, iterations,
                  max_arity, min_nodes_abstraction):
 
@@ -87,7 +89,8 @@ class Leroy:
             print(f"{new_file_path=}")
 
             try:
-                py_code = Rewrite2Py(rewrite).convert()
+                py_code = Rewrite2Py(
+                    rewrite, library_name=Leroy.LIBRARY_NAME).convert()
             except:
                 print(f"Failed to rewrite: {rewrite}")
                 raise
@@ -102,7 +105,7 @@ class Leroy:
             library_functions.append(
                 Abstraction2Py(abs_body).convert(f"fn_{i}")
             )
-        with open(f"{self.temp_dir}/leroy_library.py", "w") as f:
+        with open(f"{self.temp_dir}/{Leroy.LIBRARY_NAME}.py", "w") as f:
             f.write("\n\n".join(library_functions))
 
     def clear_temp_dir(self):
@@ -129,7 +132,7 @@ class Leroy:
 @click.option("--iterations", help='Number of iterations to run stitch for.', default=3, type=int)
 @click.option("--max-arity", default=3, type=int, help='maximum number of parameters for an abstraction.')
 @click.option("--min-nodes-abstraction", help='minimum number of ast nodes in the abstraction',
-              default=15, type=int)
+              default=10, type=int)
 def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction):
     l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction)
     l.run()

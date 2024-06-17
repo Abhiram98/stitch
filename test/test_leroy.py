@@ -1,4 +1,6 @@
 import pytest
+import pathlib
+
 from pybrary_extraction.leroy import run_leroy, Leroy
 
 
@@ -9,6 +11,25 @@ def test_simple_duplicate_files():
         ],
         standalone_mode=False
     )
+    leroy_library_path = pathlib.Path("../temp/f1.py")
+    f1_path = pathlib.Path("../temp/f1.py")
+    f2_path = pathlib.Path("../temp/f2.py")
+    assert (f1_path.exists())
+    assert (f2_path.exists())
+    assert (leroy_library_path.exists())
+
+    with open(f1_path) as f:
+        content = f.read()
+        assert(content=="from leroy_library import fn_0\nmain = fn_0()")
+
+    with open(f2_path) as f:
+        content = f.read()
+        assert (content == "from leroy_library import fn_0\nmain = fn_0()")
+
+    with open(leroy_library_path) as f:
+        content = f.read()
+        assert(content == "def fn_0():\n    def main():\n        print(\"do something\")\n        print(\"do "
+                           "something2\")    return main")
 
 
 def test_Leroy_data_structures_arrays():

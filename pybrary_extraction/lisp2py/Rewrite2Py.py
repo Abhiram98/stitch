@@ -6,15 +6,31 @@ from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.python2lisp import Py2Lisp
 
 
-class Rewrite2Py:
-    '''
-    Convert stitch rewritten code_str to python.
-    '''
+class AbstractionCall:
+    def __init__(self, func_name, params = None):
+        self.func_name = func_name
+        self.params = params
 
-    def __init__(self, lisp_str, abstraction_prefix='fn_'):
+        self.items = ['Call', func_name]
+        if params:
+            self.items += params
+
+    def __getitem__(self, item):
+        return self.items[item]
+
+class Rewrite2Py:
+    """
+    Convert stitch rewritten code_str to python.
+    """
+
+    def __init__(self, lisp_str,
+                 abstraction_prefix='fn_',
+                 library_name='leroy_library'):
 
         self.lisp_str = lisp_str
         self.abstraction_prefix = abstraction_prefix
+        self.abstractions_used = set()
+        self.library_name = library_name
 
     def convert(self):
 
@@ -24,6 +40,7 @@ class Rewrite2Py:
         lisp_parts = Rewrite2Py.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
+        py_ast = self.add_library_import_statements(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         print(ast.dump(py_ast, indent=4))
@@ -38,19 +55,28 @@ class Rewrite2Py:
 
     def replace_abstraction_calls(self, lisp_root):
         if isinstance(lisp_root, str):
+            if lisp_root.startswith(self.abstraction_prefix):
+                self.abstractions_used.add(lisp_root)
+                return AbstractionCall(lisp_root)
             return lisp_root
         elif isinstance(lisp_root, list):
+            new_lisp = []
             for node in lisp_root:
-                self.replace_abstraction_calls(node)
+                new_lisp.append(self.replace_abstraction_calls(node))
 
-            if lisp_root[0].startswith(self.abstraction_prefix):
-                fn_name = lisp_root[0]
-                args = copy.deepcopy(lisp_root[1:])
-                # new_lisp_root = ['Call', lisp_root[0], ['__list__', *lisp_root[1:]]]
-                lisp_root.insert(0, 'Call')
-                lisp_root.insert(2, ['__list__', *args])
-                del lisp_root[3:]
-            return lisp_root
+            # if lisp_root[0].startswith(self.abstraction_prefix):
+            if isinstance(new_lisp[0], AbstractionCall):
+                fn_name = new_lisp[0].func_name
+                args = copy.deepcopy(new_lisp[1:])
+
+                new_lisp_root = ['Call', fn_name, ['__list__', *new_lisp[1:]]]
+                # new_lisp.insert(0, 'Call')
+                # new_lisp.insert(2, ['__list__', *args])
+                # del new_lisp[3:]
+
+                self.abstractions_used.add(fn_name)
+                return new_lisp_root
+            return new_lisp
 
     @staticmethod
     def make_calls_exprs(lisp_parts):
@@ -62,6 +88,16 @@ class Rewrite2Py:
                 final_nodes.append(node)
         return final_nodes
 
+    def add_library_import_statements(self, py_ast):
+        import_statements = []
+        for abstraction_name in sorted(list(self.abstractions_used)):
+            import_statements.append(ast.parse(
+                f"from {self.library_name} import {abstraction_name}"
+            ).body[0]
+                                     )
+
+        py_ast.body = import_statements + py_ast.body
+        return py_ast
 
 
 if __name__ == '__main__':

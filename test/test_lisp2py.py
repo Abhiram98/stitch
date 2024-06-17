@@ -67,7 +67,7 @@ def test_abstraction_to_py_func_as_param():
 def test_rewrite_to_py():
     lisp_str = "(fn_0 1 2)"
     assert Rewrite2Py(lisp_str).convert() \
-           == 'fn_0(1, 2)'
+           == 'from leroy_library import fn_0\nfn_0(1, 2)'
 
 
 def test_rewrite_to_py_function_def():
@@ -81,7 +81,6 @@ def test_rewrite_to_py_function_def():
 #
 
 def test_rewrite_to_py_function_def_two_lines():
-     #TODO: fix this failing test.
     lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0))) (Expr (Call print (__list__ STRING_1)))))"
     assert Rewrite2Py(lisp_str).convert() \
            == """def main():
@@ -93,13 +92,13 @@ def test_rewrite_to_py_function_def_two_lines():
 def test_rewrite_to_py_2():
     lisp_str = "(fn_0 1 (fn_2 5 6)))"
     assert Rewrite2Py(lisp_str).convert() \
-           == 'fn_0(1, fn_2(5, 6))'
+           == 'from leroy_library import fn_0\nfrom leroy_library import fn_2\nfn_0(1, fn_2(5, 6))'
 
 
 def test_rewrite_to_py_3():
     lisp_str = '(ProgramStatements (Assign (__list__ x) 1) (Assign (__list__ y) (UnaryOp USub 2)) (fn_0 (fn_1 x y)))'
     assert Rewrite2Py(lisp_str).convert() \
-           == 'x = 1\ny = -2\nfn_0(fn_1(x, y))'
+           == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2\nfn_0(fn_1(x, y))'
 
 
 def test_rewrite_to_py_4():
