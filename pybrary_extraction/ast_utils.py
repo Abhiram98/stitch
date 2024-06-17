@@ -1,6 +1,7 @@
 import ast
 from typing import Union, Any
 
+
 class FindTargetVariables(ast.NodeVisitor):
     def __init__(self, include_func_calls=False):
         self.lhs_vars = []
@@ -28,7 +29,6 @@ class FindTargetVariables(ast.NodeVisitor):
         self.is_lhs = False
         self.visit(node.value)
 
-
     def visit_Name(self, node: ast.Name) -> Any:
         self.generic_visit(node)
         if self.is_lhs:
@@ -51,7 +51,6 @@ class FindTargetVariables(ast.NodeVisitor):
         #     self.is_lhs = True
         #     for arg in node.args:
         #         self.visit(arg)
-
 
     def visit_Attribute(self, node: ast.Attribute) -> Any:
         self.generic_visit(node)
@@ -80,7 +79,6 @@ class FindReadVariables(ast.NodeVisitor):
         self.generic_visit(node)
         if self.is_rhs:
             self.rhs_vars.append(node.id)
-
 
 
 def get_all_ast_classes():
