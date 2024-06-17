@@ -40,11 +40,10 @@ class Abstraction2Py:
     def get_additional_params(self, py_ast):
         """find additional parameters used by the py_ast, which are not defined within"""
         py_ast_str = ast.unparse(py_ast)
-        undef_vars = get_undef_vars(py_ast_str)
+        undef_vars = sorted(get_undef_vars(py_ast_str))  # sort for determinism
         for var in undef_vars:
-            self.args_map[var] = var
-
-
+            if var not in self.args_map.values():
+                self.args_map[var] = var
 
     def set_param_names(self, py_ast):
         for node in ast.walk(py_ast):
@@ -69,6 +68,6 @@ class Abstraction2Py:
             return py_ast
         else:
             last_stmnt = ast.Return(value=copy.deepcopy(py_ast.body[-1]))
-            py_ast.body.pop() # remove last statement
+            py_ast.body.pop()  # remove last statement
             py_ast.body.append(last_stmnt)
             # Return the last statement
