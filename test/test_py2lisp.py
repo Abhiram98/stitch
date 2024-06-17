@@ -1,10 +1,12 @@
 from pybrary_extraction.python2lisp import Py2Lisp
 import ast
 import json
+import pathlib
 
+resources_path = pathlib.Path(__file__).parent.joinpath("resources")
 
 def test_example_1():
-    with open("resources/ex1.py") as f:
+    with open(resources_path.joinpath("ex1.py")) as f:
         code_str = f.read()
 
     code_ast = ast.parse(code_str)
