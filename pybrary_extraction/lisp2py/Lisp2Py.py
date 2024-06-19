@@ -6,6 +6,7 @@ from pybrary_extraction.lisp2py.utils import MyList
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import get_all_ast_classes
 
+
 class Lisp2Py:
     def __init__(self, lisp_str):
         self.lisp_str = lisp_str

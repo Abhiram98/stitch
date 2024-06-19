@@ -4,6 +4,7 @@ import sys
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.python2lisp import Py2Lisp
+# from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
 class AbstractionCall:
@@ -24,20 +25,23 @@ class Rewrite2Py:
     """
 
     def __init__(self, lisp_str,
+                 available_abstractions: list,
                  abstraction_prefix='fn_',
                  library_name='leroy_library'):
 
         self.lisp_str = lisp_str
+        self.available_abstractions = available_abstractions
         self.abstraction_prefix = abstraction_prefix
         self.abstractions_used = set()
         self.library_name = library_name
+
 
     def convert(self):
 
         lisp_parts = Lisp2Py.parse_lisp(self.lisp_str)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
         lisp_parts = self.replace_abstraction_calls(lisp_parts)
-        lisp_parts = Rewrite2Py.make_calls_exprs(lisp_parts)
+        lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
         py_ast = self.add_library_import_statements(py_ast)
@@ -78,12 +82,17 @@ class Rewrite2Py:
                 return new_lisp_root
             return new_lisp
 
-    @staticmethod
-    def make_calls_exprs(lisp_parts):
+    def make_calls_exprs(self, lisp_parts):
         final_nodes = [lisp_parts[0]]
         for node in lisp_parts[1:]:
             if node[0] == 'Call':
-                final_nodes.append(['Expr', node])
+                abstraction_name = node[1]
+                matches = list(filter(lambda x: x.abstraction_name==abstraction_name, self.available_abstractions))
+                if len(matches)>0:
+                    final_nodes.append(['Assign', ['__list__', *matches[0].returned_vars], node])
+                else:
+                    # '(ProgramStatements (Assign (__list__ x) (Call fn_0)))'
+                    final_nodes.append(['Expr', node])
             else:
                 final_nodes.append(node)
         return final_nodes
@@ -101,4 +110,4 @@ class Rewrite2Py:
 
 
 if __name__ == '__main__':
-    print(Rewrite2Py(sys.argv[1]).convert())
+    print(Rewrite2Py(sys.argv[1], available_abstractions=[]).convert())

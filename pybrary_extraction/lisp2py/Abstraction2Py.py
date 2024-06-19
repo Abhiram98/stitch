@@ -4,20 +4,20 @@ import copy
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
 from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs
-
+from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 class Abstraction2Py:
 
-    def __init__(self, abstraction, live_out=None):
-        if live_out is None:
-            live_out = []
+    def __init__(self, abstraction: StitchAbstraction):
+        # if live_out is None:
+        #     live_out = []
         self.abstraction = abstraction
         self.param_count = 0
         self.args_map = {}
-        self.live_out = live_out
+        # self.live_out = live_out
 
     def convert(self, fn_name='fn_0'):
-        py_ast = Lisp2Py(self.abstraction).get_py_ast()
+        py_ast = Lisp2Py(self.abstraction.abstraction_body_lisp).get_py_ast()
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         self.find_parameters(py_ast)
@@ -90,7 +90,8 @@ class Abstraction2Py:
         for b in abs_fn_def.body:
             func_class_def_finder.visit(b)
             target_vars_finder.visit(b)
-        return_vars = set(self.live_out) \
+        return_vars = set(self.abstraction.live_vars_out) \
             .intersection(set(target_vars_finder.lhs_vars)) \
             .union(set(func_class_def_finder.defs))
+        self.abstraction.returned_vars = return_vars
         return return_vars

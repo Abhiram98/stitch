@@ -70,12 +70,12 @@ class Leroy:
         stitch_out = self.stitch_out
 
         stitch_rewritten = stitch_out['rewritten']
-        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'])
+        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'], i['name'])
                                for i in stitch_out["abstractions"]]
         original_lisp = stitch_out['original']
 
         self.write_abstractions(stitch_abstractions)
-        self.write_rewritten_programs(stitch_rewritten)
+        self.write_rewritten_programs(stitch_rewritten, stitch_abstractions)
 
     def read_stitch_out(self):
         try:
@@ -85,7 +85,8 @@ class Leroy:
         except FileNotFoundError:
             return
 
-    def write_rewritten_programs(self, stitch_rewritten):
+    def write_rewritten_programs(self, stitch_rewritten,
+                                 stitch_abstractions: list[StitchAbstraction]):
         for file, rewrite in zip(self.file_json_map.keys(), stitch_rewritten):
             new_file_path = file.replace(self.py_files_dir, str(self.temp_dir))
             try_make_parent_dir(new_file_path)
@@ -93,7 +94,9 @@ class Leroy:
 
             try:
                 py_code = Rewrite2Py(
-                    rewrite, library_name=Leroy.LIBRARY_NAME).convert()
+                    rewrite,
+                    library_name=Leroy.LIBRARY_NAME,
+                    available_abstractions=stitch_abstractions).convert()
             except:
                 print(f"Failed to rewrite: {rewrite}")
                 raise
@@ -105,10 +108,11 @@ class Leroy:
     def write_abstractions(self, stitch_abstractions: list[StitchAbstraction]):
         library_functions = []
         for i, abstraction in enumerate(stitch_abstractions):
-            abs_body = abstraction.abstraction_body
-            live_out = abstraction.get_live_out(self.stitch_out['original'])
+            abs_body = abstraction.abstraction_body_lisp
+            live_out = abstraction.get_and_set_live_out(self.stitch_out['original'])
+            abstraction.abstraction_body_py = Abstraction2Py(abstraction).convert(f"fn_{i}")
             library_functions.append(
-                Abstraction2Py(abs_body, live_out=live_out).convert(f"fn_{i}")
+                abstraction.abstraction_body_py
             )
         with open(f"{self.temp_dir}/{Leroy.LIBRARY_NAME}.py", "w") as f:
             f.write("\n\n".join(library_functions))

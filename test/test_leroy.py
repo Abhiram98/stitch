@@ -11,7 +11,7 @@ def test_simple_duplicate_files():
         ],
         standalone_mode=False
     )
-    leroy_library_path = pathlib.Path("../temp/f1.py")
+    leroy_library_path = pathlib.Path("../temp/leroy_library.py")
     f1_path = pathlib.Path("../temp/f1.py")
     f2_path = pathlib.Path("../temp/f2.py")
     assert (f1_path.exists())
