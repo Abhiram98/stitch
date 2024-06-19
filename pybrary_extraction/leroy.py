@@ -7,6 +7,7 @@ import shutil
 
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
+from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
 def try_make_parent_dir(new_file_path):
@@ -69,7 +70,9 @@ class Leroy:
         stitch_out = self.stitch_out
 
         stitch_rewritten = stitch_out['rewritten']
-        stitch_abstractions = [i['body'] for i in stitch_out["abstractions"]]
+        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'])
+                               for i in stitch_out["abstractions"]]
+        original_lisp = stitch_out['original']
 
         self.write_abstractions(stitch_abstractions)
         self.write_rewritten_programs(stitch_rewritten)
@@ -99,11 +102,13 @@ class Leroy:
             with open(new_file_path, "w") as f:
                 f.write(py_code)
 
-    def write_abstractions(self, stitch_abstractions):
+    def write_abstractions(self, stitch_abstractions: list[StitchAbstraction]):
         library_functions = []
-        for i, abs_body in enumerate(stitch_abstractions):
+        for i, abstraction in enumerate(stitch_abstractions):
+            abs_body = abstraction.abstraction_body
+            live_out = abstraction.get_live_out(self.stitch_out['original'])
             library_functions.append(
-                Abstraction2Py(abs_body).convert(f"fn_{i}")
+                Abstraction2Py(abs_body, live_out=live_out).convert(f"fn_{i}")
             )
         with open(f"{self.temp_dir}/{Leroy.LIBRARY_NAME}.py", "w") as f:
             f.write("\n\n".join(library_functions))

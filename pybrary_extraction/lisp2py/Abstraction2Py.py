@@ -3,14 +3,18 @@ import copy
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
+from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs
 
 
 class Abstraction2Py:
 
-    def __init__(self, abstraction):
+    def __init__(self, abstraction, live_out=None):
+        if live_out is None:
+            live_out = []
         self.abstraction = abstraction
         self.param_count = 0
         self.args_map = {}
+        self.live_out = live_out
 
     def convert(self, fn_name='fn_0'):
         py_ast = Lisp2Py(self.abstraction).get_py_ast()
@@ -38,7 +42,7 @@ class Abstraction2Py:
         self.get_additional_params(py_ast)
 
     def get_additional_params(self, py_ast):
-        """find additional parameters used by the py_ast, which are not defined within"""
+        """find additional parameters used by the abs_fn_def, which are not defined within"""
         py_ast_str = ast.unparse(py_ast)
         undef_vars = sorted(get_undef_vars(py_ast_str))  # sort for determinism
         for var in undef_vars:
@@ -60,14 +64,33 @@ class Abstraction2Py:
             self.args_map[arg_name] = param_name
             return param_name
 
-    def add_return_value(self, py_ast):
+    def add_return_value(self, abs_fn_def: ast.FunctionDef):
         # TODO: this is a naive implementation.
         #  A better implementation involves some sort of liveness analysis,
         #  to determine what the target variables are.
-        if has_return_stmnt(py_ast):
-            return py_ast
+        if has_return_stmnt(abs_fn_def):
+            return abs_fn_def
         else:
-            last_stmnt = ast.Return(value=copy.deepcopy(py_ast.body[-1]))
-            py_ast.body.pop()  # remove last statement
-            py_ast.body.append(last_stmnt)
-            # Return the last statement
+            return_vars = self.get_return_vars(abs_fn_def)
+
+            return_stmnt = "return {0}".format(",".join(return_vars))
+            return_node = ast.parse(return_stmnt).body[0]
+            abs_fn_def.body.append(return_node)
+            # last_stmnt = ast.Return(value=copy.deepcopy(abs_fn_def.body[-1]))
+            # abs_fn_def.body.pop()  # remove last statement
+            # abs_fn_def.body.append(last_stmnt)
+            # # Return the last statement
+
+    def get_return_vars(self, abs_fn_def):
+        """Variable which are live out of the block, defined in the block,
+        or are function/class definitions."""
+
+        target_vars_finder = FindTargetVariables()
+        func_class_def_finder = FindFuncAndClassDefs()
+        for b in abs_fn_def.body:
+            func_class_def_finder.visit(b)
+            target_vars_finder.visit(b)
+        return_vars = set(self.live_out) \
+            .intersection(set(target_vars_finder.lhs_vars)) \
+            .union(set(func_class_def_finder.defs))
+        return return_vars

@@ -85,7 +85,7 @@ class Lisp2Py:
             return Lisp2Py.augment_pyast_node(py_ast_node)
 
             # root_constructed = Lisp2Py.construct(lisp_root[0])
-            # if isinstance(root_constructed, str):
+            # if isinstance(root_constructed, string):
             #     ast_class = getattr(ast, root_constructed)
             #     return ast_class(*child_list)
             # else:

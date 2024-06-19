@@ -2,6 +2,19 @@ import ast
 from typing import Union, Any
 
 
+class FindFuncAndClassDefs(ast.NodeVisitor):
+    def __init__(self):
+        self.defs = []
+        self.is_lhs = False
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+        self.defs.append(node.name)
+        self.generic_visit(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
+        self.defs.append(node.name)
+        self.generic_visit(node)
+
 class FindTargetVariables(ast.NodeVisitor):
     def __init__(self, include_func_calls=False):
         self.lhs_vars = []
@@ -84,3 +97,17 @@ class FindReadVariables(ast.NodeVisitor):
 def get_all_ast_classes():
     invalid = ['main', 'parse', 'unparse']
     return [i for i in dir(ast) if i not in invalid and not i.startswith("_")]
+
+
+def line_col(string, index):
+    """Returns a 2-tuple which translates string index 'index' into
+       line and column counts. 'index' is a normal Python 0-based index;
+       line and column are 1-based. So line_col(string, 0) will return (1, 1).
+       The newline character is considered to be the last character of a
+       line.
+       The function does not check whether 'index' is in range; if index greater
+       than or equal to the length of 'string', the result will be as though
+       'string' had (index + 1 - len(string)) extra characters (none of which are
+       newlines) appended to the end
+    """
+    return string.count('\n', 0, index) + 1, index - string.rfind('\n', 0, index) - 1
