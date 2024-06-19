@@ -37,7 +37,7 @@ class Py2Lisp(ast.NodeVisitor):
 
             print(f"{p2lisp.string_hash_map=}")
 
-        return out_json
+        return out_json, string_hash_map
 
     @staticmethod
     def fromFilePath(filePath):

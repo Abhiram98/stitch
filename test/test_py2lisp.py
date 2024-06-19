@@ -33,25 +33,25 @@ def test_example_3():
 
 
 def test_from_directory_image_processing():
-    lisp_outs = Py2Lisp.fromDirectoryToJson("../Python/digital_image_processing")
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson("../Python/digital_image_processing")
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_computer_vision():
-    lisp_outs = Py2Lisp.fromDirectoryToJson("../Python/greedy_methods")
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson("../Python/greedy_methods")
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_arrays():
-    lisp_outs = Py2Lisp.fromDirectoryToJson('../Python/data_structures/arrays')
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson('../Python/data_structures/arrays')
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_p0():
-    lisp_outs = Py2Lisp.fromDirectoryToJson('../lab4-team-tyler-and-luke-1/tests/autograde/p0')
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson('../lab4-team-tyler-and-luke-1/tests/autograde/p0')
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 

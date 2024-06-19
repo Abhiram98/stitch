@@ -4,6 +4,7 @@ import sys
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.python2lisp import Py2Lisp
+from pybrary_extraction.ast_utils import StringReplacer
 # from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
@@ -27,13 +28,17 @@ class Rewrite2Py:
     def __init__(self, lisp_str,
                  available_abstractions: list,
                  abstraction_prefix='fn_',
-                 library_name='leroy_library'):
+                 library_name='leroy_library',
+                 string_hashmap=None):
 
         self.lisp_str = lisp_str
         self.available_abstractions = available_abstractions
         self.abstraction_prefix = abstraction_prefix
         self.abstractions_used = set()
         self.library_name = library_name
+        if string_hashmap is None:
+            string_hashmap = {}
+        self.string_hashmap = string_hashmap
 
 
     def convert(self):
@@ -44,6 +49,7 @@ class Rewrite2Py:
         lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
+        StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast = self.add_library_import_statements(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)

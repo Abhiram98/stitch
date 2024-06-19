@@ -3,21 +3,24 @@ import copy
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
-from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs
+from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs, StringReplacer
 from pybrary_extraction.StitchAbstraction import StitchAbstraction
+
 
 class Abstraction2Py:
 
-    def __init__(self, abstraction: StitchAbstraction):
-        # if live_out is None:
-        #     live_out = []
+    def __init__(self, abstraction: StitchAbstraction, string_hashmap=None):
+
         self.abstraction = abstraction
         self.param_count = 0
         self.args_map = {}
-        # self.live_out = live_out
+        if string_hashmap is None:
+            string_hashmap = {}
+        self.string_hashmap = string_hashmap
 
     def convert(self, fn_name='fn_0'):
         py_ast = Lisp2Py(self.abstraction.abstraction_body_lisp).get_py_ast()
+        StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         self.find_parameters(py_ast)

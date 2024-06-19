@@ -34,12 +34,14 @@ class Leroy:
 
         # file path -> lisp-encoded ast
         self.file_json_map = None
+        self.string_hashmap = None
         self.stitch_out = self.read_stitch_out()
 
     def run(self):
 
         self.clear_temp_dir()
-        self.file_json_map = Py2Lisp.fromDirectoryToJson(self.py_files_dir)
+        self.file_json_map, string_hashmap = Py2Lisp.fromDirectoryToJson(self.py_files_dir)
+        self.string_hashmap = {v: k for k, v in string_hashmap.items()}  # reverse for convenience
         with open(f"{self.temp_dir}/{self.temp_filename}", "w") as f:
             json.dump(list(self.file_json_map.values()), f, indent=4)
 
@@ -96,7 +98,9 @@ class Leroy:
                 py_code = Rewrite2Py(
                     rewrite,
                     library_name=Leroy.LIBRARY_NAME,
-                    available_abstractions=stitch_abstractions).convert()
+                    available_abstractions=stitch_abstractions,
+                    string_hashmap=self.string_hashmap
+                ).convert()
             except:
                 print(f"Failed to rewrite: {rewrite}")
                 raise
@@ -110,7 +114,7 @@ class Leroy:
         for i, abstraction in enumerate(stitch_abstractions):
             abs_body = abstraction.abstraction_body_lisp
             live_out = abstraction.get_and_set_live_out(self.stitch_out['original'])
-            abstraction.abstraction_body_py = Abstraction2Py(abstraction).convert(f"fn_{i}")
+            abstraction.abstraction_body_py = Abstraction2Py(abstraction, self.string_hashmap).convert(f"fn_{i}")
             library_functions.append(
                 abstraction.abstraction_body_py
             )

@@ -15,6 +15,7 @@ class FindFuncAndClassDefs(ast.NodeVisitor):
         self.defs.append(node.name)
         self.generic_visit(node)
 
+
 class FindTargetVariables(ast.NodeVisitor):
     def __init__(self, include_func_calls=False):
         self.lhs_vars = []
@@ -111,3 +112,13 @@ def line_col(string, index):
        newlines) appended to the end
     """
     return string.count('\n', 0, index) + 1, index - string.rfind('\n', 0, index) - 1
+
+
+class StringReplacer(ast.NodeTransformer):
+    def __init__(self, string_hashmap):
+        self.string_hashmap = string_hashmap
+
+    def visit_Name(self, node: ast.Name) -> Any:
+        if node.id in self.string_hashmap:
+            return ast.Constant(value=self.string_hashmap[node.id])
+        return node

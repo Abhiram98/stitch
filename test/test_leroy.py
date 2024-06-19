@@ -20,7 +20,7 @@ def test_simple_duplicate_files():
 
     with open(f1_path) as f:
         content = f.read()
-        assert(content=="from leroy_library import fn_0\nmain = fn_0()")
+        assert (content == "from leroy_library import fn_0\nmain = fn_0()")
 
     with open(f2_path) as f:
         content = f.read()
@@ -28,8 +28,8 @@ def test_simple_duplicate_files():
 
     with open(leroy_library_path) as f:
         content = f.read()
-        assert(content == "def fn_0():\n    def main():\n        print(\"do something\")\n        print(\"do "
-                           "something2\")    return main")
+        assert (content == "def fn_0():\n\n    "
+                           "def main():\n        print('do something')\n        print('do something2')\n    return main")
 
 
 def test_Leroy_data_structures_arrays():
@@ -48,8 +48,6 @@ def test_Leroy_data_structures():
         ],
         standalone_mode=False
     )
-
-
 
 
 def test_Leroy_data_greedy():
@@ -74,7 +72,6 @@ def test_Leroy_data_computer_vision():
     )
 
 
-
 def test_Leroy_p0():
     run_leroy(
         [
@@ -96,7 +93,5 @@ def test_Leroy_p1():
 
 
 def test_Leroy_write_abstractions():
-
     j = Leroy("../Python/data_structures", 5, 3, 10)
     j.write_abstractions([i['body'] for i in j.stitch_out["abstractions"]])
-
