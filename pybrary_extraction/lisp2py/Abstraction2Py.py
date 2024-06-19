@@ -75,14 +75,17 @@ class Abstraction2Py:
             return abs_fn_def
         else:
             return_vars = self.get_return_vars(abs_fn_def)
+            if len(return_vars):
+                return_stmnt = "return {0}".format(",".join(return_vars))
+                return_node = ast.parse(return_stmnt).body[0]
+                abs_fn_def.body.append(return_node)
+            elif isinstance(abs_fn_def.body[-1], ast.Expr):
+                # TODO: this code should be deprecated.
+                # Return the last statement
+                last_stmnt = ast.Return(value=copy.deepcopy(abs_fn_def.body[-1]))
+                abs_fn_def.body.pop()  # remove last statement
+                abs_fn_def.body.append(last_stmnt)
 
-            return_stmnt = "return {0}".format(",".join(return_vars))
-            return_node = ast.parse(return_stmnt).body[0]
-            abs_fn_def.body.append(return_node)
-            # last_stmnt = ast.Return(value=copy.deepcopy(abs_fn_def.body[-1]))
-            # abs_fn_def.body.pop()  # remove last statement
-            # abs_fn_def.body.append(last_stmnt)
-            # # Return the last statement
 
     def get_return_vars(self, abs_fn_def):
         """Variable which are live out of the block, defined in the block,
