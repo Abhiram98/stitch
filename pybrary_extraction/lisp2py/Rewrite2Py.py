@@ -2,14 +2,17 @@ import ast
 import copy
 import sys
 
+from StitchAbstraction import StitchAbstraction
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import StringReplacer
+
+
 # from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
 class AbstractionCall:
-    def __init__(self, func_name, params = None):
+    def __init__(self, func_name, params=None):
         self.func_name = func_name
         self.params = params
 
@@ -19,6 +22,7 @@ class AbstractionCall:
 
     def __getitem__(self, item):
         return self.items[item]
+
 
 class Rewrite2Py:
     """
@@ -40,12 +44,11 @@ class Rewrite2Py:
             string_hashmap = {}
         self.string_hashmap = string_hashmap
 
-
     def convert(self):
 
         lisp_parts = Lisp2Py.parse_lisp(self.lisp_str)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
-        lisp_parts = self.replace_abstraction_calls(lisp_parts)
+        lisp_parts = self.create_abstraction_calls(lisp_parts)
         lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
@@ -63,7 +66,9 @@ class Rewrite2Py:
                 lisp_parts[1][0] == Py2Lisp.list_keyword:
             raise Exception(f"Shouldn't be {Py2Lisp.list_keyword} here.")
 
-    def replace_abstraction_calls(self, lisp_root):
+    def create_abstraction_calls(self, lisp_root):
+        """Wrap abstraction calls with 'Call' nodes and pass additional
+        parameters if necessary."""
         if isinstance(lisp_root, str):
             if lisp_root.startswith(self.abstraction_prefix):
                 self.abstractions_used.add(lisp_root)
@@ -72,17 +77,19 @@ class Rewrite2Py:
         elif isinstance(lisp_root, list):
             new_lisp = []
             for node in lisp_root:
-                new_lisp.append(self.replace_abstraction_calls(node))
+                new_lisp.append(self.create_abstraction_calls(node))
 
             # if lisp_root[0].startswith(self.abstraction_prefix):
             if isinstance(new_lisp[0], AbstractionCall):
                 fn_name = new_lisp[0].func_name
                 args = copy.deepcopy(new_lisp[1:])
+                matches = self.get_matching_abstraction(fn_name)
+                if len(matches) > 0:
+                    additional_params = matches[0].get_additional_params()
+                    if len(additional_params) > 0:
+                        args += additional_params
 
-                new_lisp_root = ['Call', fn_name, ['__list__', *new_lisp[1:]]]
-                # new_lisp.insert(0, 'Call')
-                # new_lisp.insert(2, ['__list__', *args])
-                # del new_lisp[3:]
+                new_lisp_root = ['Call', fn_name, ['__list__', *args]]
 
                 self.abstractions_used.add(fn_name)
                 return new_lisp_root
@@ -93,8 +100,8 @@ class Rewrite2Py:
         for node in lisp_parts[1:]:
             if node[0] == 'Call':
                 abstraction_name = node[1]
-                matches = list(filter(lambda x: x.abstraction_name==abstraction_name, self.available_abstractions))
-                if len(matches)>0:
+                matches = self.get_matching_abstraction(abstraction_name)
+                if len(matches) > 0:
                     final_nodes.append(['Assign', ['__list__', *matches[0].returned_vars], node])
                 else:
                     # '(ProgramStatements (Assign (__list__ x) (Call fn_0)))'
@@ -102,6 +109,9 @@ class Rewrite2Py:
             else:
                 final_nodes.append(node)
         return final_nodes
+
+    def get_matching_abstraction(self, abstraction_name: str) -> list[StitchAbstraction]:
+        return list(filter(lambda x: x.abstraction_name == abstraction_name, self.available_abstractions))
 
     def add_library_import_statements(self, py_ast):
         import_statements = []

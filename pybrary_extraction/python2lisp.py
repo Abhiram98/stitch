@@ -15,6 +15,7 @@ class Py2Lisp(ast.NodeVisitor):
             self.string_hash_map = {}
         else:
             self.string_hash_map = string_hash_map
+            self.string_count += len(string_hash_map)
 
     @staticmethod
     def fromDirectoryToJson(directory_path):

@@ -8,6 +8,7 @@ from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
 class Abstraction2Py:
+    PARAM_KEY = "_param"
 
     def __init__(self, abstraction: StitchAbstraction, string_hashmap=None):
 
@@ -43,6 +44,7 @@ class Abstraction2Py:
     def find_parameters(self, py_ast):
         self.set_param_names(py_ast)
         self.get_additional_params(py_ast)
+        self.abstraction.parameters.update(set(self.args_map.values()))
 
     def get_additional_params(self, py_ast):
         """find additional parameters used by the abs_fn_def, which are not defined within"""
@@ -62,7 +64,7 @@ class Abstraction2Py:
             return self.args_map[arg_name]
         else:
             arg_num = int(arg_name.strip('#'))
-            param_name = f'_param{arg_num}'
+            param_name = f'{Abstraction2Py.PARAM_KEY}{arg_num}'
             self.param_count += 1
             self.args_map[arg_name] = param_name
             return param_name
@@ -79,13 +81,14 @@ class Abstraction2Py:
                 return_stmnt = "return {0}".format(",".join(return_vars))
                 return_node = ast.parse(return_stmnt).body[0]
                 abs_fn_def.body.append(return_node)
-            elif isinstance(abs_fn_def.body[-1], ast.Expr):
+            # elif isinstance(abs_fn_def.body[-1], ast.Expr):
+            else:
                 # TODO: this code should be deprecated.
                 # Return the last statement
-                last_stmnt = ast.Return(value=copy.deepcopy(abs_fn_def.body[-1]))
+                last_stmnt = ast.Return(
+                    value=copy.deepcopy(Abstraction2Py.strip_expr(abs_fn_def.body[-1])))
                 abs_fn_def.body.pop()  # remove last statement
                 abs_fn_def.body.append(last_stmnt)
-
 
     def get_return_vars(self, abs_fn_def):
         """Variable which are live out of the block, defined in the block,
@@ -101,3 +104,9 @@ class Abstraction2Py:
             .union(set(func_class_def_finder.defs))
         self.abstraction.returned_vars = return_vars
         return return_vars
+
+    @staticmethod
+    def strip_expr(node):
+        if isinstance(node, ast.Expr):
+            return node.value
+        return node
