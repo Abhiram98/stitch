@@ -7,7 +7,7 @@ import shutil
 
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
-from pybrary_extraction.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 def try_make_parent_dir(new_file_path):

@@ -2,13 +2,11 @@ import ast
 import copy
 import sys
 
-from StitchAbstraction import StitchAbstraction
-from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 from pybrary_extraction.python2lisp import Py2Lisp
+from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
+# from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import StringReplacer
-
-
-# from pybrary_extraction.StitchAbstraction import StitchAbstraction
 
 
 class AbstractionCall:

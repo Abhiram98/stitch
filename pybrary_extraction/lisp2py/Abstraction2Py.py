@@ -4,7 +4,7 @@ import copy
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
 from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs, StringReplacer
-from pybrary_extraction.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 class Abstraction2Py:
