@@ -81,10 +81,10 @@ class Abstraction2Py:
                 return_stmnt = "return {0}".format(",".join(return_vars))
                 return_node = ast.parse(return_stmnt).body[0]
                 abs_fn_def.body.append(return_node)
-            # elif isinstance(abs_fn_def.body[-1], ast.Expr):
-            else:
+            elif isinstance(abs_fn_def.body[-1], ast.Expr) or \
+                    isinstance(abs_fn_def.body[-1], ast.expr):
                 # TODO: this code should be deprecated.
-                # Return the last statement
+                # Return the last statement, in case it is an expression.
                 last_stmnt = ast.Return(
                     value=copy.deepcopy(Abstraction2Py.strip_expr(abs_fn_def.body[-1])))
                 abs_fn_def.body.pop()  # remove last statement

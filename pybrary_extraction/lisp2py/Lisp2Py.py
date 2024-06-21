@@ -62,6 +62,22 @@ class Lisp2Py:
         elif isinstance(node, ast.alias):
             if isinstance(node.name, ast.Name):
                 node.name = node.name.id
+
+        elif isinstance(node, ast.While):
+            if not hasattr(node, 'orelse'):
+                node.orelse = []
+
+        elif isinstance(node, ast.For):
+            if not hasattr(node, 'orelse'):
+                node.orelse = []
+        elif isinstance(node, ast.List):
+            if not hasattr(node, 'elts'):
+                node.elts = []
+        elif isinstance(node, ast.Dict):
+            if not hasattr(node, 'keys'):
+                node.keys = []
+            if not hasattr(node, 'values'):
+                node.values = []
         return node
 
     @staticmethod
@@ -126,5 +142,9 @@ class Lisp2Py:
     def create_ast_node(cls, ast_class):
         if ast_class is ast.arguments:
             return ast.arguments(posonlyargs=[], args=[], defaults=[], kwonlyargs=[])
+        if ast_class is ast.List:
+            return ast.List(elts=[])
+        if ast_class is ast.Dict:
+            return ast.Dict(keys=[], values=[])
         return ast_class()
 

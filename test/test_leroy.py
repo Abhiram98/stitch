@@ -136,8 +136,6 @@ def test_Leroy_p0():
         standalone_mode=False
     )
 
-    """def fn_1(_param0, _param1, _param2, x):
-    return x + _param2 + _param1 + _param0"""
 
     leroy_library_path = pathlib.Path("../temp/leroy_library.py")
     assert (leroy_library_path.exists())
@@ -156,15 +154,26 @@ def test_Leroy_p0():
             'def fn_1(_param0, _param1, _param2, x):\n    return x + _param2 + _param1 + _param0') != -1)
 
 
-def test_Leroy_p1():
+
+def test_Leroy_p0a():
     run_leroy(
         [
-            "--py_files_dir", "../lab4-team-tyler-and-luke-1/tests/autograde/p1",
-            '--min-nodes-abstraction', '10',
-            '--iterations', '5'
+            "--py_files_dir", "resources/p0a"
         ],
         standalone_mode=False
     )
+    # TODO: Nothing was abstracted. This is fishy.
+
+
+
+def test_Leroy_p1():
+    run_leroy(
+        [
+            "--py_files_dir", "resources/p1"
+        ],
+        standalone_mode=False
+    )
+    # TODO: Nothing was abstracted. This is fishy.
 
 
 def test_Leroy_write_abstractions():
