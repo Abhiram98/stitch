@@ -52,9 +52,14 @@ class Lisp2Py:
             if not hasattr(node, 'decorator_list'):
                 node.decorator_list = []
         elif isinstance(node, ast.arguments):
-            if getattr(node, 'args', None) is None:
-                node.args = node.posonlyargs
-                node.posonlyargs = []
+            # if getattr(node, 'args', None) is None:
+            #     node.args = node.posonlyargs
+            #     node.posonlyargs = []
+            if isinstance(node.kwarg, ast.Name) and node.kwarg.id==Py2Lisp.empty_kwarg_keyword:
+                node.kwarg = None
+
+            if isinstance(node.vararg, ast.Name) and node.vararg.id==Py2Lisp.empty_vararg_keyword:
+                node.vararg = None
             if getattr(node, 'defaults', None) is None:
                 node.defaults = []
             if getattr(node, 'kwonlyargs', None) is None:

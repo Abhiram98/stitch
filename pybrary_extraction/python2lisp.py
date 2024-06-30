@@ -7,6 +7,8 @@ import sys
 class Py2Lisp(ast.NodeVisitor):
     list_keyword = "__list__"
     module_keyword = 'ProgramStatements'
+    empty_vararg_keyword = 'EMPTY_vararg'
+    empty_kwarg_keyword = 'EMPTY_kwarg'
 
     def __init__(self, string_hash_map=None):
         super().__init__()
@@ -125,8 +127,15 @@ class Py2Lisp(ast.NodeVisitor):
         )
 
     def visit_arguments(self, node: ast.arguments) -> Any:
+        if node.vararg is None:
+            node.vararg = Py2Lisp.empty_vararg_keyword
+        if node.kwarg is None:
+            node.kwarg = Py2Lisp.empty_kwarg_keyword
+
         return self.visit_and_get_lisp_str(node,
-                                           # force_encode_args=['posonlyargs', 'args']
+                                           force_encode_args=['posonlyargs', 'args', 'vararg',
+                                                              'kwonlyargs', 'kw_defaults', 'kwarg',
+                                                              'defaults']
                                            )
 
     def visit_comprehension(self, node: ast.comprehension) -> Any:

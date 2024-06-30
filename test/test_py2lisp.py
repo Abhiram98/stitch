@@ -82,3 +82,12 @@ def test_annotated_func():
     lisp_str = Py2Lisp().visit(code_ast)
 
     assert lisp_str == '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
+
+def test_func_with_kwargs():
+    code_ast = ast.parse("def solve_all(grids, name=\"\", showif=0.0):\n     print('Hello world')")
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (FunctionDef solve_all (arguments (__list__ ) (__list__ (arg grids) (arg " \
+                       "name) (arg showif)) EMPTY_vararg (__list__ ) (__list__ ) EMPTY_kwarg (__list__ STRING_0 0.0)) " \
+                       "(__list__ (Expr (Call print (__list__ STRING_1)))) (__list__ )))"
+
