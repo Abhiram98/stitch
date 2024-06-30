@@ -1,10 +1,12 @@
 from pybrary_extraction.python2lisp import Py2Lisp
 import ast
 import json
+import pathlib
 
+resources_path = pathlib.Path(__file__).parent.joinpath("resources")
 
 def test_example_1():
-    with open("resources/ex1.py") as f:
+    with open(resources_path.joinpath("ex1.py")) as f:
         code_str = f.read()
 
     code_ast = ast.parse(code_str)
@@ -31,25 +33,25 @@ def test_example_3():
 
 
 def test_from_directory_image_processing():
-    lisp_outs = Py2Lisp.fromDirectoryToJson("../Python/digital_image_processing")
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson("../Python/digital_image_processing")
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_computer_vision():
-    lisp_outs = Py2Lisp.fromDirectoryToJson("../Python/greedy_methods")
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson("../Python/greedy_methods")
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_arrays():
-    lisp_outs = Py2Lisp.fromDirectoryToJson('../Python/data_structures/arrays')
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson('../Python/data_structures/arrays')
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
 
 def test_from_directory_p0():
-    lisp_outs = Py2Lisp.fromDirectoryToJson('../lab4-team-tyler-and-luke-1/tests/autograde/p0')
+    lisp_outs, _ = Py2Lisp.fromDirectoryToJson('../lab4-team-tyler-and-luke-1/tests/autograde/p0')
 
     print(json.dumps(list(lisp_outs.values()), indent=4))
 
@@ -80,3 +82,12 @@ def test_annotated_func():
     lisp_str = Py2Lisp().visit(code_ast)
 
     assert lisp_str == '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
+
+def test_func_with_kwargs():
+    code_ast = ast.parse("def solve_all(grids, name=\"\", showif=0.0):\n     print('Hello world')")
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (FunctionDef solve_all (arguments (__list__ ) (__list__ (arg grids) (arg " \
+                       "name) (arg showif)) EMPTY_vararg (__list__ ) (__list__ ) EMPTY_kwarg (__list__ STRING_0 0.0)) " \
+                       "(__list__ (Expr (Call print (__list__ STRING_1)))) (__list__ )))"
+

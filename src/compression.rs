@@ -1227,7 +1227,7 @@ fn stitch_search(
 
 fn is_macro_like_invention(abstraction: ExprOwned) -> bool {
     let python_path = "python";
-    let py_file = "pybrary_extraction/lisp2python.py";
+    let py_file = "pybrary_extraction/lisp2py/Rewrite2Py.py";
 
     let arg = format!("(ProgramStatements {})", 
             abstraction.to_string().replace("??", "ProgramStatements"));

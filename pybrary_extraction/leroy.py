@@ -6,7 +6,8 @@ import os
 import shutil
 
 from pybrary_extraction.python2lisp import Py2Lisp
-from pybrary_extraction.lisp2python import Lisp2Py, Abstraction2Py, Rewrite2Py
+from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 def try_make_parent_dir(new_file_path):
@@ -17,8 +18,11 @@ def try_make_parent_dir(new_file_path):
 
 
 class Leroy:
+    LIBRARY_NAME = "leroy_library"
+
     def __init__(self, py_files_dir, iterations,
-                 max_arity, min_nodes_abstraction):
+                 max_arity, min_nodes_abstraction,
+                 donot_rerun):
 
         self.py_files_dir = py_files_dir
         self.min_nodes_abstraction = min_nodes_abstraction
@@ -31,16 +35,19 @@ class Leroy:
 
         # file path -> lisp-encoded ast
         self.file_json_map = None
+        self.string_hashmap = None
+        self.donot_rerun = donot_rerun
         self.stitch_out = self.read_stitch_out()
 
     def run(self):
 
         self.clear_temp_dir()
-        self.file_json_map = Py2Lisp.fromDirectoryToJson(self.py_files_dir)
+        self.file_json_map, string_hashmap = Py2Lisp.fromDirectoryToJson(self.py_files_dir)
+        self.string_hashmap = {v: k for k, v in string_hashmap.items()}  # reverse for convenience
         with open(f"{self.temp_dir}/{self.temp_filename}", "w") as f:
             json.dump(list(self.file_json_map.values()), f, indent=4)
 
-        if not self.result_is_cached():
+        if not self.donot_rerun and not self.result_is_cached():
             self.run_stitch()
         self.write_files()
 
@@ -67,10 +74,12 @@ class Leroy:
         stitch_out = self.stitch_out
 
         stitch_rewritten = stitch_out['rewritten']
-        stitch_abstractions = [i['body'] for i in stitch_out["abstractions"]]
+        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'], i['name'], self.string_hashmap)
+                               for i in stitch_out["abstractions"]]
+        original_lisp = stitch_out['original']
 
         self.write_abstractions(stitch_abstractions)
-        self.write_rewritten_programs(stitch_rewritten)
+        self.write_rewritten_programs(stitch_rewritten, stitch_abstractions)
 
     def read_stitch_out(self):
         try:
@@ -80,14 +89,20 @@ class Leroy:
         except FileNotFoundError:
             return
 
-    def write_rewritten_programs(self, stitch_rewritten):
+    def write_rewritten_programs(self, stitch_rewritten,
+                                 stitch_abstractions: list[StitchAbstraction]):
         for file, rewrite in zip(self.file_json_map.keys(), stitch_rewritten):
             new_file_path = file.replace(self.py_files_dir, str(self.temp_dir))
             try_make_parent_dir(new_file_path)
             print(f"{new_file_path=}")
 
             try:
-                py_code = Rewrite2Py(rewrite).convert()
+                py_code = Rewrite2Py(
+                    rewrite,
+                    library_name=Leroy.LIBRARY_NAME,
+                    available_abstractions=stitch_abstractions,
+                    string_hashmap=self.string_hashmap
+                ).convert()
             except:
                 print(f"Failed to rewrite: {rewrite}")
                 raise
@@ -96,13 +111,16 @@ class Leroy:
             with open(new_file_path, "w") as f:
                 f.write(py_code)
 
-    def write_abstractions(self, stitch_abstractions):
+    def write_abstractions(self, stitch_abstractions: list[StitchAbstraction]):
         library_functions = []
-        for i, abs_body in enumerate(stitch_abstractions):
+        for i, abstraction in enumerate(stitch_abstractions):
+            abs_body = abstraction.abstraction_body_lisp
+            live_out = abstraction.get_and_set_live_out(self.stitch_out['original'])
+            abstraction.abstraction_body_py = Abstraction2Py(abstraction, self.string_hashmap).convert(f"fn_{i}")
             library_functions.append(
-                Abstraction2Py(abs_body).convert(f"fn_{i}")
+                abstraction.abstraction_body_py
             )
-        with open(f"{self.temp_dir}/leroy_library.py", "w") as f:
+        with open(f"{self.temp_dir}/{Leroy.LIBRARY_NAME}.py", "w") as f:
             f.write("\n\n".join(library_functions))
 
     def clear_temp_dir(self):
@@ -129,9 +147,11 @@ class Leroy:
 @click.option("--iterations", help='Number of iterations to run stitch for.', default=3, type=int)
 @click.option("--max-arity", default=3, type=int, help='maximum number of parameters for an abstraction.')
 @click.option("--min-nodes-abstraction", help='minimum number of ast nodes in the abstraction',
-              default=15, type=int)
-def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction):
-    l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction)
+              default=10, type=int)
+@click.option("--donot_rerun", help='Do not rerun leroy. USE for debugging only',
+              default=False, type=bool)
+def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun):
+    l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun)
     l.run()
 
 
