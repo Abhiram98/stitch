@@ -4,7 +4,7 @@ import pybrary_extraction.lisp2py as lisp2py
 
 
 class StitchAbstraction:
-    def __init__(self, abstraction_body_lisp, uses, abstraction_name):
+    def __init__(self, abstraction_body_lisp, uses, abstraction_name, string_hashmap):
         self.abstraction_body_lisp = abstraction_body_lisp
         self.uses = uses
         self.uses_py = {}
@@ -13,16 +13,22 @@ class StitchAbstraction:
         self.returned_vars = set()  # variables returned by the abstraction
         self.abstraction_body_py = None
         self.abstraction_name = abstraction_name
+        self.string_hashmap = string_hashmap
         for use in self.uses:
             for application, target in use.items():
                 wrapped_app = f"(ProgramStatements {application})"
-                self.uses_py[lisp2py.Rewrite2Py(wrapped_app, available_abstractions=[]).convert()] \
-                    = lisp2py.Lisp2Py(target).convert()
+                self.uses_py[
+                    lisp2py.Rewrite2Py(
+                        wrapped_app,
+                        available_abstractions=[],
+                        string_hashmap=self.string_hashmap).convert()] \
+                    = lisp2py.Lisp2Py(target, string_hashmap=self.string_hashmap).convert()
 
     def get_and_set_live_out(self, original_lisps):
         py_originals = []
         for lisp in original_lisps:
-            py_originals.append(lisp2py.Lisp2Py(lisp).convert())
+            py_originals.append(
+                lisp2py.Lisp2Py(lisp, string_hashmap=self.string_hashmap).convert())
 
         live_vars_out = set()
         for use in self.uses_py:

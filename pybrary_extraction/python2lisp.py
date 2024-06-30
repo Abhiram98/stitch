@@ -49,11 +49,11 @@ class Py2Lisp(ast.NodeVisitor):
         return lisp_str
 
     def generic_visit(self, node: ast.AST) -> Any:
-        return self.get_lisp_str(node)
+        return self.visit_and_get_lisp_str(node)
 
-    def get_lisp_str(self, node, encode_args=None):
-        if encode_args is None:
-            encode_args = []
+    def visit_and_get_lisp_str(self, node, force_encode_args=None):
+        if force_encode_args is None:
+            force_encode_args = []
         params = []
         for field, value in ast.iter_fields(node):
             if isinstance(value, list):
@@ -63,7 +63,7 @@ class Py2Lisp(ast.NodeVisitor):
                         val = self.visit(item)
                         if val is not None:
                             list_params.append(val)
-                if field in encode_args or list_params:
+                if field in force_encode_args or list_params:
                     params.append(f"({Py2Lisp.list_keyword} " + " ".join(list_params) + ")")
 
             elif isinstance(value, ast.AST):
@@ -72,6 +72,8 @@ class Py2Lisp(ast.NodeVisitor):
                     params.append(val)
             elif value is not None:
                 params.append(str(value))
+            # elif (value is None) and (field in force_encode_args):
+            #     params.append("None")
         params_str = " ".join(params)
         if len(params):
             lisp_string = f"({node.__class__.__name__} {params_str})"
@@ -105,7 +107,7 @@ class Py2Lisp(ast.NodeVisitor):
         return str(node.id)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
-        return self.get_lisp_str(node, encode_args=[
+        return self.visit_and_get_lisp_str(node, force_encode_args=[
             'name',
             'args',
             'body',
@@ -114,10 +116,29 @@ class Py2Lisp(ast.NodeVisitor):
             'type_comment',
         ])
 
+    def visit_ClassDef(self, node: ast.ClassDef) -> Any:
+        return self.visit_and_get_lisp_str(
+            node,
+            force_encode_args=[
+                'name', 'bases', 'keywords', 'body', 'decorator_list'
+            ]
+        )
+
     def visit_arguments(self, node: ast.arguments) -> Any:
-        return self.get_lisp_str(node,
-                                 # encode_args=['posonlyargs', 'args']
-                                 )
+        return self.visit_and_get_lisp_str(node,
+                                           # force_encode_args=['posonlyargs', 'args']
+                                           )
+
+    def visit_comprehension(self, node: ast.comprehension) -> Any:
+        return self.visit_and_get_lisp_str(
+            node, force_encode_args=['ifs']
+        )
+
+    def visit_Assign(self, node: ast.Assign) -> Any:
+        return self.visit_and_get_lisp_str(node, force_encode_args=['targets', 'value'])
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
+        return self.visit_and_get_lisp_str(node, force_encode_args=['target', 'annotation', 'value', 'simple'])
 
 
 if __name__ == '__main__':

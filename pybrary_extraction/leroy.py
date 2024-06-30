@@ -21,7 +21,8 @@ class Leroy:
     LIBRARY_NAME = "leroy_library"
 
     def __init__(self, py_files_dir, iterations,
-                 max_arity, min_nodes_abstraction):
+                 max_arity, min_nodes_abstraction,
+                 donot_rerun):
 
         self.py_files_dir = py_files_dir
         self.min_nodes_abstraction = min_nodes_abstraction
@@ -35,6 +36,7 @@ class Leroy:
         # file path -> lisp-encoded ast
         self.file_json_map = None
         self.string_hashmap = None
+        self.donot_rerun = donot_rerun
         self.stitch_out = self.read_stitch_out()
 
     def run(self):
@@ -45,7 +47,7 @@ class Leroy:
         with open(f"{self.temp_dir}/{self.temp_filename}", "w") as f:
             json.dump(list(self.file_json_map.values()), f, indent=4)
 
-        if not self.result_is_cached():
+        if not self.donot_rerun and not self.result_is_cached():
             self.run_stitch()
         self.write_files()
 
@@ -72,7 +74,7 @@ class Leroy:
         stitch_out = self.stitch_out
 
         stitch_rewritten = stitch_out['rewritten']
-        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'], i['name'])
+        stitch_abstractions = [StitchAbstraction(i['body'], i['uses'], i['name'], self.string_hashmap)
                                for i in stitch_out["abstractions"]]
         original_lisp = stitch_out['original']
 
@@ -146,8 +148,10 @@ class Leroy:
 @click.option("--max-arity", default=3, type=int, help='maximum number of parameters for an abstraction.')
 @click.option("--min-nodes-abstraction", help='minimum number of ast nodes in the abstraction',
               default=10, type=int)
-def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction):
-    l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction)
+@click.option("--donot_rerun", help='Do not rerun leroy. USE for debugging only',
+              default=False, type=bool)
+def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun):
+    l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun)
     l.run()
 
 

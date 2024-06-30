@@ -4,15 +4,19 @@ from pyparsing import OneOrMore, nestedExpr
 
 from pybrary_extraction.lisp2py.utils import MyList
 from pybrary_extraction.python2lisp import Py2Lisp
-from pybrary_extraction.ast_utils import get_all_ast_classes
+from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer
 
 
 class Lisp2Py:
-    def __init__(self, lisp_str):
+    def __init__(self, lisp_str, string_hashmap=None):
+        if string_hashmap is None:
+            string_hashmap = {}
         self.lisp_str = lisp_str
+        self.string_hashmap = string_hashmap
 
     def convert(self):
         py_ast = self.get_py_ast()
+        py_ast = StringReplacer(string_hashmap=self.string_hashmap).visit(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         print(ast.dump(py_ast, indent=4))
@@ -58,7 +62,9 @@ class Lisp2Py:
         elif isinstance(node, ast.arg):
             if isinstance(node.arg, ast.Name):
                 node.arg = node.arg.id
-
+        elif isinstance(node, ast.Attribute):
+            if isinstance(node.attr, ast.Name):
+                node.attr = node.attr.id
         elif isinstance(node, ast.alias):
             if isinstance(node.name, ast.Name):
                 node.name = node.name.id
@@ -78,6 +84,26 @@ class Lisp2Py:
                 node.keys = []
             if not hasattr(node, 'values'):
                 node.values = []
+        elif isinstance(node, ast.comprehension):
+            if not hasattr(node, 'is_async'):
+                node.is_async = 0
+        elif isinstance(node, ast.ImportFrom):
+            if isinstance(getattr(node, 'level'), ast.Constant):
+                node.level = node.level.value
+            if isinstance(getattr(node, 'module'), ast.Name):
+                node.module = node.module.id
+        elif isinstance(node, ast.FormattedValue):
+            if isinstance(node.conversion, ast.Constant):
+                node.conversion = node.conversion.value
+        elif isinstance(node, ast.ClassDef):
+            if not hasattr(node, 'decorator_list'):
+                node.decorator_list = []
+            if hasattr(node, 'name') and isinstance(node.name, ast.Name):
+                node.name = node.name.id
+        elif isinstance(node, ast.AnnAssign):
+            if not hasattr(node, 'simple'):
+                node.simple = node.value
+                node.value = None
         return node
 
     @staticmethod
@@ -114,6 +140,8 @@ class Lisp2Py:
             val = eval(lisp_root)
             if type(val) in [int, float]:
                 return ast.Constant(value=val)
+            # elif val is None:
+            #     return None
             else:
                 return ast.Name(id=lisp_root)
         except:
@@ -147,4 +175,3 @@ class Lisp2Py:
         if ast_class is ast.Dict:
             return ast.Dict(keys=[], values=[])
         return ast_class()
-
