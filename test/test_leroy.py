@@ -91,7 +91,8 @@ def test_simple_duplicate_additional_lines():
 def test_Leroy_data_structures_arrays():
     run_leroy(
         [
-            "--py_files_dir", "../Python/data_structures/arrays"
+            "--py_files_dir", "resources/data_structures/arrays",
+            "--donot_rerun", "True"
         ],
         standalone_mode=False
     )
@@ -100,7 +101,7 @@ def test_Leroy_data_structures_arrays():
 def test_Leroy_data_structures():
     run_leroy(
         [
-            "--py_files_dir", "../Python/data_structures"
+            "--py_files_dir", "resources/data_structures"
         ],
         standalone_mode=False
     )

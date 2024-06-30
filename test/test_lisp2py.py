@@ -1,6 +1,6 @@
 import pytest
 from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
-from pybrary_extraction.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 def test_basic():
@@ -17,6 +17,12 @@ def test_annotated_funcdef():
     lisp_str = '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
     assert Lisp2Py(
         lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
+
+
+def test_annotated_func_with_attribute_usage():
+    lisp_str = '(FunctionDef __bool__ (arguments (__list__ (arg self))) (__list__ (Expr STRING_775) (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None)))) __list__)'
+    assert print(Lisp2Py(
+        lisp_str).convert()) == 'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
 
 def test_empty():
@@ -98,6 +104,13 @@ def test_rewrite_to_py_function_def_two_lines():
 
     print("done")
 
+
+def test_rewrite_to_py_fndef_with_kwargs():
+    lisp_str = "(ProgramStatements (FunctionDef solve_all (arguments (__list__ ) (__list__ (arg grids) (arg name) (" \
+               "arg showif)) EMPTY_vararg (__list__ ) (__list__ ) EMPTY_kwarg (__list__ STRING_0 0.0)) (__list__ (" \
+               "Expr (Call print (__list__ STRING_1)))) (__list__ )))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
 
 def test_rewrite_to_py_2():
     lisp_str = "(fn_0 1 (fn_2 5 6)))"
