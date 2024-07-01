@@ -81,7 +81,19 @@ def test_annotated_func():
     code_ast = ast.parse("def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n  print(1)")
     lisp_str = Py2Lisp().visit(code_ast)
 
-    assert lisp_str == '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
+    assert lisp_str == "(ProgramStatements (FunctionDef (__kw__ name find_median_sorted_arrays) (__kw__ args (" \
+                       "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
+                       "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
+
+
+def test_annotated_func_with_attr_usage():
+    code_ast = ast.parse('def __bool__(self):\n    STRING_775\n    return self._root is not None')
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments (__kw__ args (" \
+                       "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
+                       "self _root) (__list__ IsNot) (__list__ None)))))))"
+
 
 def test_func_with_kwargs():
     code_ast = ast.parse("def solve_all(grids, name=\"\", showif=0.0):\n     print('Hello world')")

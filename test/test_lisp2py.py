@@ -14,15 +14,19 @@ def test_unaryop():
 
 
 def test_annotated_funcdef():
-    lisp_str = '(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr (Call print (__list__ 1)))) (__list__ ) float))'
+    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name find_median_sorted_arrays) (__kw__ args (" \
+                       "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
+                       "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
     assert Lisp2Py(
         lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
-    lisp_str = '(FunctionDef __bool__ (arguments (__list__ (arg self))) (__list__ (Expr STRING_775) (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None)))) __list__)'
-    assert print(Lisp2Py(
-        lisp_str).convert()) == 'def __bool__(self):\n    STRING_775\n    return self._root is not None'
+    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments (__kw__ args (" \
+                       "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
+                       "self _root) (__list__ IsNot) (__list__ None)))))))"
+    assert Lisp2Py(lisp_str).convert() == \
+           'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
 
 def test_empty():
@@ -33,25 +37,29 @@ def test_empty():
 
 def test_abstraction_to_py():
     lisp_str = "(If #0 (__list__ (Return #0)) (__list__ (Return #1)))"
-    assert Abstraction2Py(StitchAbstraction(lisp_str, [], "abs0")).convert('abs0') \
+    assert Abstraction2Py(StitchAbstraction(
+        lisp_str, [], "abs0", string_hashmap={})).convert('abs0') \
            == 'def abs0(_param0, _param1):\n    if _param0:\n        return _param0\n    else:\n        return _param1'
 
 
 def test_abstraction_to_py_2():
     lisp_str = "(If #0 (__list__ (Return #0)))"
-    assert Abstraction2Py(StitchAbstraction(lisp_str, [], "abs0")).convert('abs0') \
+    assert Abstraction2Py(StitchAbstraction(
+        lisp_str, [], "abs0", string_hashmap={})).convert('abs0') \
            == 'def abs0(_param0):\n    if _param0:\n        return _param0'
 
 
 def test_abstraction_to_py_addition_return():
     lisp_str = "(BinOp #0 Add #1)"
-    assert Abstraction2Py(StitchAbstraction(lisp_str, [], "abs0")).convert('abs0') \
+    assert Abstraction2Py(StitchAbstraction(
+        lisp_str, [], "abs0", string_hashmap={})).convert('abs0') \
            == 'def abs0(_param0, _param1):\n    return _param0 + _param1'
 
 
 def test_abstraction_to_py_3():
     try:
-        lisp_str = "(ProgramStatements (__list__ (UnaryOp Not (Compare #0 (__list__ Eq) (__list__ (UnaryOp Not a)))) (UnaryOp Not b)))"
+        lisp_str = "(ProgramStatements (__list__ (UnaryOp Not (Compare #0 (__list__ Eq) (__list__ (UnaryOp Not a)))) " \
+                   "(UnaryOp Not b)))"
         Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     except Exception as e:
         print("That's normal")
@@ -73,9 +81,11 @@ def test_abstraction_to_py_simple_expressions():
 
 def test_abstraction_to_py_func_as_param():
     lisp_str = "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call custom_function (__list__ y))))"
-    assert Abstraction2Py(
-        StitchAbstraction(lisp_str, [], "abs0")).convert() == \
-           'def fn_0(custom_function, y):\n    return \n    x = 5\n    custom_function(y)'
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+    print(py)
+    assert py == \
+           'def fn_0(custom_function, y):\n    x = 5\n    custom_function(y)'
 
 
 def test_rewrite_to_py():
