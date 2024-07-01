@@ -9,6 +9,7 @@ class Py2Lisp(ast.NodeVisitor):
     module_keyword = 'ProgramStatements'
     empty_vararg_keyword = 'EMPTY_vararg'
     empty_kwarg_keyword = 'EMPTY_kwarg'
+    keyword_for_keyword = "__kw__"
 
     def __init__(self, string_hash_map=None):
         super().__init__()
@@ -53,10 +54,11 @@ class Py2Lisp(ast.NodeVisitor):
     def generic_visit(self, node: ast.AST) -> Any:
         return self.visit_and_get_lisp_str(node)
 
-    def visit_and_get_lisp_str(self, node, force_encode_args=None):
+    def visit_and_get_lisp_str(self, node, force_encode_args=None, encode_as_kw=False):
         if force_encode_args is None:
             force_encode_args = []
         params = []
+        encoded_field_names = []
         for field, value in ast.iter_fields(node):
             if isinstance(value, list):
                 list_params = []
@@ -67,16 +69,23 @@ class Py2Lisp(ast.NodeVisitor):
                             list_params.append(val)
                 if field in force_encode_args or list_params:
                     params.append(f"({Py2Lisp.list_keyword} " + " ".join(list_params) + ")")
+                    encoded_field_names.append(field)
 
             elif isinstance(value, ast.AST):
                 val = self.visit(value)
                 if val is not None:
                     params.append(val)
+                    encoded_field_names.append(field)
             elif value is not None:
                 params.append(str(value))
-            # elif (value is None) and (field in force_encode_args):
-            #     params.append("None")
-        params_str = " ".join(params)
+                encoded_field_names.append(field)
+
+        if encode_as_kw:
+            params_str = " ".join(
+                [f"({Py2Lisp.keyword_for_keyword} {fn} {p})" for fn, p in zip(encoded_field_names, params)])
+        else:
+            params_str = " ".join(params)
+
         if len(params):
             lisp_string = f"({node.__class__.__name__} {params_str})"
         else:
@@ -109,33 +118,38 @@ class Py2Lisp(ast.NodeVisitor):
         return str(node.id)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
-        return self.visit_and_get_lisp_str(node, force_encode_args=[
-            'name',
-            'args',
-            'body',
-            'decorator_list',
-            'returns',
-            'type_comment',
-        ])
+        return self.visit_and_get_lisp_str(
+            node, encode_as_kw=True,
+            # force_encode_args=[
+            #     'name',
+            #     'args',
+            #     'body',
+            #     'decorator_list',
+            #     'returns',
+            #     'type_comment',
+            # ]
+        )
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         return self.visit_and_get_lisp_str(
             node,
-            force_encode_args=[
-                'name', 'bases', 'keywords', 'body', 'decorator_list'
-            ]
+            encode_as_kw=True
+            # force_encode_args=[
+            #     'name', 'bases', 'keywords', 'body', 'decorator_list'
+            # ]
         )
 
     def visit_arguments(self, node: ast.arguments) -> Any:
-        if node.vararg is None:
-            node.vararg = Py2Lisp.empty_vararg_keyword
-        if node.kwarg is None:
-            node.kwarg = Py2Lisp.empty_kwarg_keyword
+        # if node.vararg is None:
+        #     node.vararg = Py2Lisp.empty_vararg_keyword
+        # if node.kwarg is None:
+        #     node.kwarg = Py2Lisp.empty_kwarg_keyword
 
         return self.visit_and_get_lisp_str(node,
-                                           force_encode_args=['posonlyargs', 'args', 'vararg',
-                                                              'kwonlyargs', 'kw_defaults', 'kwarg',
-                                                              'defaults']
+                                           encode_as_kw=True
+                                           # force_encode_args=['posonlyargs', 'args', 'vararg',
+                                           #                    'kwonlyargs', 'kw_defaults', 'kwarg',
+                                           #                    'defaults']
                                            )
 
     def visit_comprehension(self, node: ast.comprehension) -> Any:
@@ -147,7 +161,10 @@ class Py2Lisp(ast.NodeVisitor):
         return self.visit_and_get_lisp_str(node, force_encode_args=['targets', 'value'])
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
-        return self.visit_and_get_lisp_str(node, force_encode_args=['target', 'annotation', 'value', 'simple'])
+        return self.visit_and_get_lisp_str(node,
+                                           encode_as_kw=True,
+                                           # force_encode_args=['target', 'annotation', 'value', 'simple']
+                                           )
 
 
 if __name__ == '__main__':

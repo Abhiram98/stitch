@@ -106,9 +106,9 @@ def test_rewrite_to_py_function_def_two_lines():
 
 
 def test_rewrite_to_py_fndef_with_kwargs():
-    lisp_str = "(ProgramStatements (FunctionDef solve_all (arguments (__list__ ) (__list__ (arg grids) (arg name) (" \
-               "arg showif)) EMPTY_vararg (__list__ ) (__list__ ) EMPTY_kwarg (__list__ STRING_0 0.0)) (__list__ (" \
-               "Expr (Call print (__list__ STRING_1)))) (__list__ )))"
+    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name solve_all) (__kw__ args (arguments (__kw__ args (" \
+                       "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
+                       "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
 
@@ -142,3 +142,10 @@ def test_rewrite_to_py_import():
     lisp_str = '(ProgramStatements (fn_0 (Attribute doctest testmod) (Import (__list__ (alias doctest)))))'
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
            == 'z = #1\nw = #0'
+
+
+def test_rewrite_to_py_arguments():
+    lisp_str = "(ProgramStatements (arguments __list__ (__list__ (arg  #0)) EMPTY_vararg __list__ __list__ " \
+               "EMPTY_kwarg __list__))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)

@@ -2,9 +2,10 @@ import ast
 
 from pyparsing import OneOrMore, nestedExpr
 
-from pybrary_extraction.lisp2py.utils import MyList
+from pybrary_extraction.lisp2py.utils import MyList, MyKeyword
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer
+from pybrary_extraction.lisp2py.FixAstNodes import FixAstNodes
 
 
 class Lisp2Py:
@@ -38,80 +39,6 @@ class Lisp2Py:
             return lisp_parts
 
     @staticmethod
-    def augment_pyast_node(node):
-        if isinstance(node, ast.If) and getattr(node, 'orelse', None) is None:
-            node.orelse = []
-        elif isinstance(node, ast.Call):
-            if getattr(node, 'args', None) is None:
-                node.args = []
-            if getattr(node, 'keywords', None) is None:
-                node.keywords = []
-        elif isinstance(node, ast.FunctionDef):
-            if isinstance(node.name, ast.Name):
-                node.name = node.name.id
-            if not hasattr(node, 'decorator_list'):
-                node.decorator_list = []
-        elif isinstance(node, ast.arguments):
-            # if getattr(node, 'args', None) is None:
-            #     node.args = node.posonlyargs
-            #     node.posonlyargs = []
-            if isinstance(node.kwarg, ast.Name) and node.kwarg.id==Py2Lisp.empty_kwarg_keyword:
-                node.kwarg = None
-
-            if isinstance(node.vararg, ast.Name) and node.vararg.id==Py2Lisp.empty_vararg_keyword:
-                node.vararg = None
-            if getattr(node, 'defaults', None) is None:
-                node.defaults = []
-            if getattr(node, 'kwonlyargs', None) is None:
-                node.kwonlyargs = []
-        elif isinstance(node, ast.arg):
-            if isinstance(node.arg, ast.Name):
-                node.arg = node.arg.id
-        elif isinstance(node, ast.Attribute):
-            if isinstance(node.attr, ast.Name):
-                node.attr = node.attr.id
-        elif isinstance(node, ast.alias):
-            if isinstance(node.name, ast.Name):
-                node.name = node.name.id
-
-        elif isinstance(node, ast.While):
-            if not hasattr(node, 'orelse'):
-                node.orelse = []
-
-        elif isinstance(node, ast.For):
-            if not hasattr(node, 'orelse'):
-                node.orelse = []
-        elif isinstance(node, ast.List):
-            if not hasattr(node, 'elts'):
-                node.elts = []
-        elif isinstance(node, ast.Dict):
-            if not hasattr(node, 'keys'):
-                node.keys = []
-            if not hasattr(node, 'values'):
-                node.values = []
-        elif isinstance(node, ast.comprehension):
-            if not hasattr(node, 'is_async'):
-                node.is_async = 0
-        elif isinstance(node, ast.ImportFrom):
-            if isinstance(getattr(node, 'level'), ast.Constant):
-                node.level = node.level.value
-            if isinstance(getattr(node, 'module'), ast.Name):
-                node.module = node.module.id
-        elif isinstance(node, ast.FormattedValue):
-            if isinstance(node.conversion, ast.Constant):
-                node.conversion = node.conversion.value
-        elif isinstance(node, ast.ClassDef):
-            if not hasattr(node, 'decorator_list'):
-                node.decorator_list = []
-            if hasattr(node, 'name') and isinstance(node.name, ast.Name):
-                node.name = node.name.id
-        elif isinstance(node, ast.AnnAssign):
-            if not hasattr(node, 'simple'):
-                node.simple = node.value
-                node.value = None
-        return node
-
-    @staticmethod
     def construct(lisp_root):
         if lisp_root == '__list__':
             return MyList()
@@ -125,19 +52,8 @@ class Lisp2Py:
                 c_node = Lisp2Py.construct(c)
                 child_list.append(c_node)
 
-            # if type(lisp_root)==list:
-            #     return child_list
-            # else:
-            # ast_class = getattr(ast, child_list[0])
             py_ast_node = Lisp2Py.construct_ast_node(child_list)
-            return Lisp2Py.augment_pyast_node(py_ast_node)
-
-            # root_constructed = Lisp2Py.construct(lisp_root[0])
-            # if isinstance(root_constructed, string):
-            #     ast_class = getattr(ast, root_constructed)
-            #     return ast_class(*child_list)
-            # else:
-            #     return root_constructed
+            return FixAstNodes.augment_pyast_node(py_ast_node)
 
     @staticmethod
     def get_ast_node_from_string(lisp_root: str):
@@ -155,12 +71,17 @@ class Lisp2Py:
                 if ast_class is None:
                     return ast.Name(id=lisp_root)
                 return Lisp2Py.create_ast_node(ast_class)
+            elif lisp_root == Py2Lisp.keyword_for_keyword:
+                return MyKeyword(None, None)
             return ast.Name(id=lisp_root)
 
     @staticmethod
     def construct_ast_node(child_list):
         if isinstance(child_list[0], ast.Module):
             return ast.Module(body=child_list[1:])
+        if all([isinstance(i, MyKeyword) for i in child_list[1:]]):
+            kw_args = {i.kw: i.value for i in child_list[1:]}
+            return child_list[0].__class__(**kw_args)
         py_ast_node = child_list[0].__class__(*child_list[1:])
         return py_ast_node
 
