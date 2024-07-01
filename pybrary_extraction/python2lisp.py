@@ -166,6 +166,9 @@ class Py2Lisp(ast.NodeVisitor):
                                            # force_encode_args=['target', 'annotation', 'value', 'simple']
                                            )
 
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
+        return self.visit_and_get_lisp_str(node, encode_as_kw=True)
+
 
 if __name__ == '__main__':
     # print(f"{sys.argv=}")

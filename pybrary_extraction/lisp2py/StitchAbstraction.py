@@ -22,7 +22,9 @@ class StitchAbstraction:
                         wrapped_app,
                         available_abstractions=[],
                         string_hashmap=self.string_hashmap).convert()] \
-                    = lisp2py.Lisp2Py(target, string_hashmap=self.string_hashmap).convert()
+                    = lisp2py.Rewrite2Py(target,
+                                         available_abstractions=[],
+                                         string_hashmap=self.string_hashmap).convert()
 
     def get_and_set_live_out(self, original_lisps):
         py_originals = []

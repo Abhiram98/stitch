@@ -5,6 +5,7 @@ import pathlib
 
 resources_path = pathlib.Path(__file__).parent.joinpath("resources")
 
+
 def test_example_1():
     with open(resources_path.joinpath("ex1.py")) as f:
         code_str = f.read()
@@ -23,6 +24,7 @@ def test_example_2():
     lisp_str = Py2Lisp().visit(code_ast)
     print(lisp_str)
     assert lisp_str == "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call print (__list__ x))))"
+
 
 def test_example_3():
     code_str = "x=1\ny=1\nz=x+y\nprint(z)"
@@ -103,3 +105,10 @@ def test_func_with_kwargs():
                        "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
                        "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
 
+
+def test_exception_handler():
+    code_ast = ast.parse("try:\n    print()\nexcept:\n   print('fail')")
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (Try (__list__ (Expr (Call print))) (__list__ (ExceptHandler (__kw__ body " \
+                       "(__list__ (Expr (Call print (__list__ STRING_0)))))))))"

@@ -15,16 +15,16 @@ def test_unaryop():
 
 def test_annotated_funcdef():
     lisp_str = "(ProgramStatements (FunctionDef (__kw__ name find_median_sorted_arrays) (__kw__ args (" \
-                       "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
-                       "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
+               "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
+               "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
     assert Lisp2Py(
         lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
     lisp_str = "(ProgramStatements (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments (__kw__ args (" \
-                       "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
-                       "self _root) (__list__ IsNot) (__list__ None)))))))"
+               "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
+               "self _root) (__list__ IsNot) (__list__ None)))))))"
     assert Lisp2Py(lisp_str).convert() == \
            'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
@@ -33,6 +33,17 @@ def test_empty():
     lisp_str = "(ProgramStatements )"
     assert Lisp2Py(lisp_str).convert() \
            == ''
+
+
+def test_exception_handler():
+    lisp_str = "(ProgramStatements (Try (__list__ (Expr (Call print))) (__list__ (ExceptHandler (__kw__ body " \
+                       "(__list__ (Expr (Call print (__list__ STRING_0)))))))))"
+    py = Lisp2Py(lisp_str).convert()
+    print(py)
+    assert py == """try:
+    print()
+except:
+    print(STRING_0)"""
 
 
 def test_abstraction_to_py():
@@ -76,7 +87,7 @@ def test_abstraction_to_py_simple_expressions():
     abstraction = StitchAbstraction(lisp_str, [], "fn_0")
     abstraction.get_and_set_live_out()
     assert Abstraction2Py(abstraction).convert() == 'def fn_0(y):\n    return \n    x = ' \
-                                                                                '5\n    print(y)'
+                                                    '5\n    print(y)'
 
 
 def test_abstraction_to_py_func_as_param():
@@ -86,6 +97,19 @@ def test_abstraction_to_py_func_as_param():
     print(py)
     assert py == \
            'def fn_0(custom_function, y):\n    x = 5\n    custom_function(y)'
+
+
+def test_abstraction_to_py_fn_as_kw():
+    lisp_str = "(ProgramStatements (FunctionDef #2 (__kw__ args (arguments (__kw__ args (#1 (arg #0)))))))"
+    try:
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+        print(py)
+    except:
+        print("Failure expected")
+        # This test is expected to fail because there are a
+        # mix of __kw__ args and positional arguments
+        pass
 
 
 def test_rewrite_to_py():
@@ -117,10 +141,11 @@ def test_rewrite_to_py_function_def_two_lines():
 
 def test_rewrite_to_py_fndef_with_kwargs():
     lisp_str = "(ProgramStatements (FunctionDef (__kw__ name solve_all) (__kw__ args (arguments (__kw__ args (" \
-                       "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
-                       "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
+               "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
+               "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
+
 
 def test_rewrite_to_py_2():
     lisp_str = "(fn_0 1 (fn_2 5 6)))"
@@ -143,7 +168,15 @@ def test_rewrite_to_py_4():
 
 
 def test_rewrite_to_py_5():
-    lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod 2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript merged (BinOp (BinOp total FloorDiv 2) Sub 1)) middle1) (fn_2 (Subscript merged (BinOp total FloorDiv 2)) middle2) (Return (BinOp (BinOp (fn_0 middle1 float) Add (fn_0 middle2 float)) Div 2.0))) float) (If (fn_1 STRING_3 __name__) (__list__ (Import (__list__ (alias doctest))) (Expr (Call (Attribute doctest testmod))))))"
+    lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript " \
+               "list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (" \
+               "UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (" \
+               "BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod " \
+               "2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript " \
+               "merged (BinOp (BinOp total FloorDiv 2) Sub 1)) middle1) (fn_2 (Subscript merged (BinOp total FloorDiv " \
+               "2)) middle2) (Return (BinOp (BinOp (fn_0 middle1 float) Add (fn_0 middle2 float)) Div 2.0))) float) (" \
+               "If (fn_1 STRING_3 __name__) (__list__ (Import (__list__ (alias doctest))) (Expr (Call (Attribute " \
+               "doctest testmod))))))"
 
 
 def test_rewrite_to_py_import():

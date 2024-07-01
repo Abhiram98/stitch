@@ -49,6 +49,10 @@ class FixAstNodes(ast.NodeVisitor):
     def visit_alias(self, node: ast.alias) -> Any:
         if isinstance(node.name, ast.Name):
             node.name = node.name.id
+        if isinstance(node.name, ast.operator):
+            node.name = 'operator' #fixes bug where `import operator as op` is used.
+        if isinstance(node.asname, ast.Name):
+            node.asname = node.asname.id
 
     def visit_While(self, node: ast.While) -> Any:
         if not hasattr(node, 'orelse'):
@@ -78,13 +82,16 @@ class FixAstNodes(ast.NodeVisitor):
         if isinstance(getattr(node, 'module'), ast.Name):
             node.module = node.module.id
 
+
+
     def visit_FormattedValue(self, node: ast.FormattedValue) -> Any:
         if isinstance(node.conversion, ast.Constant):
             node.conversion = node.conversion.value
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
-        if not hasattr(node, 'decorator_list'):
-            node.decorator_list = []
+        FixAstNodes.make_empty_list_fields_if_not_exists(
+            node,
+            'bases','keywords', 'decorator_list')
         if hasattr(node, 'name') and isinstance(node.name, ast.Name):
             node.name = node.name.id
 
@@ -92,6 +99,22 @@ class FixAstNodes(ast.NodeVisitor):
         if not hasattr(node, 'simple'):
             node.simple = node.value
             node.value = None
+
+    def visit_keyword(self, node: ast.keyword) -> Any:
+        if isinstance(node.arg, ast.Name):
+            node.arg = node.arg.id
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
+        if hasattr(node, 'name') \
+            and isinstance(node.name, ast.Name) and node.name.id == Py2Lisp.empty_exception_keyword:
+            node.name = None
+
+    def visit_Try(self, node: ast.Try) -> Any:
+        FixAstNodes.make_empty_list_fields_if_not_exists(
+            node, 'body', 'handlers', 'orelse', 'finalbody')
+
+
+
 
     @staticmethod
     def augment_pyast_node(node):
