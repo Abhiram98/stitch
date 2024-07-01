@@ -116,7 +116,10 @@ class Py2Lisp(ast.NodeVisitor):
         params = []
         for b in node.body:
             params.append(self.visit(b))
-        module_in_lisp = Py2Lisp.generated_constructed_list(params)
+        if len(params)>0:
+            module_in_lisp = Py2Lisp.generated_constructed_list(params)
+        else:
+            module_in_lisp = ""
         lisp_str = f"(ProgramStatements {module_in_lisp})"
         return lisp_str
 
