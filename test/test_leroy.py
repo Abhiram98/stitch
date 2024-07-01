@@ -61,6 +61,7 @@ def test_simple_duplicate_almost():
 
 
 def test_simple_duplicate_additional_lines():
+    # TODO: This test yields to extracted functions.
     run_leroy(
         [
             "--py_files_dir", "resources/simple_project/duplicate_with_additional_lines"
@@ -92,16 +93,18 @@ def test_Leroy_data_structures_arrays():
     run_leroy(
         [
             "--py_files_dir", "resources/data_structures/arrays",
-            "--donot_rerun", "True"
+            # "--donot_rerun", "True"
         ],
         standalone_mode=False
     )
+    # TODO: This runs to completion but there are issues in exporting the right return values.
 
 
 def test_Leroy_data_structures():
     run_leroy(
         [
-            "--py_files_dir", "resources/data_structures"
+            "--py_files_dir", "resources/data_structures",
+            # "--donot_rerun", "True"
         ],
         standalone_mode=False
     )

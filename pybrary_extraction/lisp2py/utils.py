@@ -10,6 +10,14 @@ class MyList(list):
         super().__init__(args)
 
 
+class MyKeyword:
+    def __init__(self, kw, value):
+        if isinstance(kw, ast.Name):
+            kw = kw.id
+        assert isinstance(kw, str) or kw is None
+        self.kw = kw
+        self.value = value
+
 def has_return_stmnt(py_ast):
     for node in ast.walk(py_ast):
         if isinstance(node, ast.Return):
