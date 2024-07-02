@@ -81,8 +81,8 @@ def test_assigns():
 def test_empty():
     code_ast = ast.parse("")
     lisp_str = Py2Lisp().visit(code_ast)
-
-    assert lisp_str == '(ProgramStatements )'
+    print(lisp_str)
+    assert lisp_str == '(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))'
 
 
 def test_annotated_func():

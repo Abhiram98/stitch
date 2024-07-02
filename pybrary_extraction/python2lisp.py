@@ -59,7 +59,7 @@ class Py2Lisp(ast.NodeVisitor):
     @staticmethod
     def generated_constructed_list(program_elements):
         if len(program_elements)==0:
-            return f"{Py2Lisp.statement_keyword} {Py2Lisp.empty_statement_keyword} {Py2Lisp.empty_statement_keyword}"
+            return f"({Py2Lisp.statement_keyword} {Py2Lisp.empty_statement_keyword} {Py2Lisp.empty_statement_keyword})"
         lisp_str = Py2Lisp.empty_statement_keyword
         for ele in program_elements[::-1]:
             lisp_str = f"({Py2Lisp.statement_keyword} {ele} {lisp_str})"
@@ -116,10 +116,7 @@ class Py2Lisp(ast.NodeVisitor):
         params = []
         for b in node.body:
             params.append(self.visit(b))
-        if len(params)>0:
-            module_in_lisp = Py2Lisp.generated_constructed_list(params)
-        else:
-            module_in_lisp = ""
+        module_in_lisp = Py2Lisp.generated_constructed_list(params)
         lisp_str = f"(ProgramStatements {module_in_lisp})"
         return lisp_str
 

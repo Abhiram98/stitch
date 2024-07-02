@@ -2,7 +2,7 @@ import ast
 
 from pyparsing import OneOrMore, nestedExpr
 
-from pybrary_extraction.lisp2py.utils import MyList, MyKeyword
+from pybrary_extraction.lisp2py.utils import MyList, MyKeyword, StatementList
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer
 from pybrary_extraction.lisp2py.FixAstNodes import FixAstNodes
@@ -58,7 +58,7 @@ class Lisp2Py:
     @staticmethod
     def get_ast_node_from_string(lisp_root: str):
         try:
-            val = eval(lisp_root)
+            val = eval(lisp_root, {})
             if type(val) in [int, float]:
                 return ast.Constant(value=val)
             # elif val is None:
@@ -73,12 +73,17 @@ class Lisp2Py:
                 return Lisp2Py.create_ast_node(ast_class)
             elif lisp_root == Py2Lisp.keyword_for_keyword:
                 return MyKeyword(None, None)
+            elif lisp_root == Py2Lisp.statement_keyword:
+                return StatementList(
+                    Py2Lisp.empty_statement_keyword, Py2Lisp.empty_statement_keyword)
+            elif lisp_root == Py2Lisp.empty_statement_keyword:
+                return Py2Lisp.empty_statement_keyword
             return ast.Name(id=lisp_root)
 
     @staticmethod
     def construct_ast_node(child_list):
         if isinstance(child_list[0], ast.Module):
-            return ast.Module(body=child_list[1:])
+            return ast.Module(body=child_list[1])
         if all([isinstance(i, MyKeyword) for i in child_list[1:]]):
             kw_args = {i.kw: i.value for i in child_list[1:]}
             return child_list[0].__class__(**kw_args)

@@ -4,40 +4,46 @@ from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 def test_basic():
-    lisp_str = "(ProgramStatements (Assign (__list__ left_sum) 0) (Assign (__list__ right_sum) 1))"
-    assert Lisp2Py(lisp_str).convert() == 'left_sum = 0\nright_sum = 1'
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ left_sum) 0) (StatementList (Assign (" \
+                       "__list__ right_sum) 1) EMPTY_Statement)))"
+    py = Lisp2Py(lisp_str).convert()
+    print(py)
+    assert py == 'left_sum = 0\nright_sum = 1'
 
 
 def test_unaryop():
-    lisp_str = "(ProgramStatements (Assign (__list__ x) (UnaryOp USub 1)))"
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ x) (UnaryOp USub 1)) EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() == 'x = -1'
 
 
 def test_annotated_funcdef():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name find_median_sorted_arrays) (__kw__ args (" \
-               "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
-               "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name find_median_sorted_arrays) (" \
+                       "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (" \
+                       "Subscript list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
+                       "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
     assert Lisp2Py(
         lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments (__kw__ args (" \
-               "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
-               "self _root) (__list__ IsNot) (__list__ None)))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments " \
+                       "(__kw__ args (__list__ (arg self))))) (__kw__ body (StatementList (Expr STRING_775) (" \
+                       "StatementList (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None))) " \
+                       "EMPTY_Statement)))) EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() == \
            'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
 
 def test_empty():
-    lisp_str = "(ProgramStatements )"
+    lisp_str = "(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() \
            == ''
 
 
 def test_exception_handler():
-    lisp_str = "(ProgramStatements (Try (__list__ (Expr (Call print))) (__list__ (ExceptHandler (__kw__ body " \
-                       "(__list__ (Expr (Call print (__list__ STRING_0)))))))))"
+    lisp_str = "(ProgramStatements (StatementList (Try (__list__ (Expr (Call print))) (__list__ (" \
+                       "ExceptHandler (__kw__ body (__list__ (Expr (Call print (__list__ STRING_0)))))))) " \
+                       "EMPTY_Statement))"
     py = Lisp2Py(lisp_str).convert()
     print(py)
     assert py == """try:

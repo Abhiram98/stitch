@@ -18,11 +18,31 @@ class MyKeyword:
         self.kw = kw
         self.value = value
 
+
+class StatementList:
+    def __init__(self, statement1, statement2):
+        self.statement1 = statement1
+        self.statement2 = statement2
+
+    def decode(self):
+        return StatementList._decode(self)
+
+    @staticmethod
+    def _decode(start_statement):
+        all_statements_list = [start_statement.statement1]
+        if isinstance(start_statement.statement2, StatementList):
+            all_statements_list += StatementList._decode(start_statement.statement2)
+        if isinstance(start_statement.statement2, list):
+            all_statements_list += start_statement.statement2
+        return all_statements_list
+
+
 def has_return_stmnt(py_ast):
     for node in ast.walk(py_ast):
         if isinstance(node, ast.Return):
             return True
     return False
+
 
 def get_undef_vars(code_str):
     '''Find undefined variables within the code-block'''
@@ -36,8 +56,8 @@ def get_undef_vars(code_str):
     # pylint_out.close()
     try:
         pylint.run_pylint(["pylint", code_file.name,
-                       "--errors-only", "--disable=all",
-                       "--enable=E0602", "--output-format=json", f"--output={pylint_out.name}"])
+                           "--errors-only", "--disable=all",
+                           "--enable=E0602", "--output-format=json", f"--output={pylint_out.name}"])
     except SystemExit:
         pass
 
@@ -49,7 +69,7 @@ def get_undef_vars(code_str):
 
     undef_vars = set()
     for d in out_data:
-        if(d['message-id'] == ERR_CODE):
+        if (d['message-id'] == ERR_CODE):
             var_name = re.findall('\'([^"]*)\'', d['message'])[0]
             undef_vars.add(var_name)
 
