@@ -83,7 +83,10 @@ class Lisp2Py:
     @staticmethod
     def construct_ast_node(child_list):
         if isinstance(child_list[0], ast.Module):
+            if not isinstance(child_list[1], list):
+                child_list[1] = [child_list[1]]
             return ast.Module(body=child_list[1])
+
         if all([isinstance(i, MyKeyword) for i in child_list[1:]]):
             kw_args = {i.kw: i.value for i in child_list[1:]}
             return child_list[0].__class__(**kw_args)
@@ -95,6 +98,19 @@ class Lisp2Py:
         if lisp_parts[0] != Py2Lisp.module_keyword:
             new_lisp_parts = [Py2Lisp.module_keyword, lisp_parts]
             return new_lisp_parts
+        return lisp_parts
+
+    @staticmethod
+    def wrap_statements_list(lisp_parts):
+        if lisp_parts[0] == Py2Lisp.module_keyword:
+            if isinstance(lisp_parts[1], list) \
+                    and lisp_parts[1][0] == Py2Lisp.statement_keyword:
+                return lisp_parts
+            else:
+                lisp_parts[1] = [Py2Lisp.statement_keyword, lisp_parts[1], Py2Lisp.empty_statement_keyword]
+                return lisp_parts
+        elif lisp_parts[0] != Py2Lisp.statement_keyword:
+            return [Py2Lisp.statement_keyword, lisp_parts, Py2Lisp.empty_statement_keyword]
         return lisp_parts
 
     @classmethod

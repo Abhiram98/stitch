@@ -5,7 +5,7 @@ from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 def test_basic():
     lisp_str = "(ProgramStatements (StatementList (Assign (__list__ left_sum) 0) (StatementList (Assign (" \
-                       "__list__ right_sum) 1) EMPTY_Statement)))"
+               "__list__ right_sum) 1) EMPTY_Statement)))"
     py = Lisp2Py(lisp_str).convert()
     print(py)
     assert py == 'left_sum = 0\nright_sum = 1'
@@ -18,18 +18,18 @@ def test_unaryop():
 
 def test_annotated_funcdef():
     lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name find_median_sorted_arrays) (" \
-                       "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (" \
-                       "Subscript list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
-                       "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
+               "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (" \
+               "Subscript list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
+               "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
     assert Lisp2Py(
         lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
     lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments " \
-                       "(__kw__ args (__list__ (arg self))))) (__kw__ body (StatementList (Expr STRING_775) (" \
-                       "StatementList (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None))) " \
-                       "EMPTY_Statement)))) EMPTY_Statement))"
+               "(__kw__ args (__list__ (arg self))))) (__kw__ body (StatementList (Expr STRING_775) (" \
+               "StatementList (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None))) " \
+               "EMPTY_Statement)))) EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() == \
            'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
@@ -42,8 +42,8 @@ def test_empty():
 
 def test_exception_handler():
     lisp_str = "(ProgramStatements (StatementList (Try (__list__ (Expr (Call print))) (__list__ (" \
-                       "ExceptHandler (__kw__ body (__list__ (Expr (Call print (__list__ STRING_0)))))))) " \
-                       "EMPTY_Statement))"
+               "ExceptHandler (__kw__ body (__list__ (Expr (Call print (__list__ STRING_0)))))))) " \
+               "EMPTY_Statement))"
     py = Lisp2Py(lisp_str).convert()
     print(py)
     assert py == """try:
@@ -97,7 +97,8 @@ def test_abstraction_to_py_simple_expressions():
 
 
 def test_abstraction_to_py_func_as_param():
-    lisp_str = "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call custom_function (__list__ y))))"
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ x) 5) (StatementList (Expr (Call custom_function (" \
+               "__list__ y))) EMPTY_Statement)))"
     py = Abstraction2Py(
         StitchAbstraction(lisp_str, [], "abs0", {})).convert()
     print(py)
@@ -116,6 +117,60 @@ def test_abstraction_to_py_fn_as_kw():
         # This test is expected to fail because there are a
         # mix of __kw__ args and positional arguments
         pass
+def test_abstraction_to_py_with_hole():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#1' \
+               ')))'
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+    assert py \
+           == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2#1'
+
+
+def test_abstraction_to_py_with_invalid_hole():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '(StatementList #1)' \
+               ')))'
+    try:
+        py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    except:
+        print("error expected")
+        return
+    raise Exception("Should have failed.")
+
+def test_abstraction_to_py_with_invalid_hole_in_the_middle():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList #1' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2)) EMPTY_Statement)' \
+               ')))'
+    # try:
+    py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {})).convert(find_parameters=False)
+    # except:
+    #     print("error expected")
+    #     return
+    raise Exception("Should have failed.")
+
+def test_abstraction_to_py_with_invalid_hole_2():
+    lisp_str = "(StatementList " \
+               "(FunctionDef (__kw__ name main) (__kw__ args arguments) " \
+               "(__kw__ body " \
+               "(StatementList (Assign (__list__ x) 1) " \
+               "(StatementList #2 (StatementList (Expr (Call print (__list__ #1))) #0))))) " \
+               "EMPTY_Statement)"
+    try:
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+    except:
+        print("error expected")
+        return
+    raise Exception("Should have failed.")
+
 
 
 def test_rewrite_to_py():
@@ -125,7 +180,8 @@ def test_rewrite_to_py():
 
 
 def test_rewrite_to_py_function_def():
-    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0)))) __list__)"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (StatementList (Expr (Call print (__list__ STRING_0))) EMPTY_Statement))) EMPTY_Statement))"
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
            == """def main():
     print(STRING_0)"""
@@ -136,7 +192,9 @@ def test_rewrite_to_py_function_def():
 #
 
 def test_rewrite_to_py_function_def_two_lines():
-    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0))) (Expr (Call print (__list__ STRING_1)))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (StatementList (Expr (Call print (__list__ STRING_0))) (StatementList (Expr (Call print (" \
+               "__list__ STRING_1))) EMPTY_Statement)))) EMPTY_Statement))"
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
            == """def main():
     print(STRING_0)
@@ -146,11 +204,14 @@ def test_rewrite_to_py_function_def_two_lines():
 
 
 def test_rewrite_to_py_fndef_with_kwargs():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name solve_all) (__kw__ args (arguments (__kw__ args (" \
-               "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
-               "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name solve_all) (__kw__ args (" \
+               "arguments (__kw__ args (__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (" \
+               "__list__ STRING_0 0.0)))) (__kw__ body (StatementList (Expr (Call print (__list__ STRING_1))) " \
+               "EMPTY_Statement))) EMPTY_Statement))"
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
+    assert py == """def solve_all(grids, name=STRING_0, showif=0.0):
+    print(STRING_1)"""
 
 
 def test_rewrite_to_py_2():
@@ -160,9 +221,18 @@ def test_rewrite_to_py_2():
 
 
 def test_rewrite_to_py_3():
-    lisp_str = '(ProgramStatements (Assign (__list__ x) 1) (Assign (__list__ y) (UnaryOp USub 2)) (fn_0 (fn_1 x y)))'
-    assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '(StatementList (fn_0 (fn_1 x y)) EMPTY_Statement)' \
+               ')))'
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+    assert py \
            == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2\nfn_0(fn_1(x, y))'
+
+
+
 
 
 def test_rewrite_to_py_4():

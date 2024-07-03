@@ -32,8 +32,10 @@ class StatementList:
         all_statements_list = [start_statement.statement1]
         if isinstance(start_statement.statement2, StatementList):
             all_statements_list += StatementList._decode(start_statement.statement2)
-        if isinstance(start_statement.statement2, list):
+        elif isinstance(start_statement.statement2, list):
             all_statements_list += start_statement.statement2
+        else:
+            all_statements_list.append(start_statement.statement2) #appends any statement
         return all_statements_list
 
 

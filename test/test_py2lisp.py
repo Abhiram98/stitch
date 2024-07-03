@@ -85,6 +85,25 @@ def test_empty():
     assert lisp_str == '(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))'
 
 
+def test_simple_function():
+    py_ast = ast.parse("""def main():
+    print(STRING_0)""")
+    lisp_str = Py2Lisp().visit(py_ast)
+    print(lisp_str)
+    assert lisp_str == '(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (' \
+                       '__kw__ body (StatementList (Expr (Call print (__list__ STRING_0))) EMPTY_Statement))) ' \
+                       'EMPTY_Statement))'
+
+def test_function_two_liner():
+    py_ast = ast.parse("""def main():
+    print(STRING_0)
+    print(STRING_1)""")
+    lisp_str = Py2Lisp().visit(py_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (" \
+                       "__kw__ body (StatementList (Expr (Call print (__list__ STRING_0))) (StatementList (Expr (Call " \
+                       "print (__list__ STRING_1))) EMPTY_Statement)))) EMPTY_Statement))"
+
 def test_annotated_func():
     code_ast = ast.parse("def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n  print(1)")
     lisp_str = Py2Lisp().visit(code_ast)

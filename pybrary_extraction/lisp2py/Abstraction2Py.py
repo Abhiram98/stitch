@@ -1,5 +1,6 @@
 import ast
 import copy
+import sys
 
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
@@ -19,12 +20,19 @@ class Abstraction2Py:
             string_hashmap = {}
         self.string_hashmap = string_hashmap
 
-    def convert(self, fn_name='fn_0'):
-        py_ast = Lisp2Py(self.abstraction.abstraction_body_lisp).get_py_ast()
+    def convert(self,
+                fn_name='fn_0',
+                find_parameters=True):
+
+        lisp_parts = Lisp2Py.parse_lisp(self.abstraction.abstraction_body_lisp)
+        lisp_parts = Lisp2Py.wrap_module(lisp_parts)
+        py_ast = Lisp2Py.construct(lisp_parts)
         StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
-        self.find_parameters(py_ast)
+        if find_parameters:
+            self.find_parameters(py_ast)
+        self.check_valid_abstraction()
         fn_def = ast.FunctionDef(
             name=fn_name,
             args=ast.arguments(
@@ -34,7 +42,7 @@ class Abstraction2Py:
                 kw_defaults=[],
                 defaults=[])
             ,
-            body=[py_ast],
+            body=py_ast.body,
             decorator_list=[]
         )
         self.add_return_value(fn_def)
@@ -105,8 +113,23 @@ class Abstraction2Py:
         self.abstraction.returned_vars = return_vars
         return return_vars
 
+    def check_valid_abstraction(self):
+        # check if there are no hole in between.
+        pass
+
     @staticmethod
     def strip_expr(node):
         if isinstance(node, ast.Expr):
             return node.value
         return node
+
+
+
+
+if __name__=='__main__':
+    print(
+        Abstraction2Py(
+            StitchAbstraction(sys.argv[1], [], "abs0", {}))
+        .convert(find_parameters=False)
+    )
+

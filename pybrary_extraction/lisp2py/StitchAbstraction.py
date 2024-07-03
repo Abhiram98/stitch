@@ -1,6 +1,7 @@
 import ast
 
 import pybrary_extraction.lisp2py as lisp2py
+import pybrary_extraction.python2lisp as python2lisp
 
 
 class StitchAbstraction:
@@ -14,9 +15,15 @@ class StitchAbstraction:
         self.abstraction_body_py = None
         self.abstraction_name = abstraction_name
         self.string_hashmap = string_hashmap
+        Py2Lisp = python2lisp.Py2Lisp
+
         for use in self.uses:
             for application, target in use.items():
-                wrapped_app = f"(ProgramStatements {application})"
+                # 'application' is a function call that always looks like
+                # fn_0 param1 param2 param3 ...
+
+                wrapped_app = f"({Py2Lisp.module_keyword} " \
+                              f"({Py2Lisp.statement_keyword} ({application}) {Py2Lisp.empty_statement_keyword}))"
                 self.uses_py[
                     lisp2py.Rewrite2Py(
                         wrapped_app,

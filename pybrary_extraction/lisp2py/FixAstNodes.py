@@ -135,8 +135,9 @@ class FixAstNodes(ast.NodeVisitor):
 
     def visit_StatementList(self, node: utils.StatementList):
         flattened_statements = node.decode()
-        return list(
-            filter(lambda x: x is not Py2Lisp.empty_statement_keyword, flattened_statements))
+        return utils.MyList(
+            *list(filter(
+                lambda x: x is not Py2Lisp.empty_statement_keyword, flattened_statements)))
 
 
     @staticmethod
