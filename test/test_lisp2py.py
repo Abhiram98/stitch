@@ -18,11 +18,11 @@ def test_unaryop():
 
 def test_annotated_funcdef():
     lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name find_median_sorted_arrays) (" \
-               "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (" \
-               "Subscript list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
+               "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript body_list int)) (arg nums2 (" \
+               "Subscript body_list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
                "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
     assert Lisp2Py(
-        lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
+        lisp_str).convert() == 'def find_median_sorted_arrays(nums1: body_list[int], nums2: body_list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
@@ -117,17 +117,38 @@ def test_abstraction_to_py_fn_as_kw():
         # This test is expected to fail because there are a
         # mix of __kw__ args and positional arguments
         pass
-def test_abstraction_to_py_with_hole():
+
+
+def test_abstraction_to_py_with_valid_hole():
     lisp_str = '(ProgramStatements ' \
                '(StatementList (Assign (__list__ x) 1) ' \
                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
                '#1' \
                ')))'
-    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "abs0", {}),
+        find_additional_params=False
+    ).convert()
     print(py)
     assert py \
-           == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2#1'
+           == """def fn_0():
+    x = 1
+    y = -2"""
 
+def test_abstraction_to_py_with_valid_hole_2():
+    lisp_str = '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#1' \
+               '))'
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "abs0", {}),
+        find_additional_params=False
+    ).convert()
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2"""
 
 def test_abstraction_to_py_with_invalid_hole():
     lisp_str = '(ProgramStatements ' \
@@ -136,11 +157,15 @@ def test_abstraction_to_py_with_invalid_hole():
                '(StatementList #1)' \
                ')))'
     try:
-        py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {}),
+            find_additional_params=False
+        ).convert()
     except:
         print("error expected")
         return
     raise Exception("Should have failed.")
+
 
 def test_abstraction_to_py_with_invalid_hole_in_the_middle():
     lisp_str = '(ProgramStatements ' \
@@ -150,11 +175,12 @@ def test_abstraction_to_py_with_invalid_hole_in_the_middle():
                ')))'
     # try:
     py = Abstraction2Py(
-            StitchAbstraction(lisp_str, [], "abs0", {})).convert(find_parameters=False)
+        StitchAbstraction(lisp_str, [], "abs0", {})).convert()
     # except:
     #     print("error expected")
     #     return
     raise Exception("Should have failed.")
+
 
 def test_abstraction_to_py_with_invalid_hole_2():
     lisp_str = "(StatementList " \
@@ -170,7 +196,6 @@ def test_abstraction_to_py_with_invalid_hole_2():
         print("error expected")
         return
     raise Exception("Should have failed.")
-
 
 
 def test_rewrite_to_py():
@@ -232,9 +257,6 @@ def test_rewrite_to_py_3():
            == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2\nfn_0(fn_1(x, y))'
 
 
-
-
-
 def test_rewrite_to_py_4():
     # TODO: this test is failing. Figure out why is was created in the first place.
     #  This is not a valid rewrite.
@@ -245,7 +267,7 @@ def test_rewrite_to_py_4():
 
 def test_rewrite_to_py_5():
     lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript " \
-               "list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (" \
+               "body_list int)) (arg nums2 (Subscript body_list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (" \
                "UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (" \
                "BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod " \
                "2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript " \

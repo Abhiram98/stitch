@@ -105,12 +105,12 @@ def test_function_two_liner():
                        "print (__list__ STRING_1))) EMPTY_Statement)))) EMPTY_Statement))"
 
 def test_annotated_func():
-    code_ast = ast.parse("def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n  print(1)")
+    code_ast = ast.parse("def find_median_sorted_arrays(nums1: body_list[int], nums2: body_list[int]) -> float:\n  print(1)")
     lisp_str = Py2Lisp().visit(code_ast)
     print(lisp_str)
     assert lisp_str == "(ProgramStatements (StatementList (FunctionDef (__kw__ name find_median_sorted_arrays) (" \
-                       "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (" \
-                       "Subscript list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
+                       "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript body_list int)) (arg nums2 (" \
+                       "Subscript body_list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
                        "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
 
 
