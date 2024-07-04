@@ -6,12 +6,15 @@ from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
 from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs, StringReplacer
 from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.lisp2py.AstValidityChecker import AstValidityChecker
 
 
 class Abstraction2Py:
     PARAM_KEY = "_param"
 
-    def __init__(self, abstraction: StitchAbstraction, string_hashmap=None):
+    def __init__(self, abstraction: StitchAbstraction,
+                 string_hashmap=None,
+                 find_additional_params=True):
 
         self.abstraction = abstraction
         self.param_count = 0
@@ -19,10 +22,14 @@ class Abstraction2Py:
         if string_hashmap is None:
             string_hashmap = {}
         self.string_hashmap = string_hashmap
+        self.find_additional_params = find_additional_params
+
+        # parameters which include trailing statements.
+        # These need to be kicked out the abstraction body and at all call sites.
+        self.trailing_statement_params = set()
 
     def convert(self,
-                fn_name='fn_0',
-                find_parameters=True):
+                fn_name='fn_0'):
 
         lisp_parts = Lisp2Py.parse_lisp(self.abstraction.abstraction_body_lisp)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
@@ -30,9 +37,9 @@ class Abstraction2Py:
         StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
-        if find_parameters:
-            self.find_parameters(py_ast)
-        self.check_valid_abstraction()
+        self.find_parameters(py_ast)
+        self.check_valid_abstraction(py_ast)
+        self.kick_trailing_statement_params(py_ast)
         fn_def = ast.FunctionDef(
             name=fn_name,
             args=ast.arguments(
@@ -51,7 +58,8 @@ class Abstraction2Py:
 
     def find_parameters(self, py_ast):
         self.set_param_names(py_ast)
-        self.get_additional_params(py_ast)
+        if self.find_additional_params:
+            self.get_additional_params(py_ast)
         self.abstraction.parameters.update(set(self.args_map.values()))
 
     def get_additional_params(self, py_ast):
@@ -65,9 +73,9 @@ class Abstraction2Py:
     def set_param_names(self, py_ast):
         for node in ast.walk(py_ast):
             if isinstance(node, ast.Name) and node.id.startswith("#"):
-                node.id = self.get_param_name(node.id)
+                node.id = self.get_set_param_name(node.id)
 
-    def get_param_name(self, arg_name):
+    def get_set_param_name(self, arg_name):
         if arg_name in self.args_map:
             return self.args_map[arg_name]
         else:
@@ -113,9 +121,13 @@ class Abstraction2Py:
         self.abstraction.returned_vars = return_vars
         return return_vars
 
-    def check_valid_abstraction(self):
+    def check_valid_abstraction(self, py_ast):
         # check if there are no hole in between.
-        pass
+        checker = AstValidityChecker(self.args_map.values())
+        checker.visit(py_ast)
+        self.trailing_statement_params = \
+            self.trailing_statement_params.union(checker.trailing_statement_params)
+
 
     @staticmethod
     def strip_expr(node):
@@ -123,13 +135,25 @@ class Abstraction2Py:
             return node.value
         return node
 
+    def kick_trailing_statement_params(self, py_ast: ast.Module):
+        # modify abstraction body.
+        # Modify parameters list.
+        if len(self.trailing_statement_params):
+            if isinstance(py_ast.body[-1], ast.Name) and py_ast.body[-1].id in self.trailing_statement_params:
+                py_ast.body = py_ast.body[:-1]
+
+            for k in list(self.args_map):
+                if self.args_map[k] in self.trailing_statement_params:
+                    del self.args_map[k]
 
 
 
 if __name__=='__main__':
     print(
         Abstraction2Py(
-            StitchAbstraction(sys.argv[1], [], "abs0", {}))
-        .convert(find_parameters=False)
+            StitchAbstraction(sys.argv[1], [], "abs0", {}),
+            find_additional_params=False
+        )
+        .convert()
     )
 
