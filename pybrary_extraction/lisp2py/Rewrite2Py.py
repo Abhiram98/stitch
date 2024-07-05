@@ -45,7 +45,7 @@ class Rewrite2Py:
         self.string_hashmap = string_hashmap
         self.converted_ast = None
 
-    def convert(self):
+    def convert(self, unparse=True):
 
         lisp_parts = Lisp2Py.parse_lisp(self.lisp_str)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
@@ -63,7 +63,8 @@ class Rewrite2Py:
         ast.fix_missing_locations(py_ast)
         print(ast.dump(py_ast, indent=4))
         self.converted_ast = py_ast
-        return ast.unparse(py_ast)
+        if unparse:
+            return ast.unparse(py_ast)
 
     def check_for_list_param(self, lisp_parts):
         if len(lisp_parts) > 1 and \

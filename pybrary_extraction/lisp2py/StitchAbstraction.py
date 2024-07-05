@@ -27,7 +27,7 @@ class StitchUse:
                       f"({Py2Lisp.statement_keyword} ({application}) {Py2Lisp.empty_statement_keyword}))"
 
         rewrite_app = lisp2py.Rewrite2Py(wrapped_app, available_abstractions=[], string_hashmap=self.string_hashmap)
-        self.application_py = rewrite_app.convert()
+        rewrite_app.convert(unparse=False)
         self.application_ast: ast.Module = rewrite_app.converted_ast
         rewrite_target = lisp2py.Rewrite2Py(target, available_abstractions=[], string_hashmap=self.string_hashmap)
         self.target_py = rewrite_target.convert()
@@ -89,6 +89,8 @@ class StitchAbstraction:
                         trailing_statements = use.get_application_param_from_number(trailing_param.position)
                         if isinstance(trailing_statements, list):
                             trailing_statements = ast.Module(body=trailing_statements)
+                        elif trailing_statements == python2lisp.Py2Lisp.empty_statement_keyword:
+                            continue
                         read_vars.visit(trailing_statements)
                         live_vars_out = live_vars_out.union(set(read_vars.rhs_vars))
 

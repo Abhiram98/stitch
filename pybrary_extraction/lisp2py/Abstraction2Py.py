@@ -50,7 +50,9 @@ class Abstraction2Py:
             name=fn_name,
             args=ast.arguments(
                 posonlyargs=[],
-                args=[ast.arg(arg=i) for i in self.args_map.values()],
+                args=[ast.arg(arg=i.param_name)
+                      for i in sorted(self.abstraction.parameters, key=lambda x: x.position)
+                      if not i.is_trailing],
                 kwonlyargs=[],
                 kw_defaults=[],
                 defaults=[])
@@ -83,7 +85,8 @@ class Abstraction2Py:
         py_ast_str = ast.unparse(py_ast)
         undef_vars = sorted(get_undef_vars(py_ast_str))  # sort for determinism
         for var in undef_vars:
-            if var not in self.args_map.values():
+            if not var.startswith(Abstraction2Py.PARAM_KEY) and \
+                    var not in self.args_map.values():
                 self.args_map[var] = var
 
     def set_param_names(self, py_ast):
@@ -143,6 +146,9 @@ class Abstraction2Py:
         checker.visit(py_ast)
         self.trailing_statement_params = \
             self.trailing_statement_params.union(checker.trailing_statement_params)
+        for param in self.abstraction.parameters:
+            if param.param_name in self.trailing_statement_params:
+                param.is_trailing = True
 
     @staticmethod
     def strip_expr(node):
