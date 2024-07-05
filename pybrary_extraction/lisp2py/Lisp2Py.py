@@ -4,8 +4,37 @@ from pyparsing import OneOrMore, nestedExpr
 
 from pybrary_extraction.lisp2py.utils import MyList, MyKeyword, StatementList
 from pybrary_extraction.python2lisp import Py2Lisp
-from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer
+from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer, LispVisitor
 from pybrary_extraction.lisp2py.FixAstNodes import FixAstNodes
+
+
+class WrapStatementList(LispVisitor):
+    def visit_ProgramStatements(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        new_root[1] = self.wrap_statements(new_root[1]) # 1st index contains the body
+        return new_root
+
+    def visit_FunctionDef(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        # if new_root[1][0]==Py2Lisp.keyword_for_keyword and new_root[1][1]=='body':
+        #     new_root[2] = self.wrap_statements(new_root[1][2])
+        return new_root
+
+    def visit_ClassDef(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        return self.wrap_statements(new_root)
+
+    def visit_For(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        return self.wrap_statements(new_root)
+
+    def wrap_statements(self, lisp_parts):
+        if not isinstance(lisp_parts, list) or not len(lisp_parts)>0:
+            return lisp_parts
+
+        if lisp_parts[0] != Py2Lisp.statement_keyword:
+            return [Py2Lisp.statement_keyword, lisp_parts, Py2Lisp.empty_statement_keyword]
+        return lisp_parts
 
 
 class Lisp2Py:
@@ -102,16 +131,8 @@ class Lisp2Py:
 
     @staticmethod
     def wrap_statements_list(lisp_parts):
-        if lisp_parts[0] == Py2Lisp.module_keyword:
-            if isinstance(lisp_parts[1], list) \
-                    and lisp_parts[1][0] == Py2Lisp.statement_keyword:
-                return lisp_parts
-            else:
-                lisp_parts[1] = [Py2Lisp.statement_keyword, lisp_parts[1], Py2Lisp.empty_statement_keyword]
-                return lisp_parts
-        elif lisp_parts[0] != Py2Lisp.statement_keyword:
-            return [Py2Lisp.statement_keyword, lisp_parts, Py2Lisp.empty_statement_keyword]
-        return lisp_parts
+        return WrapStatementList().visit(lisp_parts)
+
 
     @classmethod
     def create_ast_node(cls, ast_class):

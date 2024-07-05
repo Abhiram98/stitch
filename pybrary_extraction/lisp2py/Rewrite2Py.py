@@ -48,8 +48,8 @@ class Rewrite2Py:
     def convert(self):
 
         lisp_parts = Lisp2Py.parse_lisp(self.lisp_str)
-        lisp_parts = Lisp2Py.wrap_statements_list(lisp_parts)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
+        lisp_parts = Lisp2Py.wrap_statements_list(lisp_parts)
         lisp_parts = self.create_abstraction_calls(lisp_parts)
         lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)

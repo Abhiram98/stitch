@@ -207,7 +207,16 @@ def test_abstraction_to_py_with_valid_hole_with_uses_multiple_return():
         string_hashmap={}
     ).convert()
     assert rewritten_py == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
+    "(fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement))"
 
+    rewrite_2 = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ body (fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)))) EMPTY_Statement))"
+    rewritten_py_2 = Rewrite2Py(
+        rewrite_2,
+        library_name="leroy_library",
+        available_abstractions=[abstraction],
+        string_hashmap={}
+    ).convert()
+    assert rewritten_py_2 == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
 
 def test_abstraction_to_py_with_invalid_hole():
     lisp_str = '(ProgramStatements ' \

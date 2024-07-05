@@ -122,3 +122,22 @@ class StringReplacer(ast.NodeTransformer):
         if node.id in self.string_hashmap:
             return ast.Constant(value=self.string_hashmap[node.id])
         return node
+
+
+class LispVisitor:
+    def generic_visit(self, lisp_root):
+        if isinstance(lisp_root, list):
+            new_list = []
+            for node in lisp_root:
+                new_list.append(self.visit(node))
+            return new_list
+        else:
+            return lisp_root
+
+    def visit(self, lisp_root):
+        if isinstance(lisp_root, list) and len(lisp_root):
+            if isinstance(lisp_root[0], str):
+                fn_name = "visit_"+lisp_root[0]
+                fn = getattr(self, fn_name, self.generic_visit)
+                return fn(lisp_root)
+        return lisp_root

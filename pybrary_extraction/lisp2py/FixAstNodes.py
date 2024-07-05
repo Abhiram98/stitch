@@ -27,6 +27,8 @@ class FixAstNodes(ast.NodeVisitor):
             node.name = node.name.id
         if not hasattr(node, 'decorator_list'):
             node.decorator_list = []
+        if not isinstance(node.body, list):
+            node.body = [node.body]
         return node
 
     def visit_arguments(self, node: ast.arguments) -> Any:
@@ -108,6 +110,8 @@ class FixAstNodes(ast.NodeVisitor):
             'bases','keywords', 'decorator_list')
         if hasattr(node, 'name') and isinstance(node.name, ast.Name):
             node.name = node.name.id
+        if not isinstance(node.body, list):
+            node.body = [node.body]
         return node
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
