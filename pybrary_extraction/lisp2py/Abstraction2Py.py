@@ -5,7 +5,7 @@ import sys
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 from pybrary_extraction.lisp2py.utils import has_return_stmnt, get_undef_vars
 from pybrary_extraction.ast_utils import FindTargetVariables, FindReadVariables, FindFuncAndClassDefs, StringReplacer
-from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction, StitchParam
 from pybrary_extraction.lisp2py.AstValidityChecker import AstValidityChecker
 
 
@@ -28,8 +28,14 @@ class Abstraction2Py:
         # These need to be kicked out the abstraction body and at all call sites.
         self.trailing_statement_params = set()
 
+        self.abstraction_body_as_module = None
+        self.abstraction_body_as_fndef = None
+
     def convert(self,
-                fn_name='fn_0'):
+                fn_name=None,
+                add_return_value=True):
+        if fn_name is None:
+            fn_name = self.abstraction.abstraction_name
 
         lisp_parts = Lisp2Py.parse_lisp(self.abstraction.abstraction_body_lisp)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
@@ -52,15 +58,25 @@ class Abstraction2Py:
             body=py_ast.body,
             decorator_list=[]
         )
-        self.add_return_value(fn_def)
+        if add_return_value:
+            self.add_return_value(fn_def)
         ast.fix_missing_locations(fn_def)
+        self.abstraction_body_as_fndef = fn_def
+        self.abstraction_body_as_module = py_ast
         return ast.unparse(fn_def)
 
     def find_parameters(self, py_ast):
         self.set_param_names(py_ast)
         if self.find_additional_params:
             self.get_additional_params(py_ast)
-        self.abstraction.parameters.update(set(self.args_map.values()))
+
+        stitch_params = sorted(list(filter(lambda x: x.startswith(Abstraction2Py.PARAM_KEY), self.args_map.values())))
+        additional_params = sorted(
+            list(filter(lambda x: not x.startswith(Abstraction2Py.PARAM_KEY), self.args_map.values())))
+        ordered_params = stitch_params + additional_params
+        self.abstraction.parameters.update(
+            set([StitchParam(param, i) for i, param in enumerate(ordered_params)])
+        )
 
     def get_additional_params(self, py_ast):
         """find additional parameters used by the abs_fn_def, which are not defined within"""
@@ -118,8 +134,8 @@ class Abstraction2Py:
         return_vars = set(self.abstraction.live_vars_out) \
             .intersection(set(target_vars_finder.lhs_vars)) \
             .union(set(func_class_def_finder.defs))
-        self.abstraction.returned_vars = return_vars
-        return return_vars
+        self.abstraction.returned_vars = sorted(return_vars)  # sort for determinism
+        return self.abstraction.returned_vars
 
     def check_valid_abstraction(self, py_ast):
         # check if there are no hole in between.
@@ -127,7 +143,6 @@ class Abstraction2Py:
         checker.visit(py_ast)
         self.trailing_statement_params = \
             self.trailing_statement_params.union(checker.trailing_statement_params)
-
 
     @staticmethod
     def strip_expr(node):
@@ -147,8 +162,7 @@ class Abstraction2Py:
                     del self.args_map[k]
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
     print(
         Abstraction2Py(
             StitchAbstraction(sys.argv[1], [], "abs0", {}),
@@ -156,4 +170,3 @@ if __name__=='__main__':
         )
         .convert()
     )
-

@@ -38,6 +38,13 @@ def test_example_3():
                        "1) (StatementList (Assign (__list__ z) (BinOp x Add y)) (StatementList (Expr (Call print (" \
                        "__list__ z))) EMPTY_Statement)))))"
 
+def test_print_multiple():
+    code_str = "print(x,y)"
+    code_ast = ast.parse(code_str)
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str=="(ProgramStatements (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement))"
+
 
 def test_from_directory_image_processing():
     lisp_outs, _ = Py2Lisp.fromDirectoryToJson("../Python/digital_image_processing")

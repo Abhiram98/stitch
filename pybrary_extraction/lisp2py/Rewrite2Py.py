@@ -1,13 +1,15 @@
 import ast
 import copy
 import sys
+from typing import Any
 
 from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 # from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import StringReplacer
-
+from pybrary_extraction.lisp2py.KickTrailingParamsVisitor import KickOutTrailingParam
+from pybrary_extraction.lisp2py.ExtractedFragment import AddScopeLinks
 
 class AbstractionCall:
     def __init__(self, func_name, params=None):
@@ -41,6 +43,7 @@ class Rewrite2Py:
         if string_hashmap is None:
             string_hashmap = {}
         self.string_hashmap = string_hashmap
+        self.converted_ast = None
 
     def convert(self):
 
@@ -51,11 +54,15 @@ class Rewrite2Py:
         lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
+        if len(self.available_abstractions):
+            AddScopeLinks().visit(py_ast)
+            KickOutTrailingParam(self.available_abstractions).visit(py_ast)
         StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast = self.add_library_import_statements(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         print(ast.dump(py_ast, indent=4))
+        self.converted_ast = py_ast
         return ast.unparse(py_ast)
 
     def check_for_list_param(self, lisp_parts):
@@ -115,7 +122,13 @@ class Rewrite2Py:
                 matches = self.get_matching_abstraction(abstraction_name)
                 new_nodes = None
                 if len(matches) > 0 and matches[0].returned_vars:
-                    new_nodes= ['Assign', ['__list__', *matches[0].returned_vars], call_node]
+                    if len(matches[0].returned_vars)==1:
+                        new_nodes= ['Assign', ['__list__', *matches[0].returned_vars], call_node]
+                    else:
+                        new_nodes = ['Assign',
+                                     ['__list__', ['Tuple', ['__list__', *matches[0].returned_vars]]],
+                                     call_node
+                                     ]
                 else:
                     # '(ProgramStatements (Assign (__list__ x) (Call fn_0)))'
                     new_nodes = ['Expr', call_node]
@@ -138,7 +151,6 @@ class Rewrite2Py:
 
         py_ast.body = import_statements + py_ast.body
         return py_ast
-
 
 if __name__ == '__main__':
     print(Rewrite2Py(sys.argv[1], available_abstractions=[]).convert())

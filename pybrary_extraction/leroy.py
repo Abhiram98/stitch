@@ -114,9 +114,7 @@ class Leroy:
     def write_abstractions(self, stitch_abstractions: list[StitchAbstraction]):
         library_functions = []
         for i, abstraction in enumerate(stitch_abstractions):
-            abs_body = abstraction.abstraction_body_lisp
-            live_out = abstraction.get_and_set_live_out(self.stitch_out['original'])
-            abstraction.abstraction_body_py = Abstraction2Py(abstraction, self.string_hashmap).convert(f"fn_{i}")
+            abstraction.compute_body_py(self.stitch_out['original'])
             library_functions.append(
                 abstraction.abstraction_body_py
             )

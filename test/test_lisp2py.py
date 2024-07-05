@@ -135,13 +135,14 @@ def test_abstraction_to_py_with_valid_hole():
     x = 1
     y = -2"""
 
+
 def test_abstraction_to_py_with_valid_hole_2():
     lisp_str = '(StatementList (Assign (__list__ x) 1) ' \
                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
                '#1' \
                '))'
     py = Abstraction2Py(
-        StitchAbstraction(lisp_str, [], "abs0", {}),
+        StitchAbstraction(lisp_str, [], "fn_0", {}),
         find_additional_params=False
     ).convert()
     print(py)
@@ -149,6 +150,64 @@ def test_abstraction_to_py_with_valid_hole_2():
            == """def fn_0():
     x = 1
     y = -2"""
+
+
+def test_abstraction_to_py_with_valid_hole_with_uses():
+    lisp_str = '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#0' \
+               '))'
+    use1 = {"fn_0 (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)":
+                '(StatementList (Assign (__list__ x) 1) ' \
+                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                '(StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)' \
+                '))'}
+    stitch_originals = ['(ProgramStatements (StatementList (Assign (__list__ x) 1) ' \
+                        '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                        '(StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)' \
+                        ')))']
+    py = StitchAbstraction(lisp_str, [use1], "fn_0", {}).compute_body_py(stitch_originals)
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2
+    return x"""
+
+
+def test_abstraction_to_py_with_valid_hole_with_uses_multiple_return():
+    abstraction_body_lisp = '(StatementList (Assign (__list__ x) 1) ' \
+                            '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                            '#0' \
+                            '))'
+    use1 = {"fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)":
+                '(StatementList (Assign (__list__ x) 1) ' \
+                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                '(StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)' \
+                '))'}
+    stitch_originals = ['(ProgramStatements (StatementList (Assign (__list__ x) 1) ' \
+                        '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                        '(StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)' \
+                        ')))']
+    abstraction = StitchAbstraction(abstraction_body_lisp, [use1], "fn_0", {})
+    py = abstraction.compute_body_py(stitch_originals)
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2
+    return (x, y)"""
+
+    rewrite = "(ProgramStatements " \
+              "(fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)))"
+    rewritten_py = Rewrite2Py(
+        rewrite,
+        library_name="leroy_library",
+        available_abstractions=[abstraction],
+        string_hashmap={}
+    ).convert()
+    assert rewritten_py == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
+
 
 def test_abstraction_to_py_with_invalid_hole():
     lisp_str = '(ProgramStatements ' \
@@ -266,15 +325,10 @@ def test_rewrite_to_py_4():
 
 
 def test_rewrite_to_py_5():
-    lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript " \
-               "body_list int)) (arg nums2 (Subscript body_list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (" \
-               "UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (" \
-               "BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod " \
-               "2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript " \
-               "merged (BinOp (BinOp total FloorDiv 2) Sub 1)) middle1) (fn_2 (Subscript merged (BinOp total FloorDiv " \
-               "2)) middle2) (Return (BinOp (BinOp (fn_0 middle1 float) Add (fn_0 middle2 float)) Div 2.0))) float) (" \
-               "If (fn_1 STRING_3 __name__) (__list__ (Import (__list__ (alias doctest))) (Expr (Call (Attribute " \
-               "doctest testmod))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (fn_0 (Expr (Call print (__list__ x))) STRING_1 x))) EMPTY_Statement))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
 
 
 def test_rewrite_to_py_import():
