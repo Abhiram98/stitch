@@ -1,0 +1,48 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+def __func1(free_vars_1):
+	temp_1 = inject_int(42)
+	return temp_1
+
+temp_7 = inject_int(0)
+temp_8 = create_list(temp_7)
+temp_6 = inject_big(temp_8)
+temp_2 = temp_6
+temp_3 = create_closure(__func1,temp_2)
+_lambda_1 = inject_big(temp_3)
+_x = _lambda_1
+temp_4 = get_fun_ptr(_x)
+temp_5 = get_free_vars(_x)
+_temp_0 = temp_4(temp_5)
+print(_temp_0)

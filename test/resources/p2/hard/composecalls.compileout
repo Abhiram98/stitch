@@ -1,0 +1,695 @@
+compiling /home/jovyan/lab5-team-tyler-and-luke-1/tests/autograde/p2/hard/composecalls.py
+valid p0
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  value
+Visiting BinOp
+flattening node's  value
+Visiting BinOp
+Visiting UnaryOp
+flattening node's  right
+flattening node's  value
+visiting Call
+visiting Call
+visiting Call
+flattening node's  func
+flattening node's  arg_i
+collecting functiondef
+collecting functiondef
+collecting functiondef
+collecting functiondef
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'compose': set(), '_compose': {'f1', 'g1'}, 'f': set(), 'g': set()}
+fba.bound_vars={'__main__': {'temp_6', 'f', 'compose', 'g', 'temp_5'}, 'compose': {'_f1', 'g1', '_compose'}, '_compose': {'temp_1', 'x3', 'temp_0'}, 'f': {'x1', 'temp_2'}, 'g': {'temp_4', 'x2', 'temp_3'}}
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'compose': set(), '_compose': {'f1', 'g1'}, 'f': set(), 'g': set()}
+fba.bound_vars={'__main__': {'temp_6', 'f', 'compose', 'g', 'temp_5'}, 'compose': {'_f1', 'g1', '_compose'}, '_compose': {'temp_1', 'x3', 'temp_0'}, 'f': {'x1', 'temp_2'}, 'g': {'temp_4', 'x2', 'temp_3'}}
+all_free=['f1', 'g1']
+Before FLATTENING STAGE 1
+compose
+inject_big
+create_closure
+g1
+g1
+_compose
+inject_big
+create_closure
+temp_0
+get_fun_ptr
+free_vars_1
+x3
+get_free_vars
+free_vars_1
+temp_1
+get_fun_ptr
+free_vars_1
+temp_0
+get_free_vars
+free_vars_1
+temp_1
+f1
+g1
+_compose
+f
+inject_big
+create_closure
+temp_2
+x1
+temp_2
+g
+inject_big
+create_closure
+temp_3
+temp_4
+x2
+temp_3
+temp_4
+temp_5
+get_fun_ptr
+compose
+f
+g
+get_free_vars
+compose
+temp_6
+get_fun_ptr
+temp_5
+get_free_vars
+temp_5
+print
+temp_6
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  slice
+visiting Call
+flattening node's  slice
+flattening node's  value
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  slice
+visiting Call
+flattening node's  slice
+flattening node's  value
+flattening node's  arg_i
+flattening node's  func
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening node's  slice
+visiting Call
+flattening node's  slice
+flattening node's  value
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  slice
+visiting Call
+flattening node's  slice
+flattening node's  value
+flattening node's  arg_i
+flattening node's  func
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+flattening node's  right
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+Visiting UnaryOp
+visiting Call
+flattening node's  operand
+Visiting BinOp
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening node's  func
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  func
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+collecting functiondef
+collecting functiondef
+collecting functiondef
+collecting functiondef
+After FLATTENING STAGE 1
+BEGIN EXPLICATE
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d9cb850>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d8a28c0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d9cb220>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d9cb070>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a1f30>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d6528c0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d9ca500>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d652830>
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d9cb820>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d652890>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a21d0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d7b9c30>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2260>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5dedd0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d7f6c20>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a32b0>
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d9cb3a0>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f887d6c60e0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2500>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2ad0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2590>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0af0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d7f6e00>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0a60>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2650>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0b50>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2770>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0b80>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d9cad10>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0ac0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2830>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0a90>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2950>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0a30>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d8a2a40>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a0a00>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d9caa10>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f887d5a09d0>
+From visit_Module, node in node.body
+<ast.Expr object at 0x7f887d9cb1f0>
+RETURN: From visit_Module, node in node.body
+<ast.Expr object at 0x7f887d5a0d30>
+After Explicate Stage
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+Visiting UnaryOp
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+Visiting BinOp
+visiting Call
+visiting Call
+flattening node's  left
+flattening node's  right
+flattening node's  arg_i
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+flattening test to  <class 'ast.If'>
+flattening node's  test
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+collecting functiondef
+collecting functiondef
+collecting functiondef
+collecting functiondef
+After Flattening Stage 2
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+found else while unparsing
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_7)))], BB102:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_47)))], BB250:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_31)))], BB529:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_34)))], BB1183:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_54)))], BB2:
+)
+dict_keys(['__func1', '__func2', '__func3', '__func4', 'module']) = 
+Liveness took 3 loops
+total_loop_time=0.00041556358337402344
+per_basic_block_time=0.0004107952117919922
+update_parent_time=7.152557373046875e-07
+Liveness time taken: 0.0004451274871826172
+Int graph time taken: 0.0003693103790283203
+coloring done
+Coloring time taken: 0.0009906291961669922
+Some variable spilled
+But instructions ok
+last_var =Variable(temp_37)
+stack_size=4
+done compiling
+liveness_time=0.0004451274871826172
+interference_time=0.0003693103790283203
+coloring_time=0.0009906291961669922
+code = '\n.globl main\nmain: \npushl %ebp \nmovl %esp, %ebp \nsubl $4, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func2 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %ebx \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func3 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %esi \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func4 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall get_fun_ptr\nmovl %eax, -4(%ebp) \naddl $4, %esp \npushl %ebx \ncall get_free_vars\nmovl %eax, %ebx \naddl $4, %esp \npushl %ebx \npushl %edi \npushl %esi \ncall *-4(%ebp)\nmovl %eax, %esi \naddl $12, %esp \npushl %esi \ncall get_fun_ptr\nmovl %eax, %ebx \naddl $4, %esp \npushl $23 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %esi \ncall get_free_vars\nmovl %eax, %esi \naddl $4, %esp \npushl %esi \npushl %edi \ncall *%ebx\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall print_any \naddl $4, %esp \npopl %edi \npopl %esi\npopl %ebx\nmovl $0, %eax \nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func1
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_7))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_8))), IrStat((Instruction(call), Keyword(get_subscript), Variable(free_vars_1), Variable(temp_7), Variable(temp_9))), IrStat((Instruction(call), Keyword(get_subscript), Variable(temp_9), Variable(temp_8), Variable(temp_10))), IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_11))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_12))), IrStat((Instruction(call), Keyword(get_subscript), Variable(free_vars_1), Variable(temp_11), Variable(temp_13))), IrStat((Instruction(call), Keyword(get_subscript), Variable(temp_13), Variable(temp_12), Variable(temp_14))), IrStat((Instruction(call), Keyword(get_fun_ptr), Variable(temp_10), Variable(temp_15))), IrStat((Instruction(call), Keyword(get_free_vars), Variable(temp_14), Variable(temp_16))), IrStat((Instruction(call), Variable(temp_15), Variable(_x3), Variable(temp_16), Variable(_temp_0))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_17))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_18))), IrStat((Instruction(call), Keyword(get_subscript), Variable(free_vars_1), Variable(temp_17), Variable(temp_19))), IrStat((Instruction(call), Keyword(get_subscript), Variable(temp_19), Variable(temp_18), Variable(temp_20))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_21))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_22))), IrStat((Instruction(call), Keyword(get_subscript), Variable(free_vars_1), Variable(temp_21), Variable(temp_23))), IrStat((Instruction(call), Keyword(get_subscript), Variable(temp_23), Variable(temp_22), Variable(temp_24))), IrStat((Instruction(call), Keyword(get_fun_ptr), Variable(temp_20), Variable(temp_25))), IrStat((Instruction(call), Keyword(get_free_vars), Variable(temp_24), Variable(temp_26))), IrStat((Instruction(call), Variable(temp_25), Variable(_temp_0), Variable(temp_26), Variable(_temp_1))), IrStat((Instruction(return), Variable(_temp_1)))]
+Liveness took 3 loops
+total_loop_time=0.00040340423583984375
+per_basic_block_time=0.00039958953857421875
+update_parent_time=7.152557373046875e-07
+Liveness time taken: 0.0004165172576904297
+unknown instruction->22:return,_temp_1
+Int graph time taken: 0.0004544258117675781
+coloring done
+Coloring time taken: 0.0007414817810058594
+Some variable spilled
+But instructions ok
+last_var =Variable(temp_22)
+stack_size=4
+return stat
+return
+%edi %edi
+done compiling
+liveness_time=0.0004165172576904297
+interference_time=0.0004544258117675781
+coloring_time=0.0007414817810058594
+code = '\n__func1: \npushl %ebp \nmovl %esp, %ebp \nsubl $4, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $1 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %ebx \naddl $4, %esp \npushl %edi \npushl 12(%ebp) \ncall get_subscript\nmovl %eax, %edi \naddl $8, %esp \npushl %ebx \npushl %edi \ncall get_subscript\nmovl %eax, %esi \naddl $8, %esp \npushl $1 \ncall inject_int\nmovl %eax, %ebx \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \npushl 12(%ebp) \ncall get_subscript\nmovl %eax, %ebx \naddl $8, %esp \npushl %edi \npushl %ebx \ncall get_subscript\nmovl %eax, %edi \naddl $8, %esp \npushl %esi \ncall get_fun_ptr\nmovl %eax, %ebx \naddl $4, %esp \npushl %edi \ncall get_free_vars\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \npushl 8(%ebp) \ncall *%ebx\nmovl %eax, %ebx \naddl $8, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \npushl %edi \npushl 12(%ebp) \ncall get_subscript\nmovl %eax, %edi \naddl $8, %esp \npushl %esi \npushl %edi \ncall get_subscript\nmovl %eax, %esi \naddl $8, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, -4(%ebp) \naddl $4, %esp \npushl %edi \npushl 12(%ebp) \ncall get_subscript\nmovl %eax, %edi \naddl $8, %esp \npushl -4(%ebp) \npushl %edi \ncall get_subscript\nmovl %eax, %edi \naddl $8, %esp \npushl %esi \ncall get_fun_ptr\nmovl %eax, %esi \naddl $4, %esp \npushl %edi \ncall get_free_vars\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \npushl %ebx \ncall *%esi\nmovl %eax, %edi \naddl $8, %esp \nmovl %edi, %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func2
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_47))), IrStat((Instruction(call), Keyword(create_list), Variable(temp_47), Variable(temp_48))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_48), Variable(temp_42))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_49))), IrStat((Instruction(call), Keyword(set_subscript), Variable(temp_42), Variable(temp_49), Variable(_g1), Variable(temp_119))), IrStat((Instruction(movl), Variable(temp_42), Variable(_g1))), IrStat((Instruction(call), Keyword(inject_int), Immediate($2), Variable(temp_50))), IrStat((Instruction(call), Keyword(create_list), Variable(temp_50), Variable(temp_51))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_51), Variable(temp_43))), IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_52))), IrStat((Instruction(call), Keyword(set_subscript), Variable(temp_43), Variable(temp_52), Variable(_f1), Variable(temp_124))), IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_53))), IrStat((Instruction(call), Keyword(set_subscript), Variable(temp_43), Variable(temp_53), Variable(_g1), Variable(temp_126))), IrStat((Instruction(movl), Variable(temp_43), Variable(temp_27))), IrStat((Instruction(call), Keyword(create_closure), Immediate($__func1), Variable(temp_27), Variable(temp_28))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_28), Variable(__compose))), IrStat((Instruction(return), Variable(__compose)))]
+Liveness took 3 loops
+total_loop_time=0.0002582073211669922
+per_basic_block_time=0.0002551078796386719
+update_parent_time=7.152557373046875e-07
+Liveness time taken: 0.00026988983154296875
+unknown instruction->16:return,__compose
+Int graph time taken: 0.0002243518829345703
+coloring done
+Coloring time taken: 0.0004227161407470703
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+%edi %edi
+done compiling
+liveness_time=0.00026988983154296875
+interference_time=0.0002243518829345703
+coloring_time=0.0004227161407470703
+code = '\n__func2: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $1 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %ebx \naddl $4, %esp \npushl 12(%ebp) \npushl %ebx \npushl %edi \ncall set_subscript\nmovl %eax, %eax \naddl $12, %esp \nmovl %edi, 12(%ebp) \npushl $2 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %ebx \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl 8(%ebp) \npushl %edi \npushl %ebx \ncall set_subscript\nmovl %eax, %eax \naddl $12, %esp \npushl $1 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl 12(%ebp) \npushl %edi \npushl %ebx \ncall set_subscript\nmovl %eax, %eax \naddl $12, %esp \nmovl %ebx, %eax \npushl %eax \npushl $__func1 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func3
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_31))), IrStat((Instruction(call), Keyword(is_int), Variable(_x1), Variable(temp_82))), IrStat((Instruction(if), Variable(temp_82), Keyword(if403), Keyword(else403))), IrStat((Instruction(label), Keyword(if403))), IrStat((Instruction(call), Keyword(is_int), Variable(temp_31), Variable(temp_64))), IrStat((Instruction(if), Variable(temp_64), Keyword(if404), Keyword(else404))), IrStat((Instruction(label), Keyword(if404))), IrStat((Instruction(call), Keyword(project_int), Variable(_x1), Variable(temp_56))), IrStat((Instruction(call), Keyword(project_int), Variable(temp_31), Variable(temp_57))), IrStat((Instruction(movl), Variable(temp_57), Variable(temp_120))), IrStat((Instruction(addl), Variable(temp_56), Variable(temp_120))), IrStat((Instruction(movl), Variable(temp_120), Variable(temp_58))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_58), Variable(_temp_2))), IrStat((Instruction(jmp), Keyword(endif404))), IrStat((Instruction(label), Keyword(else404))), IrStat((Instruction(call), Keyword(is_big), Variable(temp_31), Variable(temp_63))), IrStat((Instruction(if), Variable(temp_63), Keyword(if405), Keyword(else405))), IrStat((Instruction(label), Keyword(if405))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_123))), IrStat((Instruction(jmp), Keyword(endif405))), IrStat((Instruction(label), Keyword(else405))), IrStat((Instruction(call), Keyword(is_bool), Variable(temp_31), Variable(temp_62))), IrStat((Instruction(if), Variable(temp_62), Keyword(if406), Keyword(else406))), IrStat((Instruction(label), Keyword(if406))), IrStat((Instruction(call), Keyword(project_int), Variable(_x1), Variable(temp_59))), IrStat((Instruction(call), Keyword(project_bool), Variable(temp_31), Variable(temp_60))), IrStat((Instruction(movl), Variable(temp_60), Variable(temp_127))), IrStat((Instruction(addl), Variable(temp_59), Variable(temp_127))), IrStat((Instruction(movl), Variable(temp_127), Variable(temp_61))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_61), Variable(_temp_2))), IrStat((Instruction(jmp), Keyword(endif406))), IrStat((Instruction(label), Keyword(else406))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_129))), IrStat((Instruction(label), Keyword(endif406))), IrStat((Instruction(label), Keyword(endif405))), IrStat((Instruction(label), Keyword(endif404))), IrStat((Instruction(jmp), Keyword(endif403))), IrStat((Instruction(label), Keyword(else403))), IrStat((Instruction(call), Keyword(is_big), Variable(_x1), Variable(temp_81))), IrStat((Instruction(if), Variable(temp_81), Keyword(if407), Keyword(else407))), IrStat((Instruction(label), Keyword(if407))), IrStat((Instruction(call), Keyword(is_int), Variable(temp_31), Variable(temp_70))), IrStat((Instruction(if), Variable(temp_70), Keyword(if408), Keyword(else408))), IrStat((Instruction(label), Keyword(if408))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_132))), IrStat((Instruction(jmp), Keyword(endif408))), IrStat((Instruction(label), Keyword(else408))), IrStat((Instruction(call), Keyword(is_big), Variable(temp_31), Variable(temp_69))), IrStat((Instruction(if), Variable(temp_69), Keyword(if409), Keyword(else409))), IrStat((Instruction(label), Keyword(if409))), IrStat((Instruction(call), Keyword(project_big), Variable(_x1), Variable(temp_65))), IrStat((Instruction(call), Keyword(project_big), Variable(temp_31), Variable(temp_66))), IrStat((Instruction(call), Keyword(add), Variable(temp_65), Variable(temp_66), Variable(temp_67))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_67), Variable(_temp_2))), IrStat((Instruction(jmp), Keyword(endif409))), IrStat((Instruction(label), Keyword(else409))), IrStat((Instruction(call), Keyword(is_bool), Variable(temp_31), Variable(temp_68))), IrStat((Instruction(if), Variable(temp_68), Keyword(if410), Keyword(else410))), IrStat((Instruction(label), Keyword(if410))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_139))), IrStat((Instruction(jmp), Keyword(endif410))), IrStat((Instruction(label), Keyword(else410))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_140))), IrStat((Instruction(label), Keyword(endif410))), IrStat((Instruction(label), Keyword(endif409))), IrStat((Instruction(label), Keyword(endif408))), IrStat((Instruction(jmp), Keyword(endif407))), IrStat((Instruction(label), Keyword(else407))), IrStat((Instruction(call), Keyword(is_bool), Variable(_x1), Variable(temp_80))), IrStat((Instruction(if), Variable(temp_80), Keyword(if411), Keyword(else411))), IrStat((Instruction(label), Keyword(if411))), IrStat((Instruction(call), Keyword(is_int), Variable(temp_31), Variable(temp_79))), IrStat((Instruction(if), Variable(temp_79), Keyword(if412), Keyword(else412))), IrStat((Instruction(label), Keyword(if412))), IrStat((Instruction(call), Keyword(project_bool), Variable(_x1), Variable(temp_71))), IrStat((Instruction(call), Keyword(project_int), Variable(temp_31), Variable(temp_72))), IrStat((Instruction(movl), Variable(temp_72), Variable(temp_145))), IrStat((Instruction(addl), Variable(temp_71), Variable(temp_145))), IrStat((Instruction(movl), Variable(temp_145), Variable(temp_73))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_73), Variable(_temp_2))), IrStat((Instruction(jmp), Keyword(endif412))), IrStat((Instruction(label), Keyword(else412))), IrStat((Instruction(call), Keyword(is_big), Variable(temp_31), Variable(temp_78))), IrStat((Instruction(if), Variable(temp_78), Keyword(if413), Keyword(else413))), IrStat((Instruction(label), Keyword(if413))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_148))), IrStat((Instruction(jmp), Keyword(endif413))), IrStat((Instruction(label), Keyword(else413))), IrStat((Instruction(call), Keyword(is_bool), Variable(temp_31), Variable(temp_77))), IrStat((Instruction(if), Variable(temp_77), Keyword(if414), Keyword(else414))), IrStat((Instruction(label), Keyword(if414))), IrStat((Instruction(call), Keyword(project_bool), Variable(_x1), Variable(temp_74))), IrStat((Instruction(call), Keyword(project_bool), Variable(temp_31), Variable(temp_75))), IrStat((Instruction(movl), Variable(temp_75), Variable(temp_152))), IrStat((Instruction(addl), Variable(temp_74), Variable(temp_152))), IrStat((Instruction(movl), Variable(temp_152), Variable(temp_76))), IrStat((Instruction(call), Keyword(inject_bool), Variable(temp_76), Variable(_temp_2))), IrStat((Instruction(jmp), Keyword(endif414))), IrStat((Instruction(label), Keyword(else414))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_154))), IrStat((Instruction(label), Keyword(endif414))), IrStat((Instruction(label), Keyword(endif413))), IrStat((Instruction(label), Keyword(endif412))), IrStat((Instruction(jmp), Keyword(endif411))), IrStat((Instruction(label), Keyword(else411))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_155))), IrStat((Instruction(label), Keyword(endif411))), IrStat((Instruction(label), Keyword(endif407))), IrStat((Instruction(label), Keyword(endif403))), IrStat((Instruction(movl), Variable(_temp_2), Variable(_temp_2))), IrStat((Instruction(return), Variable(_temp_2)))]
+compression possible BB531 & BB535
+compression possible BB557 & BB561
+compression possible BB550 & BB554
+compression possible BB536 & BB540
+compression possible BB599 & BB603
+compression possible BB585 & BB589
+compression possible BB578 & BB582
+compression possible BB634 & BB638
+compression possible BB627 & BB631
+compression possible BB613 & BB617
+compression possible BB608 & BB612
+compression possible BB573 & BB577
+compressing 0
+Liveness took 5 loops
+total_loop_time=0.0028395652770996094
+per_basic_block_time=0.0026400089263916016
+update_parent_time=0.00010943412780761719
+Liveness time taken: 0.0032439231872558594
+unknown instruction->110:return,_temp_2
+Int graph time taken: 0.0007457733154296875
+coloring done
+Coloring time taken: 0.0019021034240722656
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+%esi %esi
+done compiling
+liveness_time=0.0032439231872558594
+interference_time=0.0007457733154296875
+coloring_time=0.0019021034240722656
+code = '\n__func3: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $1 \ncall inject_int\nmovl %eax, %ebx \naddl $4, %esp \npushl 8(%ebp) \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else403 \nif403: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else404 \nif404: \npushl 8(%ebp) \ncall project_int\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_int\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif404 \nelse404: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else405 \nif405: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif405 \nelse405: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else406 \nif406: \npushl 8(%ebp) \ncall project_int\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_bool\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif406 \nelse406: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif406: \nendif405: \nendif404: \njmp endif403 \nelse403: \npushl 8(%ebp) \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else407 \nif407: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else408 \nif408: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif408 \nelse408: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else409 \nif409: \npushl 8(%ebp) \ncall project_big\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_big\nmovl %eax, %ebx \naddl $4, %esp \npushl %ebx \npushl %edi \ncall add\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %esi \naddl $4, %esp \njmp endif409 \nelse409: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else410 \nif410: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif410 \nelse410: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif410: \nendif409: \nendif408: \njmp endif407 \nelse407: \npushl 8(%ebp) \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else411 \nif411: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else412 \nif412: \npushl 8(%ebp) \ncall project_bool\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_int\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif412 \nelse412: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else413 \nif413: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif413 \nelse413: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else414 \nif414: \npushl 8(%ebp) \ncall project_bool\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_bool\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_bool\nmovl %eax, %esi \naddl $4, %esp \njmp endif414 \nelse414: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif414: \nendif413: \nendif412: \njmp endif411 \nelse411: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif411: \nendif407: \nendif403: \nmovl %esi, %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func4
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($1), Variable(temp_34))), IrStat((Instruction(movl), Variable(temp_34), Variable(temp_116))), IrStat((Instruction(negl), Variable(temp_116))), IrStat((Instruction(movl), Variable(temp_116), Variable(_temp_3))), IrStat((Instruction(call), Keyword(is_int), Variable(_x2), Variable(temp_111))), IrStat((Instruction(if), Variable(temp_111), Keyword(if819), Keyword(else819))), IrStat((Instruction(label), Keyword(if819))), IrStat((Instruction(call), Keyword(is_int), Variable(_temp_3), Variable(temp_93))), IrStat((Instruction(if), Variable(temp_93), Keyword(if820), Keyword(else820))), IrStat((Instruction(label), Keyword(if820))), IrStat((Instruction(call), Keyword(project_int), Variable(_x2), Variable(temp_85))), IrStat((Instruction(call), Keyword(project_int), Variable(_temp_3), Variable(temp_86))), IrStat((Instruction(movl), Variable(temp_86), Variable(temp_121))), IrStat((Instruction(addl), Variable(temp_85), Variable(temp_121))), IrStat((Instruction(movl), Variable(temp_121), Variable(temp_87))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_87), Variable(_temp_4))), IrStat((Instruction(jmp), Keyword(endif820))), IrStat((Instruction(label), Keyword(else820))), IrStat((Instruction(call), Keyword(is_big), Variable(_temp_3), Variable(temp_92))), IrStat((Instruction(if), Variable(temp_92), Keyword(if821), Keyword(else821))), IrStat((Instruction(label), Keyword(if821))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_124))), IrStat((Instruction(jmp), Keyword(endif821))), IrStat((Instruction(label), Keyword(else821))), IrStat((Instruction(call), Keyword(is_bool), Variable(_temp_3), Variable(temp_91))), IrStat((Instruction(if), Variable(temp_91), Keyword(if822), Keyword(else822))), IrStat((Instruction(label), Keyword(if822))), IrStat((Instruction(call), Keyword(project_int), Variable(_x2), Variable(temp_88))), IrStat((Instruction(call), Keyword(project_bool), Variable(_temp_3), Variable(temp_89))), IrStat((Instruction(movl), Variable(temp_89), Variable(temp_128))), IrStat((Instruction(addl), Variable(temp_88), Variable(temp_128))), IrStat((Instruction(movl), Variable(temp_128), Variable(temp_90))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_90), Variable(_temp_4))), IrStat((Instruction(jmp), Keyword(endif822))), IrStat((Instruction(label), Keyword(else822))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_130))), IrStat((Instruction(label), Keyword(endif822))), IrStat((Instruction(label), Keyword(endif821))), IrStat((Instruction(label), Keyword(endif820))), IrStat((Instruction(jmp), Keyword(endif819))), IrStat((Instruction(label), Keyword(else819))), IrStat((Instruction(call), Keyword(is_big), Variable(_x2), Variable(temp_110))), IrStat((Instruction(if), Variable(temp_110), Keyword(if823), Keyword(else823))), IrStat((Instruction(label), Keyword(if823))), IrStat((Instruction(call), Keyword(is_int), Variable(_temp_3), Variable(temp_99))), IrStat((Instruction(if), Variable(temp_99), Keyword(if824), Keyword(else824))), IrStat((Instruction(label), Keyword(if824))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_133))), IrStat((Instruction(jmp), Keyword(endif824))), IrStat((Instruction(label), Keyword(else824))), IrStat((Instruction(call), Keyword(is_big), Variable(_temp_3), Variable(temp_98))), IrStat((Instruction(if), Variable(temp_98), Keyword(if825), Keyword(else825))), IrStat((Instruction(label), Keyword(if825))), IrStat((Instruction(call), Keyword(project_big), Variable(_x2), Variable(temp_94))), IrStat((Instruction(call), Keyword(project_big), Variable(_temp_3), Variable(temp_95))), IrStat((Instruction(call), Keyword(add), Variable(temp_94), Variable(temp_95), Variable(temp_96))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_96), Variable(_temp_4))), IrStat((Instruction(jmp), Keyword(endif825))), IrStat((Instruction(label), Keyword(else825))), IrStat((Instruction(call), Keyword(is_bool), Variable(_temp_3), Variable(temp_97))), IrStat((Instruction(if), Variable(temp_97), Keyword(if826), Keyword(else826))), IrStat((Instruction(label), Keyword(if826))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_140))), IrStat((Instruction(jmp), Keyword(endif826))), IrStat((Instruction(label), Keyword(else826))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_141))), IrStat((Instruction(label), Keyword(endif826))), IrStat((Instruction(label), Keyword(endif825))), IrStat((Instruction(label), Keyword(endif824))), IrStat((Instruction(jmp), Keyword(endif823))), IrStat((Instruction(label), Keyword(else823))), IrStat((Instruction(call), Keyword(is_bool), Variable(_x2), Variable(temp_109))), IrStat((Instruction(if), Variable(temp_109), Keyword(if827), Keyword(else827))), IrStat((Instruction(label), Keyword(if827))), IrStat((Instruction(call), Keyword(is_int), Variable(_temp_3), Variable(temp_108))), IrStat((Instruction(if), Variable(temp_108), Keyword(if828), Keyword(else828))), IrStat((Instruction(label), Keyword(if828))), IrStat((Instruction(call), Keyword(project_bool), Variable(_x2), Variable(temp_100))), IrStat((Instruction(call), Keyword(project_int), Variable(_temp_3), Variable(temp_101))), IrStat((Instruction(movl), Variable(temp_101), Variable(temp_146))), IrStat((Instruction(addl), Variable(temp_100), Variable(temp_146))), IrStat((Instruction(movl), Variable(temp_146), Variable(temp_102))), IrStat((Instruction(call), Keyword(inject_int), Variable(temp_102), Variable(_temp_4))), IrStat((Instruction(jmp), Keyword(endif828))), IrStat((Instruction(label), Keyword(else828))), IrStat((Instruction(call), Keyword(is_big), Variable(_temp_3), Variable(temp_107))), IrStat((Instruction(if), Variable(temp_107), Keyword(if829), Keyword(else829))), IrStat((Instruction(label), Keyword(if829))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_149))), IrStat((Instruction(jmp), Keyword(endif829))), IrStat((Instruction(label), Keyword(else829))), IrStat((Instruction(call), Keyword(is_bool), Variable(_temp_3), Variable(temp_106))), IrStat((Instruction(if), Variable(temp_106), Keyword(if830), Keyword(else830))), IrStat((Instruction(label), Keyword(if830))), IrStat((Instruction(call), Keyword(project_bool), Variable(_x2), Variable(temp_103))), IrStat((Instruction(call), Keyword(project_bool), Variable(_temp_3), Variable(temp_104))), IrStat((Instruction(movl), Variable(temp_104), Variable(temp_153))), IrStat((Instruction(addl), Variable(temp_103), Variable(temp_153))), IrStat((Instruction(movl), Variable(temp_153), Variable(temp_105))), IrStat((Instruction(call), Keyword(inject_bool), Variable(temp_105), Variable(_temp_4))), IrStat((Instruction(jmp), Keyword(endif830))), IrStat((Instruction(label), Keyword(else830))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_155))), IrStat((Instruction(label), Keyword(endif830))), IrStat((Instruction(label), Keyword(endif829))), IrStat((Instruction(label), Keyword(endif828))), IrStat((Instruction(jmp), Keyword(endif827))), IrStat((Instruction(label), Keyword(else827))), IrStat((Instruction(call), Keyword(error_pyobj), Variable(temp_156))), IrStat((Instruction(label), Keyword(endif827))), IrStat((Instruction(label), Keyword(endif823))), IrStat((Instruction(label), Keyword(endif819))), IrStat((Instruction(movl), Variable(_temp_4), Variable(_temp_4))), IrStat((Instruction(return), Variable(_temp_4)))]
+compression possible BB1185 & BB1191
+compression possible BB1213 & BB1217
+compression possible BB1206 & BB1210
+compression possible BB1192 & BB1196
+compression possible BB1255 & BB1259
+compression possible BB1241 & BB1245
+compression possible BB1234 & BB1238
+compression possible BB1290 & BB1294
+compression possible BB1283 & BB1287
+compression possible BB1269 & BB1273
+compression possible BB1264 & BB1268
+compression possible BB1229 & BB1233
+compressing 0
+Liveness took 5 loops
+total_loop_time=0.0028603076934814453
+per_basic_block_time=0.0026607513427734375
+update_parent_time=0.00010919570922851562
+Liveness time taken: 0.0032498836517333984
+unknown instruction->113:return,_temp_4
+Int graph time taken: 0.0007269382476806641
+coloring done
+Coloring time taken: 0.0020363330841064453
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+%esi %esi
+done compiling
+liveness_time=0.0032498836517333984
+interference_time=0.0007269382476806641
+coloring_time=0.0020363330841064453
+code = '\n__func4: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $1 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \nnegl %eax \nmovl %eax, %ebx \npushl 8(%ebp) \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else819 \nif819: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else820 \nif820: \npushl 8(%ebp) \ncall project_int\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_int\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif820 \nelse820: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else821 \nif821: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif821 \nelse821: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else822 \nif822: \npushl 8(%ebp) \ncall project_int\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_bool\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif822 \nelse822: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif822: \nendif821: \nendif820: \njmp endif819 \nelse819: \npushl 8(%ebp) \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else823 \nif823: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else824 \nif824: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif824 \nelse824: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else825 \nif825: \npushl 8(%ebp) \ncall project_big\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_big\nmovl %eax, %ebx \naddl $4, %esp \npushl %ebx \npushl %edi \ncall add\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %esi \naddl $4, %esp \njmp endif825 \nelse825: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else826 \nif826: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif826 \nelse826: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif826: \nendif825: \nendif824: \njmp endif823 \nelse823: \npushl 8(%ebp) \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else827 \nif827: \npushl %ebx \ncall is_int\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else828 \nif828: \npushl 8(%ebp) \ncall project_bool\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_int\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_int\nmovl %eax, %esi \naddl $4, %esp \njmp endif828 \nelse828: \npushl %ebx \ncall is_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else829 \nif829: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \njmp endif829 \nelse829: \npushl %ebx \ncall is_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \ncmpl $0, %eax \nje else830 \nif830: \npushl 8(%ebp) \ncall project_bool\nmovl %eax, %edi \naddl $4, %esp \npushl %ebx \ncall project_bool\nmovl %eax, %ebx \naddl $4, %esp \nmovl %ebx, %eax \naddl %edi, %eax \npushl %eax \ncall inject_bool\nmovl %eax, %esi \naddl $4, %esp \njmp endif830 \nelse830: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif830: \nendif829: \nendif828: \njmp endif827 \nelse827: \ncall error_pyobj\nmovl %eax, %eax \naddl $0, %esp \nendif827: \nendif823: \nendif819: \nmovl %esi, %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'

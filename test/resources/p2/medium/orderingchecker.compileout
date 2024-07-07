@@ -1,0 +1,230 @@
+compiling /home/jovyan/lab5-team-tyler-and-luke-1/tests/autograde/p2/medium/orderingchecker.py
+valid p0
+visiting Call
+visiting Call
+flattening node's  arg_i
+visiting Call
+visiting Call
+flattening node's  arg_i
+collecting functiondef
+collecting functiondef
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'callbefore': set(), 'callafter': set()}
+fba.bound_vars={'__main__': {'callafter', 'callbefore', 'temp_1', 'x', 'temp_0'}, 'callbefore': {'x'}, 'callafter': {'x'}}
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'callbefore': set(), 'callafter': set()}
+fba.bound_vars={'__main__': {'callafter', 'callbefore', 'temp_1', 'x', 'temp_0'}, 'callbefore': {'x'}, 'callafter': {'x'}}
+all_free=[]
+Before FLATTENING STAGE 1
+callbefore
+inject_big
+create_closure
+x
+x
+temp_0
+get_fun_ptr
+callbefore
+x
+get_free_vars
+callbefore
+print
+temp_0
+callafter
+inject_big
+create_closure
+x
+temp_1
+get_fun_ptr
+callafter
+x
+get_free_vars
+callafter
+print
+temp_1
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  func
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+flattening node's  func
+flattening node's  arg_i
+visiting Call
+collecting functiondef
+collecting functiondef
+After FLATTENING STAGE 1
+BEGIN EXPLICATE
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f1692316950>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f169213c8e0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f16923172b0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692315ff0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692317490>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213cc40>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f16923160e0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213cbe0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692316920>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213d690>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f16923175b0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213da20>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692317d90>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213cd60>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f16923163b0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213cb80>
+From visit_Module, node in node.body
+<ast.Expr object at 0x7f16923167d0>
+RETURN: From visit_Module, node in node.body
+<ast.Expr object at 0x7f169213ca00>
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f1692316680>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f169213e8f0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213c190>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213ccd0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213c1f0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213f1f0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692314940>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213ca90>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213c760>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f16921754e0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f169213c970>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692174af0>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f16923162c0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f1692175480>
+From visit_Module, node in node.body
+<ast.Expr object at 0x7f1692316530>
+RETURN: From visit_Module, node in node.body
+<ast.Expr object at 0x7f1692175330>
+After Explicate Stage
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+collecting functiondef
+collecting functiondef
+After Flattening Stage 2
+self.visit(node.body[0]) =([IrStat((Instruction(return), Variable(_x)))], BB101:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(return), Variable(_x)))], BB204:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_12)))], BB2:
+)
+dict_keys(['__func1', '__func2', 'module']) = 
+Liveness took 3 loops
+total_loop_time=0.00033736228942871094
+per_basic_block_time=0.00033283233642578125
+update_parent_time=9.5367431640625e-07
+Liveness time taken: 0.0003662109375
+Int graph time taken: 0.00026679039001464844
+coloring done
+Coloring time taken: 0.0007228851318359375
+stack_size=0
+done compiling
+liveness_time=0.0003662109375
+interference_time=0.00026679039001464844
+coloring_time=0.0007228851318359375
+code = '\n.globl main\nmain: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func1 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \npushl $12 \ncall inject_int\nmovl %eax, %ebx \naddl $4, %esp \npushl %edi \ncall get_fun_ptr\nmovl %eax, %esi \naddl $4, %esp \npushl %edi \ncall get_free_vars\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \npushl %ebx \ncall *%esi\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall print_any \naddl $4, %esp \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func2 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall get_fun_ptr\nmovl %eax, %esi \naddl $4, %esp \npushl %edi \ncall get_free_vars\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \npushl %ebx \ncall *%esi\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall print_any \naddl $4, %esp \npopl %edi \npopl %esi\npopl %ebx\nmovl $0, %eax \nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func1
+[IrStat((Instruction(return), Variable(_x)))]
+Liveness took 2 loops
+total_loop_time=1.3589859008789062e-05
+per_basic_block_time=1.1682510375976562e-05
+update_parent_time=4.76837158203125e-07
+Liveness time taken: 2.6464462280273438e-05
+unknown instruction->return,_x
+Int graph time taken: 1.1920928955078125e-05
+coloring done
+Coloring time taken: 2.8371810913085938e-05
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+8(%ebp) 8
+done compiling
+liveness_time=2.6464462280273438e-05
+interference_time=1.1920928955078125e-05
+coloring_time=2.8371810913085938e-05
+code = '\n__func1: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \nmovl 8(%ebp), %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func2
+[IrStat((Instruction(return), Variable(_x)))]
+Liveness took 2 loops
+total_loop_time=1.0967254638671875e-05
+per_basic_block_time=9.298324584960938e-06
+update_parent_time=4.76837158203125e-07
+Liveness time taken: 1.9311904907226562e-05
+unknown instruction->return,_x
+Int graph time taken: 9.059906005859375e-06
+coloring done
+Coloring time taken: 3.981590270996094e-05
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+8(%ebp) 8
+done compiling
+liveness_time=1.9311904907226562e-05
+interference_time=9.059906005859375e-06
+coloring_time=3.981590270996094e-05
+code = '\n__func2: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \nmovl 8(%ebp), %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'

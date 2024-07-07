@@ -1,0 +1,168 @@
+compiling /home/jovyan/lab5-team-tyler-and-luke-1/tests/autograde/p2/medium/nested_indent.py
+valid p0
+collecting functiondef
+collecting functiondef
+collecting functiondef
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'lvl1': set(), 'lvl2': set(), 'lvl3': set()}
+fba.bound_vars={'__main__': {'lvl1'}, 'lvl1': {'lvl2'}, 'lvl2': {'lvl3'}, 'lvl3': set()}
+Free-Bound analysis----
+fba.free_vars={'__main__': set(), 'lvl1': set(), 'lvl2': set(), 'lvl3': set()}
+fba.bound_vars={'__main__': {'lvl1'}, 'lvl1': {'lvl2'}, 'lvl2': {'lvl3'}, 'lvl3': set()}
+all_free=[]
+Before FLATTENING STAGE 1
+lvl1
+inject_big
+create_closure
+lvl2
+inject_big
+create_closure
+lvl3
+inject_big
+create_closure
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  value
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+flattening node's  arg_i
+collecting functiondef
+collecting functiondef
+collecting functiondef
+After FLATTENING STAGE 1
+BEGIN EXPLICATE
+From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f89843ae2f0>
+RETURN: From visit_Module, node in node.body
+<ast.FunctionDef object at 0x7f89843ae860>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f89843ae9b0>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f89843ae020>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f89843af190>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f89841c2410>
+From visit_Module, node in node.body
+<ast.Assign object at 0x7f89843ae800>
+RETURN: From visit_Module, node in node.body
+<ast.Assign object at 0x7f89841c2050>
+After Explicate Stage
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+visiting Call
+flattening node's  arg_i
+flattening node's  arg_i
+visiting Call
+visiting Call
+collecting functiondef
+collecting functiondef
+collecting functiondef
+After Flattening Stage 2
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_bool), Immediate($1), Variable(temp_0)))], BB102:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_10)))], BB208:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_12)))], BB428:
+)
+self.visit(node.body[0]) =([IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_14)))], BB2:
+)
+dict_keys(['__func1', '__func2', '__func3', 'module']) = 
+Liveness took 3 loops
+total_loop_time=0.00010943412780761719
+per_basic_block_time=0.00010514259338378906
+update_parent_time=9.5367431640625e-07
+Liveness time taken: 0.0001404285430908203
+Int graph time taken: 5.793571472167969e-05
+coloring done
+Coloring time taken: 0.00021505355834960938
+stack_size=0
+done compiling
+liveness_time=0.0001404285430908203
+interference_time=5.793571472167969e-05
+coloring_time=0.00021505355834960938
+code = '\n.globl main\nmain: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func3 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %eax \naddl $4, %esp \npopl %edi \npopl %esi\npopl %ebx\nmovl $0, %eax \nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func1
+[IrStat((Instruction(call), Keyword(inject_bool), Immediate($1), Variable(temp_0))), IrStat((Instruction(return), Variable(temp_0)))]
+Liveness took 3 loops
+total_loop_time=3.910064697265625e-05
+per_basic_block_time=3.552436828613281e-05
+update_parent_time=9.5367431640625e-07
+Liveness time taken: 4.839897155761719e-05
+unknown instruction->1:return,temp_0
+Int graph time taken: 2.1696090698242188e-05
+coloring done
+Coloring time taken: 4.220008850097656e-05
+Some variable spilled
+But instructions ok
+stack_size=0
+return stat
+return
+%edi %edi
+done compiling
+liveness_time=4.839897155761719e-05
+interference_time=2.1696090698242188e-05
+coloring_time=4.220008850097656e-05
+code = '\n__func1: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $1 \ncall inject_bool\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax\n\npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func2
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_10))), IrStat((Instruction(call), Keyword(create_list), Variable(temp_10), Variable(temp_11))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_11), Variable(temp_7))), IrStat((Instruction(movl), Variable(temp_7), Variable(temp_1))), IrStat((Instruction(call), Keyword(create_closure), Immediate($__func1), Variable(temp_1), Variable(temp_2))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_2), Variable(_lvl3)))]
+Liveness took 3 loops
+total_loop_time=9.393692016601562e-05
+per_basic_block_time=9.059906005859375e-05
+update_parent_time=1.1920928955078125e-06
+Liveness time taken: 0.00010347366333007812
+Int graph time taken: 4.291534423828125e-05
+coloring done
+Coloring time taken: 0.0001316070556640625
+Some variable spilled
+But instructions ok
+stack_size=0
+done compiling
+liveness_time=0.00010347366333007812
+interference_time=4.291534423828125e-05
+coloring_time=0.0001316070556640625
+code = '\n__func2: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func1 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %eax \naddl $4, %esp \npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'
+GENERATING ASSEMBLY FOR:  __func3
+[IrStat((Instruction(call), Keyword(inject_int), Immediate($0), Variable(temp_12))), IrStat((Instruction(call), Keyword(create_list), Variable(temp_12), Variable(temp_13))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_13), Variable(temp_8))), IrStat((Instruction(movl), Variable(temp_8), Variable(temp_3))), IrStat((Instruction(call), Keyword(create_closure), Immediate($__func2), Variable(temp_3), Variable(temp_4))), IrStat((Instruction(call), Keyword(inject_big), Variable(temp_4), Variable(_lvl2)))]
+Liveness took 3 loops
+total_loop_time=9.1552734375e-05
+per_basic_block_time=8.845329284667969e-05
+update_parent_time=7.152557373046875e-07
+Liveness time taken: 0.0001068115234375
+Int graph time taken: 4.315376281738281e-05
+coloring done
+Coloring time taken: 0.0001647472381591797
+Some variable spilled
+But instructions ok
+stack_size=0
+done compiling
+liveness_time=0.0001068115234375
+interference_time=4.315376281738281e-05
+coloring_time=0.0001647472381591797
+code = '\n__func3: \npushl %ebp \nmovl %esp, %ebp \nsubl $0, %esp \npushl %ebx \npushl %esi\npushl %edi\n    \npushl $0 \ncall inject_int\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall create_list\nmovl %eax, %edi \naddl $4, %esp \npushl %edi \ncall inject_big\nmovl %eax, %edi \naddl $4, %esp \nmovl %edi, %eax \npushl %eax \npushl $__func2 \ncall create_closure\nmovl %eax, %edi \naddl $8, %esp \npushl %edi \ncall inject_big\nmovl %eax, %eax \naddl $4, %esp \npopl %edi \npopl %esi\npopl %ebx\nmovl %ebp, %esp \npopl %ebp \nret\n\n'

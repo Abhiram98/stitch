@@ -1,0 +1,125 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_11 = inject_int(0)
+_map = [temp_11]
+def __func1(_x,free_vars_1):
+	temp_12 = inject_int(1)
+	temp_13 = _x + temp_12
+	return temp_13
+
+temp_14 = []
+temp_15 = create_closure(__func1,temp_14)
+_lambda_1 = inject_big(temp_15)
+temp_16 = inject_int(0)
+def __func2(_f,_l,_i,_n,free_vars_2):
+	temp_17 = inject_int(3)
+	temp_18 = inject_int(0)
+	temp_19 = free_vars_2[temp_17]
+	temp_20 = temp_19[temp_18]
+	_temp_5 = temp_20 != _n
+	temp_21 = is_true(_temp_5)
+	temp_63 = is_true(temp_21)
+	if temp_63:
+		temp_22 = inject_int(0)
+		temp_23 = inject_int(0)
+		temp_24 = free_vars_2[temp_22]
+		temp_25 = inject_int(3)
+		temp_26 = inject_int(0)
+		temp_27 = free_vars_2[temp_25]
+		temp_28 = temp_27[temp_26]
+		temp_29 = temp_24[temp_23]
+		_temp_0 = temp_29[temp_28]
+		temp_30 = inject_int(2)
+		temp_31 = inject_int(0)
+		temp_32 = free_vars_2[temp_30]
+		temp_33 = temp_32[temp_31]
+		temp_34 = inject_int(2)
+		temp_35 = inject_int(0)
+		temp_36 = free_vars_2[temp_34]
+		temp_37 = temp_36[temp_35]
+		temp_38 = get_fun_ptr(temp_33)
+		temp_39 = get_free_vars(temp_37)
+		_temp_1 = temp_38(_temp_0,temp_39)
+		temp_40 = inject_int(3)
+		temp_41 = inject_int(0)
+		temp_42 = free_vars_2[temp_40]
+		temp_43 = temp_42[temp_41]
+		temp_44 = inject_int(1)
+		_temp_2 = temp_43 + temp_44
+		_temp_3 = [_temp_1]
+		temp_45 = inject_int(1)
+		temp_46 = inject_int(0)
+		temp_47 = free_vars_2[temp_45]
+		temp_48 = temp_47[temp_46]
+		temp_49 = inject_int(2)
+		temp_50 = inject_int(0)
+		temp_51 = free_vars_2[temp_49]
+		temp_52 = inject_int(0)
+		temp_53 = inject_int(0)
+		temp_54 = free_vars_2[temp_52]
+		temp_55 = inject_int(1)
+		temp_56 = inject_int(0)
+		temp_57 = free_vars_2[temp_55]
+		temp_58 = temp_57[temp_56]
+		temp_59 = get_fun_ptr(temp_48)
+		temp_60 = temp_51[temp_50]
+		temp_61 = temp_54[temp_53]
+		temp_62 = get_free_vars(temp_58)
+		_temp_4 = temp_59(temp_60,temp_61,_temp_2,_n,temp_62)
+		_temp_6 = _temp_3 + _temp_4
+		_temp_8 = _temp_6
+	else:
+		_temp_7 = []
+		_temp_8 = _temp_7
+	
+	return _temp_8
+
+temp_64 = [_l, _map, _f, _i]
+temp_65 = create_closure(__func2,temp_64)
+_map[temp_16] = inject_big(temp_65)
+temp_66 = inject_int(1)
+temp_67 = inject_int(2)
+temp_68 = inject_int(3)
+temp_69 = inject_int(4)
+_temp_9 = [temp_66, temp_67, temp_68, temp_69]
+temp_70 = inject_int(0)
+temp_71 = _map[temp_70]
+temp_72 = inject_int(0)
+temp_73 = _map[temp_72]
+temp_74 = get_fun_ptr(temp_71)
+temp_75 = inject_int(0)
+temp_76 = inject_int(4)
+temp_77 = get_free_vars(temp_73)
+_temp_10 = temp_74(_lambda_1,_temp_9,temp_75,temp_76,temp_77)
+print(_temp_10)

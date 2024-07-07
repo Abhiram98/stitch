@@ -1,0 +1,308 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_0 = inject_int(0)
+temp_48 = inject_big(create_list(inject_int(1)))
+set_subscript(temp_48,inject_int(0),temp_0)
+_prod = temp_48
+temp_1 = inject_int(0)
+def __func1(_a,_b,free_vars_1):
+	temp_2 = inject_int(0)
+	if is_int(_b):
+		if is_int(temp_2):
+			temp_17 = inject_bool(_b == temp_2)
+		
+		if is_bool(temp_2):
+			temp_17 = inject_bool(project_int(_b) == project_bool(temp_2))
+		
+		if is_big(temp_2):
+			temp_17 = inject_bool(0)
+		
+	else:
+		if is_bool(_b):
+			if is_int(temp_2):
+				temp_17 = inject_bool(project_bool(_b) == project_int(temp_2))
+			
+			if is_bool(temp_2):
+				temp_17 = inject_bool(_b == temp_2)
+			
+			if is_big(temp_2):
+				temp_17 = inject_bool(0)
+			
+		else:
+			if is_big(_b):
+				if is_int(temp_2):
+					temp_17 = inject_bool(0)
+				
+				if is_bool(temp_2):
+					temp_17 = inject_bool(0)
+				
+				if is_big(temp_2):
+					temp_17 = inject_bool(equal(project_big(_b),project_big(temp_2)))
+				
+			
+		
+	
+	temp_17 = temp_17
+	if is_true(temp_17):
+		temp_18 = inject_int(0)
+		temp_20 = temp_18
+	else:
+		temp_3 = inject_int(0)
+		temp_4 = inject_int(0)
+		temp_5 = get_subscript(free_vars_1,temp_3)
+		temp_6 = get_subscript(temp_5,temp_4)
+		temp_7 = inject_int(1)
+		temp_8 = - temp_7
+		temp_9 = inject_int(0)
+		temp_10 = inject_int(0)
+		temp_11 = get_subscript(free_vars_1,temp_9)
+		temp_12 = get_subscript(temp_11,temp_10)
+		temp_13 = get_fun_ptr(temp_6)
+		if is_int(_b):
+			if is_int(temp_8):
+				temp_14 = inject_int((project_int(_b)) + (project_int(temp_8)))
+			else:
+				if is_big(temp_8):
+					error_pyobj()
+				else:
+					if is_bool(temp_8):
+						temp_14 = inject_int((project_int(_b)) + (project_bool(temp_8)))
+					else:
+						error_pyobj()
+					
+				
+			
+		else:
+			if is_big(_b):
+				if is_int(temp_8):
+					error_pyobj()
+				else:
+					if is_big(temp_8):
+						temp_14 = inject_big(add(project_big(_b),project_big(temp_8)))
+					else:
+						if is_bool(temp_8):
+							error_pyobj()
+						else:
+							error_pyobj()
+						
+					
+				
+			else:
+				if is_bool(_b):
+					if is_int(temp_8):
+						temp_14 = inject_int((project_bool(_b)) + (project_int(temp_8)))
+					else:
+						if is_big(temp_8):
+							error_pyobj()
+						else:
+							if is_bool(temp_8):
+								temp_14 = inject_bool((project_bool(_b)) + (project_bool(temp_8)))
+							else:
+								error_pyobj()
+							
+						
+					
+				else:
+					error_pyobj()
+				
+			
+		
+		temp_14 = temp_14
+		temp_15 = get_free_vars(temp_12)
+		temp_16 = temp_13(_a,temp_14,temp_15)
+		if is_int(_a):
+			if is_int(temp_16):
+				temp_19 = inject_int((project_int(_a)) + (project_int(temp_16)))
+			else:
+				if is_big(temp_16):
+					error_pyobj()
+				else:
+					if is_bool(temp_16):
+						temp_19 = inject_int((project_int(_a)) + (project_bool(temp_16)))
+					else:
+						error_pyobj()
+					
+				
+			
+		else:
+			if is_big(_a):
+				if is_int(temp_16):
+					error_pyobj()
+				else:
+					if is_big(temp_16):
+						temp_19 = inject_big(add(project_big(_a),project_big(temp_16)))
+					else:
+						if is_bool(temp_16):
+							error_pyobj()
+						else:
+							error_pyobj()
+						
+					
+				
+			else:
+				if is_bool(_a):
+					if is_int(temp_16):
+						temp_19 = inject_int((project_bool(_a)) + (project_int(temp_16)))
+					else:
+						if is_big(temp_16):
+							error_pyobj()
+						else:
+							if is_bool(temp_16):
+								temp_19 = inject_bool((project_bool(_a)) + (project_bool(temp_16)))
+							else:
+								error_pyobj()
+							
+						
+					
+				else:
+					error_pyobj()
+				
+			
+		
+		temp_19 = temp_19
+		temp_20 = temp_19
+	
+	return temp_20
+
+temp_49 = inject_big(create_list(inject_int(1)))
+set_subscript(temp_49,inject_int(0),_prod)
+temp_21 = temp_49
+temp_22 = create_closure(__func1,temp_21)
+set_subscript(_prod,temp_1,inject_big(temp_22))
+def __func2(_n,free_vars_2):
+	temp_23 = inject_int(0)
+	temp_24 = inject_int(0)
+	temp_25 = get_subscript(free_vars_2,temp_23)
+	temp_26 = get_subscript(temp_25,temp_24)
+	temp_27 = inject_int(0)
+	temp_28 = inject_int(0)
+	temp_29 = get_subscript(free_vars_2,temp_27)
+	temp_30 = get_subscript(temp_29,temp_28)
+	temp_31 = get_fun_ptr(temp_26)
+	temp_32 = get_free_vars(temp_30)
+	temp_33 = temp_31(_n,_n,temp_32)
+	return temp_33
+
+temp_50 = inject_big(create_list(inject_int(1)))
+set_subscript(temp_50,inject_int(0),_prod)
+temp_34 = temp_50
+temp_35 = create_closure(__func2,temp_34)
+_square = inject_big(temp_35)
+_i = inject_int(0)
+temp_36 = get_fun_ptr(_square)
+temp_37 = get_free_vars(_square)
+temp_38 = temp_36(_i,temp_37)
+temp_39 = inject_int(25)
+if is_int(temp_38):
+	if is_int(temp_39):
+		temp_51 = inject_bool(temp_38 != temp_39)
+	
+	if is_bool(temp_39):
+		temp_51 = inject_bool(project_int(temp_38) != project_bool(temp_39))
+	
+	if is_big(temp_39):
+		temp_51 = inject_bool(1)
+	
+else:
+	if is_bool(temp_38):
+		if is_int(temp_39):
+			temp_51 = inject_bool(project_bool(temp_38) != project_int(temp_39))
+		
+		if is_bool(temp_39):
+			temp_51 = inject_bool(temp_38 != temp_39)
+		
+		if is_big(temp_39):
+			temp_51 = inject_bool(1)
+		
+	else:
+		if is_big(temp_38):
+			if is_int(temp_39):
+				temp_51 = inject_bool(1)
+			
+			if is_bool(temp_39):
+				temp_51 = inject_bool(1)
+			
+			if is_big(temp_39):
+				temp_51 = inject_bool(not_equal(project_big(temp_38),project_big(temp_39)))
+			
+		
+	
+
+temp_40 = temp_51
+temp_47 = is_true(temp_40)
+while (temp_47):
+	temp_41 = inject_int(1)
+	_i = inject_int((project_int(_i)) + (project_int(temp_41)))
+	_i = _i
+	temp_42 = get_fun_ptr(_square)
+	temp_43 = get_free_vars(_square)
+	temp_44 = temp_42(_i,temp_43)
+	temp_45 = inject_int(25)
+	if is_int(temp_44):
+		if is_int(temp_45):
+			temp_46 = inject_bool(temp_44 != temp_45)
+		
+		if is_bool(temp_45):
+			temp_46 = inject_bool(project_int(temp_44) != project_bool(temp_45))
+		
+		if is_big(temp_45):
+			temp_46 = inject_bool(1)
+		
+	else:
+		if is_bool(temp_44):
+			if is_int(temp_45):
+				temp_46 = inject_bool(project_bool(temp_44) != project_int(temp_45))
+			
+			if is_bool(temp_45):
+				temp_46 = inject_bool(temp_44 != temp_45)
+			
+			if is_big(temp_45):
+				temp_46 = inject_bool(1)
+			
+		else:
+			if is_big(temp_44):
+				if is_int(temp_45):
+					temp_46 = inject_bool(1)
+				
+				if is_bool(temp_45):
+					temp_46 = inject_bool(1)
+				
+				if is_big(temp_45):
+					temp_46 = inject_bool(not_equal(project_big(temp_44),project_big(temp_45)))
+				
+			
+		
+	
+	temp_46 = temp_46
+	temp_47 = is_true(temp_46)

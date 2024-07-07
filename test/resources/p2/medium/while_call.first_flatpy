@@ -1,0 +1,98 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_0 = inject_int(0)
+_prod = [temp_0]
+temp_1 = inject_int(0)
+def __func1(_a,_b,free_vars_1):
+	temp_2 = inject_int(0)
+	temp_17 = _b == temp_2
+	if is_true(temp_17):
+		temp_18 = inject_int(0)
+		temp_20 = temp_18
+	else:
+		temp_3 = inject_int(0)
+		temp_4 = inject_int(0)
+		temp_5 = free_vars_1[temp_3]
+		temp_6 = temp_5[temp_4]
+		temp_7 = inject_int(1)
+		temp_8 = - temp_7
+		temp_9 = inject_int(0)
+		temp_10 = inject_int(0)
+		temp_11 = free_vars_1[temp_9]
+		temp_12 = temp_11[temp_10]
+		temp_13 = get_fun_ptr(temp_6)
+		temp_14 = _b + temp_8
+		temp_15 = get_free_vars(temp_12)
+		temp_16 = temp_13(_a,temp_14,temp_15)
+		temp_19 = _a + temp_16
+		temp_20 = temp_19
+	
+	return temp_20
+
+temp_21 = [_prod]
+temp_22 = create_closure(__func1,temp_21)
+_prod[temp_1] = inject_big(temp_22)
+def __func2(_n,free_vars_2):
+	temp_23 = inject_int(0)
+	temp_24 = inject_int(0)
+	temp_25 = free_vars_2[temp_23]
+	temp_26 = temp_25[temp_24]
+	temp_27 = inject_int(0)
+	temp_28 = inject_int(0)
+	temp_29 = free_vars_2[temp_27]
+	temp_30 = temp_29[temp_28]
+	temp_31 = get_fun_ptr(temp_26)
+	temp_32 = get_free_vars(temp_30)
+	temp_33 = temp_31(_n,_n,temp_32)
+	return temp_33
+
+temp_34 = [_prod]
+temp_35 = create_closure(__func2,temp_34)
+_square = inject_big(temp_35)
+_i = inject_int(0)
+temp_36 = get_fun_ptr(_square)
+temp_37 = get_free_vars(_square)
+temp_38 = temp_36(_i,temp_37)
+temp_39 = inject_int(25)
+temp_40 = temp_38 != temp_39
+temp_47 = is_true(temp_40)
+while (temp_47):
+	temp_41 = inject_int(1)
+	_i = _i + temp_41
+	temp_42 = get_fun_ptr(_square)
+	temp_43 = get_free_vars(_square)
+	temp_44 = temp_42(_i,temp_43)
+	temp_45 = inject_int(25)
+	temp_46 = temp_44 != temp_45
+	temp_47 = is_true(temp_46)

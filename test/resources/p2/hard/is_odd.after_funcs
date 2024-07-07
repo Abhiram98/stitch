@@ -1,0 +1,54 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_7 = [0]
+is_odd = [0]
+lambda_1 = inject_big(create_closure(def __func1(n,free_vars_1):
+	return free_vars_1[0][0]free_vars_1[1][0]False
+,[temp_7, temp_8]))
+is_even = inject_big(create_closure(def __func2(n,free_vars_2):
+	temp_2 = n != 0
+	if is_true(temp_2):
+		temp_0 = - 1
+		temp_1 = n + temp_0
+		temp_3 = get_fun_ptr(free_vars_2[0][0])(temp_1,get_free_vars(free_vars_2[0][0]))
+		temp_4 = temp_3
+	else:
+		temp_4 = True
+	
+	return temp_4
+,[is_odd]))
+temp_7[0] = n != 0
+is_odd[0] = lambda_1
+temp_9 = get_fun_ptr(is_odd[0])(23,get_free_vars(is_odd[0]))
+print(temp_9)

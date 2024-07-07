@@ -1,0 +1,54 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+compose = inject_big(create_closure(def __func2(_f1,g1,free_vars_2):
+	g1 = [g1]
+	_compose = inject_big(create_closure(def __func1(x3,free_vars_1):
+		temp_0 = get_fun_ptr(free_vars_1[1][0])(x3,get_free_vars(free_vars_1[1][0]))
+		temp_1 = get_fun_ptr(free_vars_1[0][0])(temp_0,get_free_vars(free_vars_1[0][0]))
+		return temp_1
+	,[f1, g1]))
+	return _compose
+,[]))
+f = inject_big(create_closure(def __func3(x1,free_vars_3):
+	temp_2 = x1 + 1
+	return temp_2
+,[]))
+g = inject_big(create_closure(def __func4(x2,free_vars_4):
+	temp_3 = - 1
+	temp_4 = x2 + temp_3
+	return temp_4
+,[]))
+temp_5 = get_fun_ptr(compose)(f,g,get_free_vars(compose))
+temp_6 = get_fun_ptr(temp_5)(23,get_free_vars(temp_5))
+print(temp_6)

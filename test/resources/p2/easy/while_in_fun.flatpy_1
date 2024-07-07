@@ -1,0 +1,193 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+def __func1(_x,_y,free_vars_1):
+	temp_35 = is_int(_x)
+	if temp_35:
+		temp_14 = is_int(_y)
+		if temp_14:
+			temp_13 = _x != _y
+			_temp_0 = inject_bool(temp_13)
+		
+		temp_18 = is_bool(_y)
+		if temp_18:
+			temp_15 = project_int(_x)
+			temp_16 = project_bool(_y)
+			temp_17 = temp_15 != temp_16
+			_temp_0 = inject_bool(temp_17)
+		
+		temp_19 = is_big(_y)
+		if temp_19:
+			_temp_0 = inject_bool(1)
+		
+	else:
+		temp_34 = is_bool(_x)
+		if temp_34:
+			temp_23 = is_int(_y)
+			if temp_23:
+				temp_20 = project_bool(_x)
+				temp_21 = project_int(_y)
+				temp_22 = temp_20 != temp_21
+				_temp_0 = inject_bool(temp_22)
+			
+			temp_25 = is_bool(_y)
+			if temp_25:
+				temp_24 = _x != _y
+				_temp_0 = inject_bool(temp_24)
+			
+			temp_26 = is_big(_y)
+			if temp_26:
+				_temp_0 = inject_bool(1)
+			
+		else:
+			temp_33 = is_big(_x)
+			if temp_33:
+				temp_27 = is_int(_y)
+				if temp_27:
+					_temp_0 = inject_bool(1)
+				
+				temp_28 = is_bool(_y)
+				if temp_28:
+					_temp_0 = inject_bool(1)
+				
+				temp_32 = is_big(_y)
+				if temp_32:
+					temp_29 = project_big(_x)
+					temp_30 = project_big(_y)
+					temp_31 = not_equal(temp_29,temp_30)
+					_temp_0 = inject_bool(temp_31)
+				
+			
+		
+	
+	_temp_0 = _temp_0
+	temp_5 = is_true(_temp_0)
+	while (temp_5):
+		temp_4 = inject_int(1)
+		temp_62 = is_int(_x)
+		if temp_62:
+			temp_44 = is_int(temp_4)
+			if temp_44:
+				temp_36 = project_int(_x)
+				temp_37 = project_int(temp_4)
+				temp_38 = temp_36 + temp_37
+				_x = inject_int(temp_38)
+			else:
+				temp_43 = is_big(temp_4)
+				if temp_43:
+					error_pyobj()
+				else:
+					temp_42 = is_bool(temp_4)
+					if temp_42:
+						temp_39 = project_int(_x)
+						temp_40 = project_bool(temp_4)
+						temp_41 = temp_39 + temp_40
+						_x = inject_int(temp_41)
+					else:
+						error_pyobj()
+					
+				
+			
+		else:
+			temp_61 = is_big(_x)
+			if temp_61:
+				temp_50 = is_int(temp_4)
+				if temp_50:
+					error_pyobj()
+				else:
+					temp_49 = is_big(temp_4)
+					if temp_49:
+						temp_45 = project_big(_x)
+						temp_46 = project_big(temp_4)
+						temp_47 = add(temp_45,temp_46)
+						_x = inject_big(temp_47)
+					else:
+						temp_48 = is_bool(temp_4)
+						if temp_48:
+							error_pyobj()
+						else:
+							error_pyobj()
+						
+					
+				
+			else:
+				temp_60 = is_bool(_x)
+				if temp_60:
+					temp_59 = is_int(temp_4)
+					if temp_59:
+						temp_51 = project_bool(_x)
+						temp_52 = project_int(temp_4)
+						temp_53 = temp_51 + temp_52
+						_x = inject_int(temp_53)
+					else:
+						temp_58 = is_big(temp_4)
+						if temp_58:
+							error_pyobj()
+						else:
+							temp_57 = is_bool(temp_4)
+							if temp_57:
+								temp_54 = project_bool(_x)
+								temp_55 = project_bool(temp_4)
+								temp_56 = temp_54 + temp_55
+								_x = inject_bool(temp_56)
+							else:
+								error_pyobj()
+							
+						
+					
+				else:
+					error_pyobj()
+				
+			
+		
+		_x = _x
+		temp_5 = is_true(_temp_0)
+	
+	return _x
+
+temp_64 = inject_int(0)
+temp_65 = create_list(temp_64)
+temp_12 = inject_big(temp_65)
+temp_6 = temp_12
+temp_7 = create_closure(__func1,temp_6)
+_while_in_fun = inject_big(temp_7)
+temp_66 = eval(input())
+temp_8 = temp_66
+_temp_1 = temp_8
+temp_67 = eval(input())
+temp_9 = temp_67
+_temp_2 = temp_9
+temp_10 = get_fun_ptr(_while_in_fun)
+temp_11 = get_free_vars(_while_in_fun)
+_temp_3 = temp_10(_temp_1,_temp_2,temp_11)
+print(_temp_3)
