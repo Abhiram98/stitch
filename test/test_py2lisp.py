@@ -148,3 +148,29 @@ def test_exception_handler():
     assert lisp_str == "(ProgramStatements (StatementList (Try (__list__ (Expr (Call print))) (__list__ (" \
                        "ExceptHandler (__kw__ body (__list__ (Expr (Call print (__list__ STRING_0)))))))) " \
                        "EMPTY_Statement))"
+
+def test_forloop():
+    code_py = """def partition(arr: list[int], low: int, high: int) -> int:
+        pivot = arr[high]
+        i = low - 1
+        for j in range(low, high):
+            if arr[j] >= pivot:
+                i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        return i + 1
+    """
+    code_ast = ast.parse(code_py)
+    lisp_str = Py2Lisp().visit(code_ast)
+    print(lisp_str)
+    assert lisp_str == "(ProgramStatements (StatementList (FunctionDef (__kw__ name partition) (__kw__ args (" \
+                       "arguments (__kw__ args (__list__ (arg arr (Subscript list int)) (arg low int) (arg high " \
+                       "int))))) (__kw__ body (StatementList (Assign (__list__ pivot) (Subscript arr high)) (" \
+                       "StatementList (Assign (__list__ i) (BinOp low Sub 1)) (StatementList (For j (Call range (" \
+                       "__list__ low high)) (StatementList (If (Compare (Subscript arr j) (__list__ GtE) (__list__ " \
+                       "pivot)) (StatementList (AugAssign i Add 1) (StatementList (Assign (__list__ (Tuple (__list__ " \
+                       "(Subscript arr i) (Subscript arr j)))) (Tuple (__list__ (Subscript arr j) (Subscript arr " \
+                       "i)))) EMPTY_Statement))) EMPTY_Statement)) (StatementList (Assign (__list__ (Tuple (__list__ " \
+                       "(Subscript arr (BinOp i Add 1)) (Subscript arr high)))) (Tuple (__list__ (Subscript arr high) " \
+                       "(Subscript arr (BinOp i Add 1))))) (StatementList (Return (BinOp i Add 1)) " \
+                       "EMPTY_Statement)))))) (__kw__ returns int)) EMPTY_Statement))"
