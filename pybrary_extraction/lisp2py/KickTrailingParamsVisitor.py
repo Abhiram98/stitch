@@ -2,6 +2,7 @@ import ast
 from typing import Any
 
 import pybrary_extraction.lisp2py.StitchAbstraction as stitch_abstraction
+import pybrary_extraction.python2lisp as py2lisp
 
 class KickOutTrailingParam(ast.NodeVisitor):
 
@@ -20,5 +21,8 @@ class KickOutTrailingParam(ast.NodeVisitor):
                 trailing_param = matches[0].get_trailing_statement_params()[0]
                 if trailing_param.position < len(node.args):
                     trailing_statements = node.args.pop(trailing_param.position)
-                    assert hasattr(node, 'parent_scope')
-                    node.parent_scope.body += trailing_statements
+                    if trailing_statements!=py2lisp.Py2Lisp.empty_statement_keyword:
+                        assert hasattr(node, 'parent_scope')
+                        if not isinstance(trailing_statements, list):
+                            trailing_statements = [trailing_statements]
+                        node.parent_scope.body += trailing_statements
