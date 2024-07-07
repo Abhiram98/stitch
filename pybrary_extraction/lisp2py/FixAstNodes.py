@@ -143,6 +143,10 @@ class FixAstNodes(ast.NodeVisitor):
             *list(filter(
                 lambda x: x is not Py2Lisp.empty_statement_keyword, flattened_statements)))
 
+    def visit_Tuple(self, node: ast.Tuple) -> Any:
+        FixAstNodes.make_empty_list_fields_if_not_exists(node, 'elts')
+        return node
+
 
     @staticmethod
     def augment_pyast_node(node):

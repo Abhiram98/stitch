@@ -11,12 +11,12 @@ from pybrary_extraction.lisp2py.FixAstNodes import FixAstNodes
 class WrapStatementList(LispVisitor):
     def visit_ProgramStatements(self, lisp_root):
         new_root = self.generic_visit(lisp_root)
-        new_root[1] = self.wrap_statements(new_root[1]) # 1st index contains the body
+        new_root[1] = self.wrap_statements(new_root[1])  # 1st index contains the body
         return new_root
 
     def visit_FunctionDef(self, lisp_root):
         new_root = self.generic_visit(lisp_root)
-        if new_root[1][0]==Py2Lisp.keyword_for_keyword and new_root[1][1]=='body':
+        if new_root[1][0] == Py2Lisp.keyword_for_keyword and new_root[1][1] == 'body':
             new_root[1][2] = self.wrap_statements(new_root[1][2])
         return new_root
 
@@ -32,7 +32,7 @@ class WrapStatementList(LispVisitor):
         return new_root
 
     def wrap_statements(self, lisp_parts):
-        if not isinstance(lisp_parts, list) or not len(lisp_parts)>0:
+        if not isinstance(lisp_parts, list) or not len(lisp_parts) > 0:
             return lisp_parts
 
         if lisp_parts[0] != Py2Lisp.statement_keyword:
@@ -102,7 +102,12 @@ class Lisp2Py:
                 ast_class = getattr(ast, lisp_root, None)
                 if ast_class is None:
                     return ast.Name(id=lisp_root)
-                return Lisp2Py.create_ast_node(ast_class)
+                py_ast_node = ast_class()
+                try:
+                    return FixAstNodes.augment_pyast_node(py_ast_node)  # sometimes it is the final object, which
+                    # needs fixing for unparsing.
+                except:
+                    return py_ast_node  # sometimes this is just the creation object. Other params will be filled later.
             elif lisp_root == Py2Lisp.keyword_for_keyword:
                 return MyKeyword(None, None)
             elif lisp_root == Py2Lisp.statement_keyword:
@@ -135,14 +140,3 @@ class Lisp2Py:
     @staticmethod
     def wrap_statements_list(lisp_parts):
         return WrapStatementList().visit(lisp_parts)
-
-
-    @classmethod
-    def create_ast_node(cls, ast_class):
-        if ast_class is ast.arguments:
-            return ast.arguments(posonlyargs=[], args=[], defaults=[], kwonlyargs=[])
-        if ast_class is ast.List:
-            return ast.List(elts=[])
-        if ast_class is ast.Dict:
-            return ast.Dict(keys=[], values=[])
-        return ast_class()
