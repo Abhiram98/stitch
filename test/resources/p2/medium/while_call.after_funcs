@@ -1,0 +1,43 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+prod = [0]
+prod[0] = inject_big(create_closure(def __func1(a,b,free_vars_1):
+	return b == 00a + (get_fun_ptr(free_vars_1[0][0])(a,b + (- 1),get_free_vars(free_vars_1[0][0])))
+,[prod]))
+square = inject_big(create_closure(def __func2(n,free_vars_2):
+	return get_fun_ptr(free_vars_2[0][0])(n,n,get_free_vars(free_vars_2[0][0]))
+,[prod]))
+i = 0
+while (get_fun_ptr(square)(i,get_free_vars(square)) != 25):
+	i = i + 1

@@ -1,0 +1,23 @@
+WARNING: no p_error() function is defined
+Traceback (most recent call last):
+  File "/home/jovyan/lab5-team-tyler-and-luke-1/src/compile.py", line 148, in <module>
+    compile(filename)
+  File "/home/jovyan/lab5-team-tyler-and-luke-1/src/compile.py", line 53, in compile
+    orig_ast, temp_count = handle_functions.handle(orig_ast)
+  File "/home/jovyan/lab5-team-tyler-and-luke-1/src/function_handling/handle_functions.py", line 34, in handle
+    ast_node = Uniquify(fba).visit(ast_node)
+  File "/opt/conda/lib/python3.10/ast.py", line 412, in visit
+    return visitor(node)
+  File "/opt/conda/lib/python3.10/ast.py", line 488, in generic_visit
+    value = self.visit(value)
+  File "/opt/conda/lib/python3.10/ast.py", line 412, in visit
+    return visitor(node)
+  File "/home/jovyan/lab5-team-tyler-and-luke-1/src/function_handling/uniquify.py", line 214, in visit_Assign
+    self.generic_visit(node)
+  File "/opt/conda/lib/python3.10/ast.py", line 497, in generic_visit
+    new_node = self.visit(old_value)
+  File "/opt/conda/lib/python3.10/ast.py", line 412, in visit
+    return visitor(node)
+  File "/home/jovyan/lab5-team-tyler-and-luke-1/src/function_handling/uniquify.py", line 41, in visit_Name
+    new_name = ast.Name(id="", ctx=node.ctx)
+AttributeError: 'Name' object has no attribute 'ctx'

@@ -7,11 +7,14 @@ import sys
 class Py2Lisp(ast.NodeVisitor):
     list_keyword = "__list__"
     module_keyword = 'ProgramStatements'
+    statement_keyword = 'StatementList'
+    empty_statement_keyword = 'EMPTY_Statement'
     empty_vararg_keyword = 'EMPTY_vararg'
     empty_kwarg_keyword = 'EMPTY_kwarg'
     keyword_for_keyword = "__kw__"
 
-    def __init__(self, string_hash_map=None):
+    def __init__(self, string_hash_map=None,
+                 mangle_names=False):
         super().__init__()
         self.string_count = 0
         if string_hash_map is None:
@@ -19,9 +22,11 @@ class Py2Lisp(ast.NodeVisitor):
         else:
             self.string_hash_map = string_hash_map
             self.string_count += len(string_hash_map)
+        self.mangle_names = mangle_names
 
     @staticmethod
-    def fromDirectoryToJson(directory_path):
+    def fromDirectoryToJson(
+            directory_path, mangle_names=False):
         py_files = []
         for folder, subfolders, files in os.walk(directory_path):
             for file in files:
@@ -35,7 +40,7 @@ class Py2Lisp(ast.NodeVisitor):
             with open(file) as f:
                 code_str = f.read()
             code_ast = ast.parse(code_str)
-            p2lisp = Py2Lisp(string_hash_map=string_hash_map)
+            p2lisp = Py2Lisp(string_hash_map=string_hash_map, mangle_names=mangle_names)
             lisp_str = p2lisp.visit(code_ast)
             out_json[file] = lisp_str
 
@@ -54,9 +59,23 @@ class Py2Lisp(ast.NodeVisitor):
     def generic_visit(self, node: ast.AST) -> Any:
         return self.visit_and_get_lisp_str(node)
 
-    def visit_and_get_lisp_str(self, node, force_encode_args=None, encode_as_kw=False):
+    @staticmethod
+    def generated_constructed_list(program_elements):
+        if len(program_elements) == 0:
+            return f"({Py2Lisp.statement_keyword} {Py2Lisp.empty_statement_keyword} {Py2Lisp.empty_statement_keyword})"
+        lisp_str = Py2Lisp.empty_statement_keyword
+        for ele in program_elements[::-1]:
+            lisp_str = f"({Py2Lisp.statement_keyword} {ele} {lisp_str})"
+        return lisp_str
+
+    def visit_and_get_lisp_str(self, node,
+                               force_encode_args=None,
+                               encode_as_kw=False,
+                               encode_fields_as_constructed_list=None):
         if force_encode_args is None:
             force_encode_args = []
+        if encode_fields_as_constructed_list is None:
+            encode_fields_as_constructed_list = []
         params = []
         encoded_field_names = []
         for field, value in ast.iter_fields(node):
@@ -68,7 +87,11 @@ class Py2Lisp(ast.NodeVisitor):
                         if val is not None:
                             list_params.append(val)
                 if field in force_encode_args or list_params:
-                    params.append(f"({Py2Lisp.list_keyword} " + " ".join(list_params) + ")")
+                    if field in encode_fields_as_constructed_list:
+                        params.append(
+                            Py2Lisp.generated_constructed_list(list_params))
+                    else:
+                        params.append(f"({Py2Lisp.list_keyword} " + " ".join(list_params) + ")")
                     encoded_field_names.append(field)
 
             elif isinstance(value, ast.AST):
@@ -96,7 +119,7 @@ class Py2Lisp(ast.NodeVisitor):
         params = []
         for b in node.body:
             params.append(self.visit(b))
-        module_in_lisp = f"{' '.join(params)}"
+        module_in_lisp = Py2Lisp.generated_constructed_list(params)
         lisp_str = f"(ProgramStatements {module_in_lisp})"
         return lisp_str
 
@@ -115,28 +138,21 @@ class Py2Lisp(ast.NodeVisitor):
         return str(node.value)
 
     def visit_Name(self, node: ast.Name) -> Any:
+        if self.mangle_names:
+            return f"_{str(node.id)}"  # name mangling
         return str(node.id)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         return self.visit_and_get_lisp_str(
             node, encode_as_kw=True,
-            # force_encode_args=[
-            #     'name',
-            #     'args',
-            #     'body',
-            #     'decorator_list',
-            #     'returns',
-            #     'type_comment',
-            # ]
+            encode_fields_as_constructed_list=['body']
         )
 
     def visit_ClassDef(self, node: ast.ClassDef) -> Any:
         return self.visit_and_get_lisp_str(
             node,
-            encode_as_kw=True
-            # force_encode_args=[
-            #     'name', 'bases', 'keywords', 'body', 'decorator_list'
-            # ]
+            encode_as_kw=True,
+            encode_fields_as_constructed_list=['body']
         )
 
     def visit_arguments(self, node: ast.arguments) -> Any:
@@ -168,6 +184,18 @@ class Py2Lisp(ast.NodeVisitor):
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> Any:
         return self.visit_and_get_lisp_str(node, encode_as_kw=True)
+
+    def visit_For(self, node: ast.For) -> Any:
+        return self.visit_and_get_lisp_str(node,
+                                           encode_fields_as_constructed_list=['body', 'orelse'])
+
+    def visit_While(self, node: ast.While) -> Any:
+        return self.visit_and_get_lisp_str(node,
+                                           encode_fields_as_constructed_list=['body', 'orelse'])
+
+    def visit_If(self, node: ast.If) -> Any:
+        return self.visit_and_get_lisp_str(node,
+                                           encode_fields_as_constructed_list=['body', 'orelse'])
 
 
 if __name__ == '__main__':

@@ -93,7 +93,8 @@ def test_Leroy_data_structures_arrays():
     run_leroy(
         [
             "--py_files_dir", "resources/data_structures/arrays",
-            # "--donot_rerun", "True"
+            # "--donot_rerun", "True",
+            "--min-nodes-abstraction", "10"
         ],
         standalone_mode=False
     )
@@ -105,6 +106,7 @@ def test_Leroy_data_structures():
         [
             "--py_files_dir", "resources/data_structures",
             # "--donot_rerun", "True"
+            "--min-nodes-abstraction", "25"
         ],
         standalone_mode=False
     )
@@ -174,6 +176,16 @@ def test_Leroy_p1():
     run_leroy(
         [
             "--py_files_dir", "resources/p1"
+        ],
+        standalone_mode=False
+    )
+    # TODO: Nothing was abstracted. This is fishy.
+
+
+def test_Leroy_p2():
+    run_leroy(
+        [
+            "--py_files_dir", "resources/p2"
         ],
         standalone_mode=False
     )

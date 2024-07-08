@@ -4,40 +4,46 @@ from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 
 
 def test_basic():
-    lisp_str = "(ProgramStatements (Assign (__list__ left_sum) 0) (Assign (__list__ right_sum) 1))"
-    assert Lisp2Py(lisp_str).convert() == 'left_sum = 0\nright_sum = 1'
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ left_sum) 0) (StatementList (Assign (" \
+               "__list__ right_sum) 1) EMPTY_Statement)))"
+    py = Lisp2Py(lisp_str).convert()
+    print(py)
+    assert py == 'left_sum = 0\nright_sum = 1'
 
 
 def test_unaryop():
-    lisp_str = "(ProgramStatements (Assign (__list__ x) (UnaryOp USub 1)))"
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ x) (UnaryOp USub 1)) EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() == 'x = -1'
 
 
 def test_annotated_funcdef():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name find_median_sorted_arrays) (__kw__ args (" \
-               "arguments (__kw__ args (__list__ (arg nums1 (Subscript list int)) (arg nums2 (Subscript list " \
-               "int)))))) (__kw__ body (__list__ (Expr (Call print (__list__ 1))))) (__kw__ returns float)))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name find_median_sorted_arrays) (" \
+               "__kw__ args (arguments (__kw__ args (__list__ (arg nums1 (Subscript body_list int)) (arg nums2 (" \
+               "Subscript body_list int)))))) (__kw__ body (StatementList (Expr (Call print (__list__ 1))) " \
+               "EMPTY_Statement)) (__kw__ returns float)) EMPTY_Statement))"
     assert Lisp2Py(
-        lisp_str).convert() == 'def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    print(1)'
+        lisp_str).convert() == 'def find_median_sorted_arrays(nums1: body_list[int], nums2: body_list[int]) -> float:\n    print(1)'
 
 
 def test_annotated_func_with_attribute_usage():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments (__kw__ args (" \
-               "__list__ (arg self))))) (__kw__ body (__list__ (Expr STRING_775) (Return (Compare (Attribute " \
-               "self _root) (__list__ IsNot) (__list__ None)))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name __bool__) (__kw__ args (arguments " \
+               "(__kw__ args (__list__ (arg self))))) (__kw__ body (StatementList (Expr STRING_775) (" \
+               "StatementList (Return (Compare (Attribute self _root) (__list__ IsNot) (__list__ None))) " \
+               "EMPTY_Statement)))) EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() == \
            'def __bool__(self):\n    STRING_775\n    return self._root is not None'
 
 
 def test_empty():
-    lisp_str = "(ProgramStatements )"
+    lisp_str = "(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))"
     assert Lisp2Py(lisp_str).convert() \
            == ''
 
 
 def test_exception_handler():
-    lisp_str = "(ProgramStatements (Try (__list__ (Expr (Call print))) (__list__ (ExceptHandler (__kw__ body " \
-                       "(__list__ (Expr (Call print (__list__ STRING_0)))))))))"
+    lisp_str = "(ProgramStatements (StatementList (Try (__list__ (Expr (Call print))) (__list__ (" \
+               "ExceptHandler (__kw__ body (__list__ (Expr (Call print (__list__ STRING_0)))))))) " \
+               "EMPTY_Statement))"
     py = Lisp2Py(lisp_str).convert()
     print(py)
     assert py == """try:
@@ -67,7 +73,130 @@ def test_abstraction_to_py_addition_return():
            == 'def abs0(_param0, _param1):\n    return _param0 + _param1'
 
 
+def test_abstraction_to_py_multiple_params():
+    lisp_str = "(StatementList (Assign (__list__ x) #2) (StatementList (Assign (__list__ y) #1) #0))"
+    stitch_originals = ['(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) (UnaryOp USub 2)) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) (UnaryOp USub x)) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement)))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp 1 Add 2) Add 3) Add 4) Add 5)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ 1))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (UnaryOp USub 1)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Expr (Call print (__list__ (BinOp x Add 1)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp 1 Add (UnaryOp USub 2))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp 1 Add 2)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) 2) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp (Call eval (__list__ (Call input))) Add (Call eval (__list__ (Call input))))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) 2) (StatementList (Assign (__list__ z) 3) (StatementList (Assign (__list__ w) 23) (StatementList (Assign (__list__ v) (UnaryOp USub 2)) (StatementList (Assign (__list__ k) 12) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k)))) EMPTY_Statement))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 51474836) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add x) Add x) Add x) Add x) Add x) Add x) Add x)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) 1) (StatementList (Assign (__list__ tmp1) 2) (StatementList (Assign (__list__ tmp3) (BinOp tmp0 Add tmp1)) (StatementList (Assign (__list__ tmp4) (BinOp tmp1 Add tmp3)) (StatementList (Expr (Call print (__list__ (BinOp tmp3 Add tmp4)))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ z) 4) (StatementList (Assign (__list__ w) 0) (StatementList (Assign (__list__ z) 1) (StatementList (Assign (__list__ x) (BinOp w Add z)) (StatementList (Assign (__list__ y) (BinOp x Add 1)) (StatementList (Assign (__list__ w) y) (StatementList (Expr (Call print (__list__ w))) EMPTY_Statement))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (BinOp 1 Add (Call eval (__list__ (Call input))))) (StatementList (Assign (__list__ y) (BinOp x Add x)) (StatementList (Assign (__list__ z) (BinOp y Add y)) (StatementList (Assign (__list__ w) (BinOp z Add z)) (StatementList (Assign (__list__ a) (BinOp w Add w)) (StatementList (Assign (__list__ b) (BinOp a Add a)) (StatementList (Assign (__list__ c) (BinOp b Add b)) (StatementList (Assign (__list__ d) (BinOp c Add c)) (StatementList (Assign (__list__ e) (BinOp d Add d)) (StatementList (Assign (__list__ f) (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e)) (StatementList (Expr (Call print (__list__ c))) EMPTY_Statement))))))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ _tmp1) 23) (StatementList (Assign (__list__ tmp2_) (UnaryOp USub 6)) (StatementList (Assign (__list__ tmp_3) 12) (StatementList (Expr (Call print (__list__ (BinOp (BinOp _tmp1 Add tmp2_) Add tmp_3)))) (StatementList (Expr (Call print (__list__ (BinOp tmp2_ Add tmp_3)))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 12) (StatementList (Expr (Call print (__list__ (BinOp 3 Add (BinOp 2 Add (UnaryOp USub (BinOp (BinOp (Call eval (__list__ (Call input))) Add (BinOp x Add (UnaryOp USub 2))) Add (UnaryOp USub x)))))))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (BinOp 20 Add (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 30)))))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add 1) Add 2) Add 3) Add 4) Add 5) Add 6) Add 7) Add 8) Add 9) Add 10) Add 11) Add 12)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (UnaryOp USub (BinOp 1 Add (UnaryOp USub 2)))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) 23) (StatementList (Assign (__list__ tmp0) (BinOp tmp0 Add 1)) (StatementList (Expr (Call print (__list__ tmp0))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Assign (__list__ y) (BinOp (Call eval (__list__ (Call input))) Add x)) (StatementList (Assign (__list__ z) (BinOp (Call eval (__list__ (Call input))) Add y)) (StatementList (Assign (__list__ w) (BinOp (Call eval (__list__ (Call input))) Add z)) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input))))))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) 3) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) (StatementList (Assign (__list__ tmp) x) (StatementList (Assign (__list__ x) y) (StatementList (Assign (__list__ y) tmp) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement))))))))))',
+                        '(ProgramStatements (StatementList (Expr 1) (StatementList (Expr 2) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) (UnaryOp USub (Call eval (__list__ (Call input))))) (StatementList (Assign (__list__ tmp1) (BinOp tmp0 Add 23)) (StatementList (Assign (__list__ tmp0) (Call eval (__list__ (Call input)))) (StatementList (Assign (__list__ tmp2) (BinOp tmp0 Add tmp1)) (StatementList (Expr (Call print (__list__ tmp2))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 2))))))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 100) (StatementList (Expr (Call print (__list__ (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub x)))))))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Expr (BinOp (Call eval (__list__ (Call input))) Add (Call eval (__list__ (Call input))))) (StatementList (Expr (Call eval (__list__ (Call input)))) EMPTY_Statement)))']
+    uses = [{
+                'fn_1 (StatementList (Assign (__list__ z) (BinOp y Add y)) (StatementList (Assign (__list__ w) (BinOp z Add z)) (StatementList (Assign (__list__ a) (BinOp w Add w)) (StatementList (Assign (__list__ b) (BinOp a Add a)) (StatementList (Assign (__list__ c) (BinOp b Add b)) (StatementList (Assign (__list__ d) (BinOp c Add c)) (StatementList (Assign (__list__ e) (BinOp d Add d)) (fn_0 c (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e) f)))))))) (BinOp x Add x) (BinOp 1 Add (Call eval (__list__ (Call input))))': '(StatementList (Assign (__list__ x) (BinOp 1 Add (Call eval (__list__ (Call input))))) (StatementList (Assign (__list__ y) (BinOp x Add x)) (StatementList (Assign (__list__ z) (BinOp y Add y)) (StatementList (Assign (__list__ w) (BinOp z Add z)) (StatementList (Assign (__list__ a) (BinOp w Add w)) (StatementList (Assign (__list__ b) (BinOp a Add a)) (StatementList (Assign (__list__ c) (BinOp b Add b)) (StatementList (Assign (__list__ d) (BinOp c Add c)) (StatementList (Assign (__list__ e) (BinOp d Add d)) (fn_0 c (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e) f))))))))))'},
+            {
+                'fn_1 (fn_0 w y w) (BinOp x Add 1) (BinOp w Add z)': '(StatementList (Assign (__list__ x) (BinOp w Add z)) (StatementList (Assign (__list__ y) (BinOp x Add 1)) (fn_0 w y w)))'},
+            {
+                'fn_1 (StatementList (Assign (__list__ z) (BinOp (Call eval (__list__ (Call input))) Add y)) (fn_0 (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input)))) (BinOp (Call eval (__list__ (Call input))) Add z) w)) (BinOp (Call eval (__list__ (Call input))) Add x) (Call eval (__list__ (Call input)))': '(StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Assign (__list__ y) (BinOp (Call eval (__list__ (Call input))) Add x)) (StatementList (Assign (__list__ z) (BinOp (Call eval (__list__ (Call input))) Add y)) (fn_0 (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input)))) (BinOp (Call eval (__list__ (Call input))) Add z) w))))'},
+            {
+                'fn_1 (StatementList (Assign (__list__ z) 3) (StatementList (Assign (__list__ w) 23) (StatementList (Assign (__list__ v) (UnaryOp USub 2)) (fn_0 (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k) 12 k)))) 2 1': '(StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) 2) (StatementList (Assign (__list__ z) 3) (StatementList (Assign (__list__ w) 23) (StatementList (Assign (__list__ v) (UnaryOp USub 2)) (fn_0 (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k) 12 k))))))'},
+            {
+                'fn_1 (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement)) (UnaryOp USub x) 2': '(StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) (UnaryOp USub x)) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement))))'},
+            {
+                'fn_1 (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) (StatementList (Assign (__list__ tmp) x) (StatementList (Assign (__list__ x) y) (StatementList (Assign (__list__ y) tmp) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement))))))) 3 2': '(StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) 3) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) (StatementList (Assign (__list__ tmp) x) (StatementList (Assign (__list__ x) y) (StatementList (Assign (__list__ y) tmp) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement)))))))))'},
+            {
+                'fn_1 (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement)) tmp y': '(StatementList (Assign (__list__ x) y) (StatementList (Assign (__list__ y) tmp) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement))))'}]
+    abstraction = StitchAbstraction(lisp_str, uses, "fn_0", {})
+    py = abstraction.compute_body_py(stitch_originals)
+    print(py)
+    assert py == """def fn_0(_param1, _param2):
+    x = _param2
+    y = _param1
+    return (x, y)"""
+
+
+def test_abstraction_to_py_return_param():
+    lisp_str = '(StatementList (Assign (__list__ #2) #1) (StatementList (Expr (Call print (__list__ #0))) EMPTY_Statement))'
+    stitch_originals = ['(ProgramStatements (StatementList EMPTY_Statement EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) (UnaryOp USub 2)) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) (UnaryOp USub x)) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement)))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp 1 Add 2) Add 3) Add 4) Add 5)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ 1))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (UnaryOp USub 1)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Expr (Call print (__list__ (BinOp x Add 1)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp 1 Add (UnaryOp USub 2))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp 1 Add 2)))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) 2) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (BinOp (Call eval (__list__ (Call input))) Add (Call eval (__list__ (Call input))))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 1) (StatementList (Assign (__list__ y) 2) (StatementList (Assign (__list__ z) 3) (StatementList (Assign (__list__ w) 23) (StatementList (Assign (__list__ v) (UnaryOp USub 2)) (StatementList (Assign (__list__ k) 12) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k)))) EMPTY_Statement))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 51474836) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add x) Add x) Add x) Add x) Add x) Add x) Add x)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) 1) (StatementList (Assign (__list__ tmp1) 2) (StatementList (Assign (__list__ tmp3) (BinOp tmp0 Add tmp1)) (StatementList (Assign (__list__ tmp4) (BinOp tmp1 Add tmp3)) (StatementList (Expr (Call print (__list__ (BinOp tmp3 Add tmp4)))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ z) 4) (StatementList (Assign (__list__ w) 0) (StatementList (Assign (__list__ z) 1) (StatementList (Assign (__list__ x) (BinOp w Add z)) (StatementList (Assign (__list__ y) (BinOp x Add 1)) (StatementList (Assign (__list__ w) y) (StatementList (Expr (Call print (__list__ w))) EMPTY_Statement))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (BinOp 1 Add (Call eval (__list__ (Call input))))) (StatementList (Assign (__list__ y) (BinOp x Add x)) (StatementList (Assign (__list__ z) (BinOp y Add y)) (StatementList (Assign (__list__ w) (BinOp z Add z)) (StatementList (Assign (__list__ a) (BinOp w Add w)) (StatementList (Assign (__list__ b) (BinOp a Add a)) (StatementList (Assign (__list__ c) (BinOp b Add b)) (StatementList (Assign (__list__ d) (BinOp c Add c)) (StatementList (Assign (__list__ e) (BinOp d Add d)) (StatementList (Assign (__list__ f) (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e)) (StatementList (Expr (Call print (__list__ c))) EMPTY_Statement))))))))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ _tmp1) 23) (StatementList (Assign (__list__ tmp2_) (UnaryOp USub 6)) (StatementList (Assign (__list__ tmp_3) 12) (StatementList (Expr (Call print (__list__ (BinOp (BinOp _tmp1 Add tmp2_) Add tmp_3)))) (StatementList (Expr (Call print (__list__ (BinOp tmp2_ Add tmp_3)))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 12) (StatementList (Expr (Call print (__list__ (BinOp 3 Add (BinOp 2 Add (UnaryOp USub (BinOp (BinOp (Call eval (__list__ (Call input))) Add (BinOp x Add (UnaryOp USub 2))) Add (UnaryOp USub x)))))))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (BinOp 20 Add (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 30)))))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add 1) Add 2) Add 3) Add 4) Add 5) Add 6) Add 7) Add 8) Add 9) Add 10) Add 11) Add 12)))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (UnaryOp USub (BinOp 1 Add (UnaryOp USub 2)))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) 23) (StatementList (Assign (__list__ tmp0) (BinOp tmp0 Add 1)) (StatementList (Expr (Call print (__list__ tmp0))) EMPTY_Statement))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Assign (__list__ y) (BinOp (Call eval (__list__ (Call input))) Add x)) (StatementList (Assign (__list__ z) (BinOp (Call eval (__list__ (Call input))) Add y)) (StatementList (Assign (__list__ w) (BinOp (Call eval (__list__ (Call input))) Add z)) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input))))))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 2) (StatementList (Assign (__list__ y) 3) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) (StatementList (Assign (__list__ tmp) x) (StatementList (Assign (__list__ x) y) (StatementList (Assign (__list__ y) tmp) (StatementList (Expr (Call print (__list__ x))) (StatementList (Expr (Call print (__list__ y))) EMPTY_Statement))))))))))',
+                        '(ProgramStatements (StatementList (Expr 1) (StatementList (Expr 2) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Assign (__list__ tmp0) (UnaryOp USub (Call eval (__list__ (Call input))))) (StatementList (Assign (__list__ tmp1) (BinOp tmp0 Add 23)) (StatementList (Assign (__list__ tmp0) (Call eval (__list__ (Call input)))) (StatementList (Assign (__list__ tmp2) (BinOp tmp0 Add tmp1)) (StatementList (Expr (Call print (__list__ tmp2))) EMPTY_Statement))))))',
+                        '(ProgramStatements (StatementList (Expr (Call print (__list__ (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 2))))))))) EMPTY_Statement))',
+                        '(ProgramStatements (StatementList (Assign (__list__ x) 100) (StatementList (Expr (Call print (__list__ (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub x)))))))) EMPTY_Statement)))',
+                        '(ProgramStatements (StatementList (Expr (BinOp (Call eval (__list__ (Call input))) Add (Call eval (__list__ (Call input))))) (StatementList (Expr (Call eval (__list__ (Call input)))) EMPTY_Statement)))']
+    uses = [{
+                'fn_0 c (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e) f': '(StatementList (Assign (__list__ f) (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add a) Add b) Add c) Add d) Add e)) (StatementList (Expr (Call print (__list__ c))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k) 12 k': '(StatementList (Assign (__list__ k) 12) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add v) Add k)))) EMPTY_Statement))'},
+            {
+                'fn_0 tmp0 (BinOp tmp0 Add 1) tmp0': '(StatementList (Assign (__list__ tmp0) (BinOp tmp0 Add 1)) (StatementList (Expr (Call print (__list__ tmp0))) EMPTY_Statement))'},
+            {
+                'fn_0 tmp2 (BinOp tmp0 Add tmp1) tmp2': '(StatementList (Assign (__list__ tmp2) (BinOp tmp0 Add tmp1)) (StatementList (Expr (Call print (__list__ tmp2))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp tmp3 Add tmp4) (BinOp tmp1 Add tmp3) tmp4': '(StatementList (Assign (__list__ tmp4) (BinOp tmp1 Add tmp3)) (StatementList (Expr (Call print (__list__ (BinOp tmp3 Add tmp4)))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input)))) (BinOp (Call eval (__list__ (Call input))) Add z) w': '(StatementList (Assign (__list__ w) (BinOp (Call eval (__list__ (Call input))) Add z)) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp x Add y) Add z) Add w) Add (Call eval (__list__ (Call input))))))) EMPTY_Statement))'},
+            {
+                'fn_0 w y w': '(StatementList (Assign (__list__ w) y) (StatementList (Expr (Call print (__list__ w))) EMPTY_Statement))'},
+            {
+                'fn_0 x (BinOp 20 Add (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 30))))) x': '(StatementList (Assign (__list__ x) (BinOp 20 Add (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub 30)))))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp x Add 1) (Call eval (__list__ (Call input))) x': '(StatementList (Assign (__list__ x) (Call eval (__list__ (Call input)))) (StatementList (Expr (Call print (__list__ (BinOp x Add 1)))) EMPTY_Statement))'},
+            {
+                'fn_0 x (UnaryOp USub (BinOp 1 Add (UnaryOp USub 2))) x': '(StatementList (Assign (__list__ x) (UnaryOp USub (BinOp 1 Add (UnaryOp USub 2)))) (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement))'},
+            {
+                'fn_0 (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub x))))) 100 x': '(StatementList (Assign (__list__ x) 100) (StatementList (Expr (Call print (__list__ (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub (UnaryOp USub x)))))))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp 3 Add (BinOp 2 Add (UnaryOp USub (BinOp (BinOp (Call eval (__list__ (Call input))) Add (BinOp x Add (UnaryOp USub 2))) Add (UnaryOp USub x))))) 12 x': '(StatementList (Assign (__list__ x) 12) (StatementList (Expr (Call print (__list__ (BinOp 3 Add (BinOp 2 Add (UnaryOp USub (BinOp (BinOp (Call eval (__list__ (Call input))) Add (BinOp x Add (UnaryOp USub 2))) Add (UnaryOp USub x)))))))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add 1) Add 2) Add 3) Add 4) Add 5) Add 6) Add 7) Add 8) Add 9) Add 10) Add 11) Add 12) 2 x': '(StatementList (Assign (__list__ x) 2) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add 1) Add 2) Add 3) Add 4) Add 5) Add 6) Add 7) Add 8) Add 9) Add 10) Add 11) Add 12)))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add x) Add x) Add x) Add x) Add x) Add x) Add x) 51474836 x': '(StatementList (Assign (__list__ x) 51474836) (StatementList (Expr (Call print (__list__ (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp (BinOp x Add x) Add x) Add x) Add x) Add x) Add x) Add x)))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp x Add y) (UnaryOp USub 2) y': '(StatementList (Assign (__list__ y) (UnaryOp USub 2)) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))'},
+            {
+                'fn_0 (BinOp x Add y) 2 y': '(StatementList (Assign (__list__ y) 2) (StatementList (Expr (Call print (__list__ (BinOp x Add y)))) EMPTY_Statement))'}]
+    abstraction = StitchAbstraction(lisp_str, uses, "fn_0", {})
+    py = abstraction.compute_body_py(stitch_originals)
+    print(py)
+
+
 def test_abstraction_to_py_3():
+    # TODO: Modify test case
     try:
         lisp_str = "(ProgramStatements (__list__ (UnaryOp Not (Compare #0 (__list__ Eq) (__list__ (UnaryOp Not a)))) " \
                    "(UnaryOp Not b)))"
@@ -91,7 +220,8 @@ def test_abstraction_to_py_simple_expressions():
 
 
 def test_abstraction_to_py_func_as_param():
-    lisp_str = "(ProgramStatements (Assign (__list__ x) 5) (Expr (Call custom_function (__list__ y))))"
+    lisp_str = "(ProgramStatements (StatementList (Assign (__list__ x) 5) (StatementList (Expr (Call custom_function (" \
+               "__list__ y))) EMPTY_Statement)))"
     py = Abstraction2Py(
         StitchAbstraction(lisp_str, [], "abs0", {})).convert()
     print(py)
@@ -112,6 +242,154 @@ def test_abstraction_to_py_fn_as_kw():
         pass
 
 
+def test_abstraction_to_py_with_valid_hole():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#1' \
+               ')))'
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "abs0", {}),
+        find_additional_params=False
+    ).convert()
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2"""
+
+
+def test_abstraction_to_py_with_valid_hole_2():
+    lisp_str = '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#1' \
+               '))'
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "fn_0", {}),
+        find_additional_params=False
+    ).convert()
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2"""
+
+
+def test_abstraction_to_py_with_valid_hole_with_uses():
+    lisp_str = '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '#0' \
+               '))'
+    use1 = {"fn_0 (StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)":
+                '(StatementList (Assign (__list__ x) 1) ' \
+                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                '(StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)' \
+                '))'}
+    stitch_originals = ['(ProgramStatements (StatementList (Assign (__list__ x) 1) ' \
+                        '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                        '(StatementList (Expr (Call print (__list__ x))) EMPTY_Statement)' \
+                        ')))']
+    py = StitchAbstraction(lisp_str, [use1], "fn_0", {}).compute_body_py(stitch_originals)
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2
+    return x"""
+
+
+def test_abstraction_to_py_with_valid_hole_with_uses_multiple_return():
+    abstraction_body_lisp = '(StatementList (Assign (__list__ x) 1) ' \
+                            '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                            '#0' \
+                            '))'
+    use1 = {"fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)":
+                '(StatementList (Assign (__list__ x) 1) ' \
+                '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                '(StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)' \
+                '))'}
+    stitch_originals = ['(ProgramStatements (StatementList (Assign (__list__ x) 1) ' \
+                        '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+                        '(StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)' \
+                        ')))']
+    abstraction = StitchAbstraction(abstraction_body_lisp, [use1], "fn_0", {})
+    py = abstraction.compute_body_py(stitch_originals)
+    print(py)
+    assert py \
+           == """def fn_0():
+    x = 1
+    y = -2
+    return (x, y)"""
+
+    rewrite = "(ProgramStatements " \
+              "(fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)))"
+    rewritten_py = Rewrite2Py(
+        rewrite,
+        library_name="leroy_library",
+        available_abstractions=[abstraction],
+        string_hashmap={}
+    ).convert()
+    assert rewritten_py == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
+    "(fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement))"
+
+    rewrite_2 = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ body (fn_0 (StatementList (Expr (Call print (__list__ x y))) EMPTY_Statement)))) EMPTY_Statement))"
+    rewritten_py_2 = Rewrite2Py(
+        rewrite_2,
+        library_name="leroy_library",
+        available_abstractions=[abstraction],
+        string_hashmap={}
+    ).convert()
+    assert rewritten_py_2 == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
+
+
+def test_abstraction_to_py_with_invalid_hole():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '(StatementList #1)' \
+               ')))'
+    try:
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {}),
+            find_additional_params=False
+        ).convert()
+    except:
+        print("error expected")
+        return
+    raise Exception("Should have failed.")
+
+
+def test_abstraction_to_py_with_invalid_hole_in_the_middle():
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList #1' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2)) EMPTY_Statement)' \
+               ')))'
+    # try:
+    py = Abstraction2Py(
+        StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+    # except:
+    #     print("error expected")
+    #     return
+    raise Exception("Should have failed.")
+
+
+def test_abstraction_to_py_with_invalid_hole_2():
+    lisp_str = "(StatementList " \
+               "(FunctionDef (__kw__ name main) (__kw__ args arguments) " \
+               "(__kw__ body " \
+               "(StatementList (Assign (__list__ x) 1) " \
+               "(StatementList #2 (StatementList (Expr (Call print (__list__ #1))) #0))))) " \
+               "EMPTY_Statement)"
+    try:
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+    except:
+        print("error expected")
+        return
+    raise Exception("Should have failed.")
+
+
 def test_rewrite_to_py():
     lisp_str = "(fn_0 1 2)"
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
@@ -119,7 +397,8 @@ def test_rewrite_to_py():
 
 
 def test_rewrite_to_py_function_def():
-    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0)))) __list__)"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (StatementList (Expr (Call print (__list__ STRING_0))) EMPTY_Statement))) EMPTY_Statement))"
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
            == """def main():
     print(STRING_0)"""
@@ -130,7 +409,9 @@ def test_rewrite_to_py_function_def():
 #
 
 def test_rewrite_to_py_function_def_two_lines():
-    lisp_str = "(FunctionDef main arguments (__list__ (Expr (Call print (__list__ STRING_0))) (Expr (Call print (__list__ STRING_1)))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (StatementList (Expr (Call print (__list__ STRING_0))) (StatementList (Expr (Call print (" \
+               "__list__ STRING_1))) EMPTY_Statement)))) EMPTY_Statement))"
     assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
            == """def main():
     print(STRING_0)
@@ -140,11 +421,14 @@ def test_rewrite_to_py_function_def_two_lines():
 
 
 def test_rewrite_to_py_fndef_with_kwargs():
-    lisp_str = "(ProgramStatements (FunctionDef (__kw__ name solve_all) (__kw__ args (arguments (__kw__ args (" \
-               "__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (__list__ STRING_0 0.0)))) (" \
-               "__kw__ body (__list__ (Expr (Call print (__list__ STRING_1)))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name solve_all) (__kw__ args (" \
+               "arguments (__kw__ args (__list__ (arg grids) (arg name) (arg showif))) (__kw__ defaults (" \
+               "__list__ STRING_0 0.0)))) (__kw__ body (StatementList (Expr (Call print (__list__ STRING_1))) " \
+               "EMPTY_Statement))) EMPTY_Statement))"
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
+    assert py == """def solve_all(grids, name=STRING_0, showif=0.0):
+    print(STRING_1)"""
 
 
 def test_rewrite_to_py_2():
@@ -154,8 +438,14 @@ def test_rewrite_to_py_2():
 
 
 def test_rewrite_to_py_3():
-    lisp_str = '(ProgramStatements (Assign (__list__ x) 1) (Assign (__list__ y) (UnaryOp USub 2)) (fn_0 (fn_1 x y)))'
-    assert Rewrite2Py(lisp_str, available_abstractions=[]).convert() \
+    lisp_str = '(ProgramStatements ' \
+               '(StatementList (Assign (__list__ x) 1) ' \
+               '(StatementList (Assign (__list__ y) (UnaryOp USub 2))' \
+               '(StatementList (fn_0 (fn_1 x y)) EMPTY_Statement)' \
+               ')))'
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+    assert py \
            == 'from leroy_library import fn_0\nfrom leroy_library import fn_1\nx = 1\ny = -2\nfn_0(fn_1(x, y))'
 
 
@@ -168,15 +458,10 @@ def test_rewrite_to_py_4():
 
 
 def test_rewrite_to_py_5():
-    lisp_str = "(ProgramStatements (FunctionDef find_median_sorted_arrays (arguments (__list__ (arg nums1 (Subscript " \
-               "list int)) (arg nums2 (Subscript list int)))) (__list__ (Expr STRING_1) (If (BoolOp And (__list__ (" \
-               "UnaryOp Not nums1) (UnaryOp Not nums2))) (__list__ (Raise (fn_0 STRING_2 ValueError)))) (fn_2 (fn_0 (" \
-               "BinOp nums1 Add nums2) sorted) merged) (fn_2 (fn_0 merged len) total) (If (fn_1 1 (BinOp total Mod " \
-               "2)) (__list__ (Return (fn_0 (Subscript merged (BinOp total FloorDiv 2)) float)))) (fn_2 (Subscript " \
-               "merged (BinOp (BinOp total FloorDiv 2) Sub 1)) middle1) (fn_2 (Subscript merged (BinOp total FloorDiv " \
-               "2)) middle2) (Return (BinOp (BinOp (fn_0 middle1 float) Add (fn_0 middle2 float)) Div 2.0))) float) (" \
-               "If (fn_1 STRING_3 __name__) (__list__ (Import (__list__ (alias doctest))) (Expr (Call (Attribute " \
-               "doctest testmod))))))"
+    lisp_str = "(ProgramStatements (StatementList (FunctionDef (__kw__ name main) (__kw__ args arguments) (__kw__ " \
+               "body (fn_0 (Expr (Call print (__list__ x))) STRING_1 x))) EMPTY_Statement))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
 
 
 def test_rewrite_to_py_import():
@@ -192,3 +477,55 @@ def test_rewrite_to_py_arguments():
                "EMPTY_kwarg __list__))"
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
+
+
+def test_rewrite_to_py_6():
+    lisp_str = "(StatementList (Assign (__list__ y_copy) (BinOp y_copy Add (UnaryOp USub 1))) (StatementList (If (" \
+               "Call int (__list__ (Compare y_copy (__list__ Eq) (__list__ 4)))) (StatementList (Assign (__list__ z) " \
+               "(BinOp z Add 1)) (StatementList (If (Call int (__list__ (Compare x (__list__ Eq) (__list__ 3)))) (" \
+               "StatementList (Assign (__list__ z) (BinOp z Add 1)) (StatementList (Assign (__list__ y) (BinOp y Add " \
+               "(UnaryOp USub 1))) (StatementList (Assign (__list__ x) (BinOp x Add 1)) (StatementList (Assign (" \
+               "__list__ inner_loop_done) 1) EMPTY_Statement)))) (StatementList (fn_0 2 2 x (StatementList (Assign (" \
+               "__list__ z) (BinOp z Add 3)) EMPTY_Statement)) (StatementList (Assign (__list__ y) (BinOp y Add (" \
+               "UnaryOp USub 1))) (StatementList (Assign (__list__ x) (BinOp x Add 1)) (StatementList (Assign (" \
+               "__list__ inner_loop_done) 1) EMPTY_Statement))))) EMPTY_Statement))) EMPTY_Statement))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+
+
+def test_rewrite_to_py_forloop():
+    lisp_str = "(ProgramStatements" \
+               " (StatementList (Expr STRING_4) " \
+               "(StatementList (FunctionDef (__kw__ name partition) " \
+               "(__kw__ args (arguments (__kw__ args (__list__ (arg arr (Subscript list int)) (arg low int) (arg high " \
+               "int))))) " \
+               "(__kw__ body (StatementList (Expr STRING_5) (StatementList (Assign (__list__ pivot) (" \
+               "Subscript arr high)) (StatementList (Assign (__list__ i) (BinOp low Sub 1)) (StatementList (For j (" \
+               "Call range (__list__ low high)) (StatementList (If (Compare (Subscript arr j) (__list__ GtE) (" \
+               "__list__ pivot)) (StatementList (AugAssign i Add 1) (StatementList (fn_1 i arr j) EMPTY_Statement))) " \
+               "EMPTY_Statement)) (StatementList (fn_1 (BinOp i Add 1) arr high) (StatementList (Return (BinOp i Add " \
+               "1)) EMPTY_Statement))))))) " \
+               "(__kw__ returns int))" \
+               "EMPTY_Statement )))" \
+               # "" \
+               # "(StatementList (FunctionDef (__kw__ name " \
+               # "kth_largest_element) (__kw__ args (arguments (__kw__ args (__list__ (arg arr (Subscript list int)) (" \
+               # "arg position int))))) (__kw__ body (StatementList (Expr STRING_6) (StatementList (If (UnaryOp Not " \
+               # "arr) (StatementList (Return (UnaryOp USub 1)) EMPTY_Statement)) (StatementList (If (UnaryOp Not (Call " \
+               # "isinstance (__list__ position int))) (StatementList (Raise (Call ValueError (__list__ STRING_7))) " \
+               # "EMPTY_Statement)) (StatementList (If (UnaryOp Not (Compare 1 (__list__ LtE LtE) (__list__ position (" \
+               # "Call len (__list__ arr))))) (StatementList (Raise (Call ValueError (__list__ STRING_8))) " \
+               # "EMPTY_Statement)) (StatementList (Assign (__list__ (Tuple (__list__ low high))) (Tuple (__list__ 0 (" \
+               # "BinOp (Call len (__list__ arr)) Sub 1)))) (StatementList (While (Compare low (__list__ LtE) (__list__ " \
+               # "high)) (StatementList (If (BoolOp Or (__list__ (Compare low (__list__ Gt) (__list__ (BinOp (Call len " \
+               # "(__list__ arr)) Sub 1))) (Compare high (__list__ Lt) (__list__ 0)))) (StatementList (Return (UnaryOp " \
+               # "USub 1)) EMPTY_Statement)) (StatementList (Assign (__list__ pivot_index) (Call partition (__list__ " \
+               # "arr low high))) (StatementList (If (Compare pivot_index (__list__ Eq) (__list__ (BinOp position Sub " \
+               # "1))) (StatementList (Return (Subscript arr pivot_index)) EMPTY_Statement) (StatementList (If (Compare " \
+               # "pivot_index (__list__ Gt) (__list__ (BinOp position Sub 1))) (StatementList (Assign (__list__ high) (" \
+               # "BinOp pivot_index Sub 1)) EMPTY_Statement) (StatementList (Assign (__list__ low) (BinOp pivot_index " \
+               # "Add 1)) EMPTY_Statement)) EMPTY_Statement)) EMPTY_Statement)))) (StatementList (Return (UnaryOp USub " \
+               # "1)) EMPTY_Statement)))))))) (__kw__ returns int)) fn_0))))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+

@@ -1,13 +1,15 @@
 import ast
 import copy
 import sys
+from typing import Any
 
 from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 # from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.ast_utils import StringReplacer
-
+from pybrary_extraction.lisp2py.KickTrailingParamsVisitor import KickOutTrailingParam
+from pybrary_extraction.lisp2py.ExtractedFragment import AddScopeLinks
 
 class AbstractionCall:
     def __init__(self, func_name, params=None):
@@ -41,21 +43,28 @@ class Rewrite2Py:
         if string_hashmap is None:
             string_hashmap = {}
         self.string_hashmap = string_hashmap
+        self.converted_ast = None
 
-    def convert(self):
+    def convert(self, unparse=True):
 
         lisp_parts = Lisp2Py.parse_lisp(self.lisp_str)
         lisp_parts = Lisp2Py.wrap_module(lisp_parts)
+        lisp_parts = Lisp2Py.wrap_statements_list(lisp_parts)
         lisp_parts = self.create_abstraction_calls(lisp_parts)
         lisp_parts = self.make_calls_exprs(lisp_parts)
         self.check_for_list_param(lisp_parts)
         py_ast = Lisp2Py.construct(lisp_parts)
+        if len(self.available_abstractions):
+            AddScopeLinks().visit(py_ast)
+            KickOutTrailingParam(self.available_abstractions).visit(py_ast)
         StringReplacer(self.string_hashmap).visit(py_ast)
         py_ast = self.add_library_import_statements(py_ast)
         py_ast.type_ignores = []
         ast.fix_missing_locations(py_ast)
         print(ast.dump(py_ast, indent=4))
-        return ast.unparse(py_ast)
+        self.converted_ast = py_ast
+        if unparse:
+            return ast.unparse(py_ast)
 
     def check_for_list_param(self, lisp_parts):
         if len(lisp_parts) > 1 and \
@@ -93,20 +102,42 @@ class Rewrite2Py:
                 return new_lisp_root
             return new_lisp
 
-    def make_calls_exprs(self, lisp_parts):
-        final_nodes = [lisp_parts[0]]
-        for node in lisp_parts[1:]:
-            if node[0] == 'Call':
-                abstraction_name = node[1]
+    def make_calls_exprs(self, lisp_root):
+        """Wrap function calls with 'Expr' nodes in case they are outer level statements."""
+        if isinstance(lisp_root, str):
+            return lisp_root
+        elif isinstance(lisp_root, list):
+            # recursion
+            final_list = []
+            for node in lisp_root:
+                final_list.append(
+                    self.make_calls_exprs(node)
+                )
+            if lisp_root[0]==Py2Lisp.statement_keyword\
+                and (isinstance(lisp_root[1], list) or isinstance(lisp_root[1], AbstractionCall)) \
+                and lisp_root[1][0]=='Call':
+                # an unwrapped call node.
+
+                call_node = lisp_root[1]
+                abstraction_name = call_node[1]
                 matches = self.get_matching_abstraction(abstraction_name)
-                if len(matches) > 0:
-                    final_nodes.append(['Assign', ['__list__', *matches[0].returned_vars], node])
+                new_nodes = None
+                if len(matches) > 0 and matches[0].returned_vars:
+                    if len(matches[0].returned_vars)==1:
+                        new_nodes= ['Assign', ['__list__', *matches[0].returned_vars], call_node]
+                    else:
+                        new_nodes = ['Assign',
+                                     ['__list__', ['Tuple', ['__list__', *matches[0].returned_vars]]],
+                                     call_node
+                                     ]
                 else:
                     # '(ProgramStatements (Assign (__list__ x) (Call fn_0)))'
-                    final_nodes.append(['Expr', node])
-            else:
-                final_nodes.append(node)
-        return final_nodes
+                    new_nodes = ['Expr', call_node]
+                final_list[1] = new_nodes
+            # wrap here.
+            return final_list
+
+        return lisp_root
 
     def get_matching_abstraction(self, abstraction_name: str) -> list[StitchAbstraction]:
         return list(filter(lambda x: x.abstraction_name == abstraction_name, self.available_abstractions))
@@ -121,7 +152,6 @@ class Rewrite2Py:
 
         py_ast.body = import_statements + py_ast.body
         return py_ast
-
 
 if __name__ == '__main__':
     print(Rewrite2Py(sys.argv[1], available_abstractions=[]).convert())

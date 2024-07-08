@@ -1,0 +1,137 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_0 = inject_int(0)
+_lessthan = [temp_0]
+temp_1 = inject_int(0)
+def __func1(_a,_b,free_vars_1):
+	temp_2 = inject_int(0)
+	temp_23 = _a == temp_2
+	if is_true(temp_23):
+		temp_24 = inject_bool(1)
+		temp_26 = temp_24
+	else:
+		temp_3 = inject_int(0)
+		temp_20 = _b == temp_3
+		if is_true(temp_20):
+			temp_21 = inject_bool(0)
+			temp_25 = temp_21
+		else:
+			temp_4 = inject_int(0)
+			temp_5 = inject_int(0)
+			temp_6 = free_vars_1[temp_4]
+			temp_7 = temp_6[temp_5]
+			temp_8 = inject_int(1)
+			temp_9 = - temp_8
+			temp_10 = inject_int(1)
+			temp_11 = - temp_10
+			temp_12 = inject_int(0)
+			temp_13 = inject_int(0)
+			temp_14 = free_vars_1[temp_12]
+			temp_15 = temp_14[temp_13]
+			temp_16 = get_fun_ptr(temp_7)
+			temp_17 = _a + temp_9
+			temp_18 = _b + temp_11
+			temp_19 = get_free_vars(temp_15)
+			temp_22 = temp_16(temp_17,temp_18,temp_19)
+			temp_25 = temp_22
+		
+		temp_26 = temp_25
+	
+	return temp_26
+
+temp_27 = [_lessthan]
+temp_28 = create_closure(__func1,temp_27)
+_lessthan[temp_1] = inject_big(temp_28)
+def __func2(_l,_len,free_vars_2):
+	_j = inject_int(0)
+	temp_29 = inject_int(1)
+	temp_30 = - temp_29
+	temp_31 = _len + temp_30
+	temp_32 = _j != temp_31
+	temp_59 = is_true(temp_32)
+	while (temp_59):
+		temp_33 = inject_int(0)
+		temp_34 = inject_int(0)
+		temp_35 = free_vars_2[temp_33]
+		temp_36 = temp_35[temp_34]
+		temp_37 = inject_int(1)
+		temp_38 = _j + temp_37
+		temp_39 = inject_int(0)
+		temp_40 = inject_int(0)
+		temp_41 = free_vars_2[temp_39]
+		temp_42 = temp_41[temp_40]
+		temp_43 = get_fun_ptr(temp_36)
+		temp_44 = _l[_j]
+		temp_45 = _l[temp_38]
+		temp_46 = get_free_vars(temp_42)
+		temp_47 = temp_43(temp_44,temp_45,temp_46)
+		temp_53 = is_true(temp_47)
+		if temp_53:
+			_tmp = _l[_j]
+			temp_48 = inject_int(1)
+			temp_49 = _j + temp_48
+			_l[_j] = _l[temp_49]
+			temp_50 = inject_int(1)
+			temp_51 = _j + temp_50
+			_l[temp_51] = _tmp
+			temp_52 = inject_int(1)
+			_j = - temp_52
+		else:
+			_x = inject_int(0)
+		
+		temp_54 = inject_int(1)
+		_j = _j + temp_54
+		temp_55 = inject_int(1)
+		temp_56 = - temp_55
+		temp_57 = _len + temp_56
+		temp_58 = _j != temp_57
+		temp_59 = is_true(temp_58)
+	
+	return _l
+
+temp_60 = [_lessthan]
+temp_61 = create_closure(__func2,temp_60)
+_sort = inject_big(temp_61)
+temp_62 = inject_int(10)
+temp_63 = inject_int(11)
+temp_64 = inject_int(8)
+temp_65 = inject_int(9)
+temp_66 = inject_int(5)
+temp_67 = inject_int(4)
+_x = [temp_62, temp_63, temp_64, temp_65, temp_66, temp_67]
+_len = inject_int(6)
+temp_68 = get_fun_ptr(_sort)
+temp_69 = get_free_vars(_sort)
+temp_70 = temp_68(_x,_len,temp_69)
+print(temp_70)

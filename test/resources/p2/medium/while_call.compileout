@@ -1,0 +1,22 @@
+compiling /home/jovyan/lab5-team-tyler-and-luke-1/tests/autograde/p2/medium/while_call.py
+valid p0
+Found IfExp in flat ast
+IN UNPARSE
+<ast.IfExp object at 0x7f4aa9faf5b0>
+visiting IfExp!
+<class 'ast.Compare'>
+Visiting BinOp
+visiting Call
+Visiting BinOp
+Visiting UnaryOp
+flattening node's  right
+flattening node's  arg_i
+flattening node's  right
+flattening IfExp test
+flattening node's  test
+flattening node's  orelse
+flattening node's  value
+visiting Call
+flattening node's  value
+visiting Call
+flattening node's  left

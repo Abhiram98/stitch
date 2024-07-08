@@ -1,0 +1,52 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+fun1 = inject_big(create_closure(def __func3(free_vars_3):
+	x = 1
+	fun2 = inject_big(create_closure(def __func2(free_vars_2):
+		x = 3
+		fun3 = inject_big(create_closure(def __func1(free_vars_1):
+			x = 5
+			print(x)
+			return x
+		,[]))
+		print(x)
+		temp_0 = get_fun_ptr(fun3)(get_free_vars(fun3))
+		return temp_0
+	,[]))
+	print(x)
+	temp_1 = get_fun_ptr(fun2)(get_free_vars(fun2))
+	return temp_1
+,[]))
+temp_2 = get_fun_ptr(fun1)(get_free_vars(fun1))
+print(temp_2)

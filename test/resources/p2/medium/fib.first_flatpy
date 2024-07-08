@@ -1,0 +1,98 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+temp_12 = inject_int(0)
+_fib = [temp_12]
+temp_13 = inject_int(0)
+def __func1(_n,free_vars_1):
+	temp_14 = inject_int(0)
+	_temp_8 = _n == temp_14
+	temp_15 = is_true(_temp_8)
+	temp_41 = is_true(temp_15)
+	if temp_41:
+		_temp_10 = inject_int(0)
+	else:
+		temp_16 = inject_int(1)
+		_temp_6 = _n == temp_16
+		temp_17 = is_true(_temp_6)
+		temp_40 = is_true(temp_17)
+		if temp_40:
+			_temp_9 = inject_int(1)
+		else:
+			temp_18 = inject_int(1)
+			_temp_0 = - temp_18
+			_temp_1 = _n + _temp_0
+			temp_19 = inject_int(2)
+			_temp_2 = - temp_19
+			_temp_3 = _n + _temp_2
+			temp_20 = inject_int(0)
+			temp_21 = inject_int(0)
+			temp_22 = free_vars_1[temp_20]
+			temp_23 = temp_22[temp_21]
+			temp_24 = inject_int(0)
+			temp_25 = inject_int(0)
+			temp_26 = free_vars_1[temp_24]
+			temp_27 = temp_26[temp_25]
+			temp_28 = get_fun_ptr(temp_23)
+			temp_29 = get_free_vars(temp_27)
+			_temp_4 = temp_28(_temp_1,temp_29)
+			temp_30 = inject_int(0)
+			temp_31 = inject_int(0)
+			temp_32 = free_vars_1[temp_30]
+			temp_33 = temp_32[temp_31]
+			temp_34 = inject_int(0)
+			temp_35 = inject_int(0)
+			temp_36 = free_vars_1[temp_34]
+			temp_37 = temp_36[temp_35]
+			temp_38 = get_fun_ptr(temp_33)
+			temp_39 = get_free_vars(temp_37)
+			_temp_5 = temp_38(_temp_3,temp_39)
+			_temp_7 = _temp_4 + _temp_5
+			_temp_9 = _temp_7
+		
+		_temp_10 = _temp_9
+	
+	return _temp_10
+
+temp_42 = [_fib]
+temp_43 = create_closure(__func1,temp_42)
+_fib[temp_13] = inject_big(temp_43)
+temp_44 = inject_int(0)
+temp_45 = _fib[temp_44]
+temp_46 = inject_int(0)
+temp_47 = _fib[temp_46]
+temp_48 = get_fun_ptr(temp_45)
+temp_49 = inject_int(6)
+temp_50 = get_free_vars(temp_47)
+_temp_11 = temp_48(temp_49,temp_50)
+print(_temp_11)

@@ -27,6 +27,22 @@ class AddScopeLinks(ast.NodeVisitor):
         node.parent_scope = self.parent_scope
         return visitor(node)
 
+    def generic_visit(self, node):
+        """Called if no explicit visitor function exists for a node."""
+        for field, value in ast.iter_fields(node):
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, ast.AST):
+                        self.visit(item)
+                    elif isinstance(item, list):
+                        self.generic_visit_list(item) # so that recursive lists are visited.
+            elif isinstance(value, ast.AST):
+                self.visit(value)
+
+    def generic_visit_list(self, item):
+        for i in item:
+            self.visit(i)
+
 
 class FindNodesWithinIndices(ast.NodeVisitor):
     def __init__(self, start_line, start_col, end_line, end_col):
@@ -80,4 +96,3 @@ class ExtractedFragment:
         parent_scope = biggest_node.parent_scope
 
         return ExtractedFragment(parent_scope, start_line, end_line)
-

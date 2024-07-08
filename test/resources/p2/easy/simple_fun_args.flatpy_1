@@ -1,0 +1,123 @@
+def int_comp_eq(a,b):
+    return int(a==b)
+
+def int_comp_noteq(a,b):
+    return int(a!=b)
+
+inject_int=lambda x: int(x)
+inject_big = lambda x: x
+inject_bool = lambda x: bool(x)
+project_int = lambda x: x
+project_big = lambda x: x
+project_bool = lambda x: x
+is_true = lambda x: x 
+is_int = lambda x: type(x) == int
+is_bool = lambda x: type(x) == bool
+is_big = lambda x: (is_int(x) or is_bool(x)) == False
+create_list = lambda x: [1] * x
+create_dict = lambda : dict()
+
+
+def error_pyobj(msg):
+    raise Exception("type error")
+    
+
+def set_subscript(l, i, v):
+    l[i] = v
+    return l
+    
+
+def get_subscript(l, i):
+    return l[i]
+    
+
+def __func1(_a,_b,free_vars_1):
+	temp_30 = is_int(_a)
+	if temp_30:
+		temp_12 = is_int(_b)
+		if temp_12:
+			temp_4 = project_int(_a)
+			temp_5 = project_int(_b)
+			temp_6 = temp_4 + temp_5
+			temp_0 = inject_int(temp_6)
+		else:
+			temp_11 = is_big(_b)
+			if temp_11:
+				error_pyobj()
+			else:
+				temp_10 = is_bool(_b)
+				if temp_10:
+					temp_7 = project_int(_a)
+					temp_8 = project_bool(_b)
+					temp_9 = temp_7 + temp_8
+					temp_0 = inject_int(temp_9)
+				else:
+					error_pyobj()
+				
+			
+		
+	else:
+		temp_29 = is_big(_a)
+		if temp_29:
+			temp_18 = is_int(_b)
+			if temp_18:
+				error_pyobj()
+			else:
+				temp_17 = is_big(_b)
+				if temp_17:
+					temp_13 = project_big(_a)
+					temp_14 = project_big(_b)
+					temp_15 = add(temp_13,temp_14)
+					temp_0 = inject_big(temp_15)
+				else:
+					temp_16 = is_bool(_b)
+					if temp_16:
+						error_pyobj()
+					else:
+						error_pyobj()
+					
+				
+			
+		else:
+			temp_28 = is_bool(_a)
+			if temp_28:
+				temp_27 = is_int(_b)
+				if temp_27:
+					temp_19 = project_bool(_a)
+					temp_20 = project_int(_b)
+					temp_21 = temp_19 + temp_20
+					temp_0 = inject_int(temp_21)
+				else:
+					temp_26 = is_big(_b)
+					if temp_26:
+						error_pyobj()
+					else:
+						temp_25 = is_bool(_b)
+						if temp_25:
+							temp_22 = project_bool(_a)
+							temp_23 = project_bool(_b)
+							temp_24 = temp_22 + temp_23
+							temp_0 = inject_bool(temp_24)
+						else:
+							error_pyobj()
+						
+					
+				
+			else:
+				error_pyobj()
+			
+		
+	
+	temp_0 = temp_0
+	return temp_0
+
+temp_31 = inject_int(0)
+temp_32 = create_list(temp_31)
+temp_3 = inject_big(temp_32)
+temp_1 = temp_3
+temp_2 = create_closure(__func1,temp_1)
+_fun_w_args = inject_big(temp_2)
+_fn_call_2
+_fn_call_2 = _fn_call_3
+_fn_call_2 = _fn_call_3
+_fn_call_2

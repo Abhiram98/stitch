@@ -2,10 +2,42 @@ import ast
 
 from pyparsing import OneOrMore, nestedExpr
 
-from pybrary_extraction.lisp2py.utils import MyList, MyKeyword
+from pybrary_extraction.lisp2py.utils import MyList, MyKeyword, StatementList
 from pybrary_extraction.python2lisp import Py2Lisp
-from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer
+from pybrary_extraction.ast_utils import get_all_ast_classes, StringReplacer, LispVisitor
 from pybrary_extraction.lisp2py.FixAstNodes import FixAstNodes
+
+
+class WrapStatementList(LispVisitor):
+    def visit_ProgramStatements(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        new_root[1] = self.wrap_statements(new_root[1])  # 1st index contains the body
+        return new_root
+
+    def visit_FunctionDef(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        if new_root[1][0] == Py2Lisp.keyword_for_keyword and new_root[1][1] == 'body':
+            new_root[1][2] = self.wrap_statements(new_root[1][2])
+        return new_root
+
+    def visit_ClassDef(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        if new_root[2][0] == Py2Lisp.keyword_for_keyword and new_root[2][1] == 'body':
+            new_root[2][2] = self.wrap_statements(new_root[2][2])
+        return new_root
+
+    def visit_For(self, lisp_root):
+        new_root = self.generic_visit(lisp_root)
+        new_root[3] = self.wrap_statements(new_root[3])
+        return new_root
+
+    def wrap_statements(self, lisp_parts):
+        if not isinstance(lisp_parts, list) or not len(lisp_parts) > 0:
+            return lisp_parts
+
+        if lisp_parts[0] != Py2Lisp.statement_keyword:
+            return [Py2Lisp.statement_keyword, lisp_parts, Py2Lisp.empty_statement_keyword]
+        return lisp_parts
 
 
 class Lisp2Py:
@@ -58,7 +90,7 @@ class Lisp2Py:
     @staticmethod
     def get_ast_node_from_string(lisp_root: str):
         try:
-            val = eval(lisp_root)
+            val = eval(lisp_root, {})
             if type(val) in [int, float]:
                 return ast.Constant(value=val)
             # elif val is None:
@@ -70,15 +102,28 @@ class Lisp2Py:
                 ast_class = getattr(ast, lisp_root, None)
                 if ast_class is None:
                     return ast.Name(id=lisp_root)
-                return Lisp2Py.create_ast_node(ast_class)
+                py_ast_node = ast_class()
+                try:
+                    return FixAstNodes.augment_pyast_node(py_ast_node)  # sometimes it is the final object, which
+                    # needs fixing for unparsing.
+                except:
+                    return py_ast_node  # sometimes this is just the creation object. Other params will be filled later.
             elif lisp_root == Py2Lisp.keyword_for_keyword:
                 return MyKeyword(None, None)
+            elif lisp_root == Py2Lisp.statement_keyword:
+                return StatementList(
+                    Py2Lisp.empty_statement_keyword, Py2Lisp.empty_statement_keyword)
+            elif lisp_root == Py2Lisp.empty_statement_keyword:
+                return Py2Lisp.empty_statement_keyword
             return ast.Name(id=lisp_root)
 
     @staticmethod
     def construct_ast_node(child_list):
         if isinstance(child_list[0], ast.Module):
-            return ast.Module(body=child_list[1:])
+            if not isinstance(child_list[1], list):
+                child_list[1] = [child_list[1]]
+            return ast.Module(body=child_list[1])
+
         if all([isinstance(i, MyKeyword) for i in child_list[1:]]):
             kw_args = {i.kw: i.value for i in child_list[1:]}
             return child_list[0].__class__(**kw_args)
@@ -92,12 +137,6 @@ class Lisp2Py:
             return new_lisp_parts
         return lisp_parts
 
-    @classmethod
-    def create_ast_node(cls, ast_class):
-        if ast_class is ast.arguments:
-            return ast.arguments(posonlyargs=[], args=[], defaults=[], kwonlyargs=[])
-        if ast_class is ast.List:
-            return ast.List(elts=[])
-        if ast_class is ast.Dict:
-            return ast.Dict(keys=[], values=[])
-        return ast_class()
+    @staticmethod
+    def wrap_statements_list(lisp_parts):
+        return WrapStatementList().visit(lisp_parts)

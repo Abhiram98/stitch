@@ -22,7 +22,7 @@ class Leroy:
 
     def __init__(self, py_files_dir, iterations,
                  max_arity, min_nodes_abstraction,
-                 donot_rerun):
+                 donot_rerun, mangle_names):
 
         self.py_files_dir = py_files_dir
         self.min_nodes_abstraction = min_nodes_abstraction
@@ -37,12 +37,14 @@ class Leroy:
         self.file_json_map = None
         self.string_hashmap = None
         self.donot_rerun = donot_rerun
+        self.mangle_names = mangle_names
         self.stitch_out = self.read_stitch_out()
 
     def run(self):
 
         self.clear_temp_dir()
-        self.file_json_map, string_hashmap = Py2Lisp.fromDirectoryToJson(self.py_files_dir)
+        self.file_json_map, string_hashmap = Py2Lisp.fromDirectoryToJson(
+            self.py_files_dir, self.mangle_names)
         self.string_hashmap = {v: k for k, v in string_hashmap.items()}  # reverse for convenience
         with open(f"{self.temp_dir}/{self.temp_filename}", "w") as f:
             json.dump(list(self.file_json_map.values()), f, indent=4)
@@ -114,9 +116,7 @@ class Leroy:
     def write_abstractions(self, stitch_abstractions: list[StitchAbstraction]):
         library_functions = []
         for i, abstraction in enumerate(stitch_abstractions):
-            abs_body = abstraction.abstraction_body_lisp
-            live_out = abstraction.get_and_set_live_out(self.stitch_out['original'])
-            abstraction.abstraction_body_py = Abstraction2Py(abstraction, self.string_hashmap).convert(f"fn_{i}")
+            abstraction.compute_body_py(self.stitch_out['original'])
             library_functions.append(
                 abstraction.abstraction_body_py
             )
@@ -150,8 +150,15 @@ class Leroy:
               default=10, type=int)
 @click.option("--donot_rerun", help='Do not rerun leroy. USE for debugging only',
               default=False, type=bool)
-def run_leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun):
-    l = Leroy(py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun)
+@click.option("--mangle_names", help='Whether to mangle names or not. '
+                                     'To avoid name clashes with the `ast` library.',
+              default=False, type=bool)
+def run_leroy(
+        py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun,
+        mangle_names
+):
+    l = Leroy(
+        py_files_dir, iterations, max_arity, min_nodes_abstraction, donot_rerun, mangle_names)
     l.run()
 
 

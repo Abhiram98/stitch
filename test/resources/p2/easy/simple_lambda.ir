@@ -1,0 +1,12 @@
+call,inject_int,$42,temp_1
+return,temp_1call,inject_int,$0,temp_7
+call,create_list,temp_7,temp_8
+call,inject_big,temp_8,temp_6
+movl,temp_6,temp_2
+call,create_closure,$__func1,temp_2,temp_3
+call,inject_big,temp_3,_lambda_1
+movl,_lambda_1,_x
+call,get_fun_ptr,_x,temp_4
+call,get_free_vars,_x,temp_5
+call,temp_4,temp_5,_temp_0
+call,print,_temp_0,None
