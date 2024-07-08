@@ -13,7 +13,8 @@ class Py2Lisp(ast.NodeVisitor):
     empty_kwarg_keyword = 'EMPTY_kwarg'
     keyword_for_keyword = "__kw__"
 
-    def __init__(self, string_hash_map=None):
+    def __init__(self, string_hash_map=None,
+                 mangle_names=False):
         super().__init__()
         self.string_count = 0
         if string_hash_map is None:
@@ -21,9 +22,11 @@ class Py2Lisp(ast.NodeVisitor):
         else:
             self.string_hash_map = string_hash_map
             self.string_count += len(string_hash_map)
+        self.mangle_names = mangle_names
 
     @staticmethod
-    def fromDirectoryToJson(directory_path):
+    def fromDirectoryToJson(
+            directory_path, mangle_names=False):
         py_files = []
         for folder, subfolders, files in os.walk(directory_path):
             for file in files:
@@ -37,7 +40,7 @@ class Py2Lisp(ast.NodeVisitor):
             with open(file) as f:
                 code_str = f.read()
             code_ast = ast.parse(code_str)
-            p2lisp = Py2Lisp(string_hash_map=string_hash_map)
+            p2lisp = Py2Lisp(string_hash_map=string_hash_map, mangle_names=mangle_names)
             lisp_str = p2lisp.visit(code_ast)
             out_json[file] = lisp_str
 
@@ -58,7 +61,7 @@ class Py2Lisp(ast.NodeVisitor):
 
     @staticmethod
     def generated_constructed_list(program_elements):
-        if len(program_elements)==0:
+        if len(program_elements) == 0:
             return f"({Py2Lisp.statement_keyword} {Py2Lisp.empty_statement_keyword} {Py2Lisp.empty_statement_keyword})"
         lisp_str = Py2Lisp.empty_statement_keyword
         for ele in program_elements[::-1]:
@@ -135,6 +138,8 @@ class Py2Lisp(ast.NodeVisitor):
         return str(node.value)
 
     def visit_Name(self, node: ast.Name) -> Any:
+        if self.mangle_names:
+            return f"_{str(node.id)}"  # name mangling
         return str(node.id)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
@@ -191,6 +196,7 @@ class Py2Lisp(ast.NodeVisitor):
     def visit_If(self, node: ast.If) -> Any:
         return self.visit_and_get_lisp_str(node,
                                            encode_fields_as_constructed_list=['body', 'orelse'])
+
 
 if __name__ == '__main__':
     # print(f"{sys.argv=}")

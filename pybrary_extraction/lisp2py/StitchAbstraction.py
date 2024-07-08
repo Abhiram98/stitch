@@ -37,8 +37,9 @@ class StitchUse:
     def set_params_map_from_stitch_params(self, stitch_params: set[StitchParam]):
         func_call: ast.Call = self.application_ast.body[-1].value
         for param in stitch_params:
-            self.parameter_map[param.param_name] = \
-                func_call.args[param.position]
+            if param.position < len(func_call.args):
+                self.parameter_map[param.param_name] = \
+                    func_call.args[param.position]
 
     def get_param_map_filtered_by_names(self):
         new_map = {}
