@@ -1227,7 +1227,7 @@ fn stitch_search(
 
 fn is_macro_like_invention(abstraction: ExprOwned) -> bool {
     let python_path = "python";
-    let py_file = "pybrary_extraction/lisp2py/Rewrite2Py.py";
+    let py_file = "../pybrary_extraction/lisp2py/Abstraction2Py.py";
 
     let arg = format!("(ProgramStatements {})", 
             abstraction.to_string().replace("??", "ProgramStatements"));
@@ -1240,10 +1240,10 @@ fn is_macro_like_invention(abstraction: ExprOwned) -> bool {
     let output = command
         .output()
         .expect("failed to run py command");
-    // println!("status: {}", output.status);
-    // println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-    // println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
-    // println!("return: {}", output.status.success());
+    println!("status: {}", output.status);
+    println!("stdout: {}", String::from_utf8_lossy(&output.stdout));
+    println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+    println!("return: {}", output.status.success());
 
     return output.status.success()==false;
 }
