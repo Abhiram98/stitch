@@ -1,5 +1,0 @@
-compiling /home/jovyan/lab5-team-tyler-and-luke-1/tests/autograde/p2/medium/nameconflict.py
-valid p0
-Free-Bound analysis----
-fba.free_vars={'__main__': set(), 'lambda_1': set(), 'use_f': {'f'}, 'create_f': set()}
-fba.bound_vars={'__main__': {'create_f', 'f', 'lambda_1', 'use_f'}, 'lambda_1': {'x'}, 'use_f': set(), 'create_f': {'f'}}
