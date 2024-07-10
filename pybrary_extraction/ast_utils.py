@@ -141,3 +141,13 @@ class LispVisitor:
                 fn = getattr(self, fn_name, self.generic_visit)
                 return fn(lisp_root)
         return lisp_root
+
+def expr_is_killed_inside_body(expr: ast.AST, body: ast.Module) -> bool:
+    names_in_expr = set()
+    for node in ast.walk(expr):
+        if isinstance(node, ast.Name):
+            names_in_expr.add(node.id)
+    target_vars_finder = FindTargetVariables()
+    target_vars_finder.visit(body)
+    return len(set(target_vars_finder.lhs_vars).intersection(names_in_expr))==0
+

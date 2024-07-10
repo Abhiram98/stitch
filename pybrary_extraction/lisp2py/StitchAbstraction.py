@@ -1,4 +1,5 @@
 import ast
+from pyparsing import OneOrMore, nestedExpr
 
 import pybrary_extraction.lisp2py as lisp2py
 import pybrary_extraction.python2lisp as python2lisp
@@ -32,7 +33,7 @@ class StitchUse:
         rewrite_target = lisp2py.Rewrite2Py(target, available_abstractions=[], string_hashmap=self.string_hashmap)
         self.target_py = rewrite_target.convert()
         self.target_ast: ast.Module = rewrite_target.converted_ast
-        self.parameter_map = {} # map of param_name -> value passes
+        self.parameter_map = {}  # map of param_name -> value passes
 
     def set_params_map_from_stitch_params(self, stitch_params: set[StitchParam]):
         func_call: ast.Call = self.application_ast.body[-1].value
@@ -48,14 +49,12 @@ class StitchUse:
                 new_map[self.parameter_map[param].id] = param
         return new_map
 
-    def get_application_param_from_number(self, param_number)-> ast.Expr:
+    def get_application_param_from_number(self, param_number) -> ast.Expr:
         func_call: ast.Call = self.application_ast.body[-1].value
         assert isinstance(func_call, ast.Call)
         if param_number >= len(func_call.args):
             raise Exception(f"param_number {param_number}>={len(func_call.args)}")
         return func_call.args[param_number]
-
-
 
 
 class StitchAbstraction:
@@ -97,8 +96,6 @@ class StitchAbstraction:
             if intersecting := live_vars_out.intersection(set(name_map.keys())):
                 live_vars_out = live_vars_out.union({name_map[i] for i in intersecting})
 
-
-
         self.live_vars_out = self.live_vars_out.union(live_vars_out)
         return live_vars_out
 
@@ -134,7 +131,7 @@ class StitchAbstraction:
     def get_additional_params(self):
         return [i for i in self.parameters if not i.param_name.startswith(lisp2py.Abstraction2Py.PARAM_KEY)]
 
-    def get_trailing_statement_params(self)-> list[StitchParam]:
+    def get_trailing_statement_params(self) -> list[StitchParam]:
         return list(filter(lambda x: x.is_trailing, self.parameters))
 
     def set_trailing_statement_param(self, *params):
@@ -152,3 +149,13 @@ class StitchAbstraction:
         abstraction_py_obj.add_return_value(abstraction_py_obj.abstraction_body_as_fndef)
         self.abstraction_body_py = ast.unparse(abstraction_py_obj.abstraction_body_as_fndef)
         return self.abstraction_body_py
+
+    def is_expression_killed_in_abstraction(self, expr) -> bool:
+        pass
+
+    def find_application_use(self, application_lisp_as_str: str) -> StitchUse:
+        u1 = self.uses_py[0]
+        for use in self.uses_py:
+            application_str = str(OneOrMore(nestedExpr()).parseString(use.application).as_list()[0])
+            if application_str == application_lisp_as_str:
+                return use

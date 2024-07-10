@@ -2,14 +2,16 @@ import ast
 import copy
 import sys
 from typing import Any
+from pyparsing import OneOrMore, nestedExpr
 
 from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py.Lisp2Py import Lisp2Py
 # from pybrary_extraction.python2lisp import Py2Lisp
-from pybrary_extraction.ast_utils import StringReplacer
+from pybrary_extraction.ast_utils import StringReplacer, expr_is_killed_inside_body
 from pybrary_extraction.lisp2py.KickTrailingParamsVisitor import KickOutTrailingParam
 from pybrary_extraction.lisp2py.ExtractedFragment import AddScopeLinks
+
 
 class AbstractionCall:
     def __init__(self, func_name, params=None):
@@ -19,9 +21,30 @@ class AbstractionCall:
         self.items = ['Call', func_name]
         if params:
             self.items += params
+        self.reverted_lisp = None
 
     def __getitem__(self, item):
         return self.items[item]
+
+    def is_valid(self,
+                 stitch_abstraction: StitchAbstraction,
+                 call_lisp: list) -> bool:
+        # check if it's a valid abstraction call
+        # i.e no macro-like expressions as parameters
+
+        lisp_str = str(call_lisp[1:])
+        use = stitch_abstraction.find_application_use(application_lisp_as_str=lisp_str)
+        if use is None: return True
+        trailing_param_indices = [i.position for i in stitch_abstraction.get_trailing_statement_params()]
+        if not isinstance(use.application_ast.body[0], ast.Call):
+            return True
+        for i, arg_expr in enumerate(use.application_ast.body[0].args):
+            if (i not in trailing_param_indices
+                    and expr_is_killed_inside_body(arg_expr, use.target_ast)):
+                self.reverted_lisp = OneOrMore(nestedExpr()).parseString(use.target).as_list()[0]
+                return False
+
+        return True
 
 
 class Rewrite2Py:
@@ -92,9 +115,12 @@ class Rewrite2Py:
                 args = copy.deepcopy(new_lisp[1:])
                 matches = self.get_matching_abstraction(fn_name)
                 if len(matches) > 0:
-                    additional_params = matches[0].get_additional_params()
-                    if len(additional_params) > 0:
-                        args += additional_params
+                    if (new_lisp[0].is_valid(matches[0], call_lisp=new_lisp)):
+                        additional_params = matches[0].get_additional_params()
+                        if len(additional_params) > 0:
+                            args += additional_params
+                    else:
+                        return new_lisp[0].reverted_lisp  # return reverted function call if not valid.
 
                 new_lisp_root = ['Call', fn_name, ['__list__', *args]]
 
@@ -113,9 +139,9 @@ class Rewrite2Py:
                 final_list.append(
                     self.make_calls_exprs(node)
                 )
-            if lisp_root[0]==Py2Lisp.statement_keyword\
-                and (isinstance(lisp_root[1], list) or isinstance(lisp_root[1], AbstractionCall)) \
-                and lisp_root[1][0]=='Call':
+            if lisp_root[0] == Py2Lisp.statement_keyword \
+                    and (isinstance(lisp_root[1], list) or isinstance(lisp_root[1], AbstractionCall)) \
+                    and lisp_root[1][0] == 'Call':
                 # an unwrapped call node.
 
                 call_node = lisp_root[1]
@@ -123,8 +149,8 @@ class Rewrite2Py:
                 matches = self.get_matching_abstraction(abstraction_name)
                 new_nodes = None
                 if len(matches) > 0 and matches[0].returned_vars:
-                    if len(matches[0].returned_vars)==1:
-                        new_nodes= ['Assign', ['__list__', *matches[0].returned_vars], call_node]
+                    if len(matches[0].returned_vars) == 1:
+                        new_nodes = ['Assign', ['__list__', *matches[0].returned_vars], call_node]
                     else:
                         new_nodes = ['Assign',
                                      ['__list__', ['Tuple', ['__list__', *matches[0].returned_vars]]],
@@ -152,6 +178,7 @@ class Rewrite2Py:
 
         py_ast.body = import_statements + py_ast.body
         return py_ast
+
 
 if __name__ == '__main__':
     print(Rewrite2Py(sys.argv[1], available_abstractions=[]).convert())
