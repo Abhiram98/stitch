@@ -32,13 +32,15 @@ class AbstractionCall:
         # check if it's a valid abstraction call
         # i.e no macro-like expressions as parameters
 
-        lisp_str = str(call_lisp[1:])
+        lisp_str = str([call_lisp[0].func_name, *call_lisp[1:]])
         use = stitch_abstraction.find_application_use(application_lisp_as_str=lisp_str)
         if use is None: return True
         trailing_param_indices = [i.position for i in stitch_abstraction.get_trailing_statement_params()]
-        if not isinstance(use.application_ast.body[0], ast.Call):
+        if not isinstance(use.application_ast.body[-1], ast.Expr) \
+            and isinstance(use.application_ast.body[-1].value, ast.Call):
             return True
-        for i, arg_expr in enumerate(use.application_ast.body[0].args):
+        call_node = use.application_ast.body[-1].value
+        for i, arg_expr in enumerate(call_node.args):
             if (i not in trailing_param_indices
                     and expr_is_killed_inside_body(arg_expr, use.target_ast)):
                 self.reverted_lisp = OneOrMore(nestedExpr()).parseString(use.target).as_list()[0]
@@ -106,8 +108,18 @@ class Rewrite2Py:
             return lisp_root
         elif isinstance(lisp_root, list):
             new_lisp = []
-            for node in lisp_root:
-                new_lisp.append(self.create_abstraction_calls(node))
+            for ind, node in enumerate(lisp_root):
+                new_node = self.create_abstraction_calls(node)
+                if (lisp_root[0] == Py2Lisp.statement_keyword
+                        and ind==1
+                        and isinstance(new_node, list) and len(new_node)
+                        and new_node[0] == Py2Lisp.statement_keyword
+                        # and new_node[-1] == Py2Lisp.empty_statement_keyword
+                ):
+                    new_lisp = new_node
+                    break
+                else:
+                    new_lisp.append(new_node)
 
             # if lisp_root[0].startswith(self.abstraction_prefix):
             if isinstance(new_lisp[0], AbstractionCall):

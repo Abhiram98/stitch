@@ -16,14 +16,18 @@ class WrapStatementList(LispVisitor):
 
     def visit_FunctionDef(self, lisp_root):
         new_root = self.generic_visit(lisp_root)
-        if new_root[1][0] == Py2Lisp.keyword_for_keyword and new_root[1][1] == 'body':
-            new_root[1][2] = self.wrap_statements(new_root[1][2])
+        body_nodes = list(filter(lambda x: x[0]=='__kw__' and x[1]=='body', new_root))
+        if len(body_nodes) > 0:
+            body_kw = body_nodes[0]
+            body_kw[2] = self.wrap_statements(body_kw[2])
         return new_root
 
     def visit_ClassDef(self, lisp_root):
         new_root = self.generic_visit(lisp_root)
-        if new_root[2][0] == Py2Lisp.keyword_for_keyword and new_root[2][1] == 'body':
-            new_root[2][2] = self.wrap_statements(new_root[2][2])
+        body_nodes = list(filter(lambda x: x[0] == '__kw__' and x[1] == 'body', new_root))
+        if len(body_nodes) > 0:
+            body_kw = body_nodes[0]
+            body_kw[2] = self.wrap_statements(body_kw[2])
         return new_root
 
     def visit_For(self, lisp_root):

@@ -1,8 +1,13 @@
 import ast
 from typing import Any
 
+import pybrary_extraction.python2lisp as p2l
+
 
 class InvalidStatement(Exception):
+    pass
+
+class InvalidHole(Exception):
     pass
 
 
@@ -13,7 +18,8 @@ class AstValidityChecker(ast.NodeVisitor):
 
     def check_list(self, body_list):
         for ele in body_list:
-            if isinstance(ele, ast.Name) and ele.id in self.param_names:
+            if (isinstance(ele, ast.Name) and
+                    (ele.id in self.param_names or ele.id in p2l.Py2Lisp.empty_statement_keyword)):
                 raise InvalidStatement(ele.id)
 
     def visit_Module(self, node: ast.Module) -> Any:
@@ -41,6 +47,9 @@ class AstValidityChecker(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> Any:
         self.generic_visit(node)
         self.check_list(node.body)
+        if isinstance(node.args, ast.Name) and node.args.id in self.param_names:
+            raise InvalidHole(f"{node.args.id} is an invalid hole.")
+
 
     def visit_For(self, node: ast.For) -> Any:
         self.generic_visit(node)

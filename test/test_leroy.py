@@ -137,7 +137,7 @@ def test_Leroy_data_computer_vision():
 def test_Leroy_p0():
     run_leroy(
         [
-            "--py_files_dir", "resources/p0"
+            "--py_files_dir", "resources/python_subset/p0"
         ],
         standalone_mode=False
     )
@@ -164,32 +164,40 @@ def test_Leroy_p0():
 def test_Leroy_p0a():
     run_leroy(
         [
-            "--py_files_dir", "resources/p0a"
+            "--py_files_dir", "resources/python_subset/p0a"
         ],
         standalone_mode=False
     )
-    # TODO: Nothing was abstracted. This is fishy.
 
 
 
 def test_Leroy_p1():
     run_leroy(
         [
-            "--py_files_dir", "resources/p1"
+            "--py_files_dir", "resources/python_subset/p1"
         ],
         standalone_mode=False
     )
-    # TODO: Nothing was abstracted. This is fishy.
 
 
 def test_Leroy_p2():
     run_leroy(
         [
-            "--py_files_dir", "resources/p2"
+            "--py_files_dir", "resources/python_subset/p2",
+            "--iterations", "25"
         ],
         standalone_mode=False
     )
-    # TODO: Nothing was abstracted. This is fishy.
+
+def test_Leroy_python_subset():
+    run_leroy(
+        [
+            "--py_files_dir", "resources/python_subset",
+            "--iterations", "100",
+            "--min-nodes-abstraction", "20"
+        ],
+        standalone_mode=False
+    )
 
 
 def test_Leroy_write_abstractions():

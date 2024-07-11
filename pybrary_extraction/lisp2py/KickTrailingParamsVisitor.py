@@ -26,3 +26,19 @@ class KickOutTrailingParam(ast.NodeVisitor):
                         if not isinstance(trailing_statements, list):
                             trailing_statements = [trailing_statements]
                         node.parent_scope.body += trailing_statements
+
+    def generic_visit(self, node):
+        """Called if no explicit visitor function exists for a node."""
+        for field, value in ast.iter_fields(node):
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, ast.AST):
+                        self.visit(item)
+                    elif isinstance(item, list):
+                        self.generic_visit_list(item) # so that recursive lists are visited.
+            elif isinstance(value, ast.AST):
+                self.visit(value)
+
+    def generic_visit_list(self, item):
+        for i in item:
+            self.visit(i)

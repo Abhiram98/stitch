@@ -150,12 +150,9 @@ class StitchAbstraction:
         self.abstraction_body_py = ast.unparse(abstraction_py_obj.abstraction_body_as_fndef)
         return self.abstraction_body_py
 
-    def is_expression_killed_in_abstraction(self, expr) -> bool:
-        pass
 
     def find_application_use(self, application_lisp_as_str: str) -> StitchUse:
-        u1 = self.uses_py[0]
         for use in self.uses_py:
-            application_str = str(OneOrMore(nestedExpr()).parseString(use.application).as_list()[0])
+            application_str = str(OneOrMore(nestedExpr()).parseString(f"({use.application})").as_list()[0])
             if application_str == application_lisp_as_str:
                 return use

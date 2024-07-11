@@ -144,7 +144,8 @@ class Leroy:
 
 @click.command()
 @click.option("--py_files_dir", help='directory containing python files to run leroy on.')
-@click.option("--iterations", help='Number of iterations to run stitch for.', default=3, type=int)
+@click.option("--iterations", help='Number of iterations to run stitch for. '
+                                   'A value of -1 runs until no more abstractions are possible', default=3, type=int)
 @click.option("--max-arity", default=3, type=int, help='maximum number of parameters for an abstraction.')
 @click.option("--min-nodes-abstraction", help='minimum number of ast nodes in the abstraction',
               default=10, type=int)

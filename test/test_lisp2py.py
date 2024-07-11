@@ -200,7 +200,8 @@ def test_abstraction_to_py_3():
     try:
         lisp_str = "(ProgramStatements (__list__ (UnaryOp Not (Compare #0 (__list__ Eq) (__list__ (UnaryOp Not a)))) " \
                    "(UnaryOp Not b)))"
-        Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+        py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+        print(py)
     except Exception as e:
         print("That's normal")
         print(e)
@@ -226,7 +227,7 @@ def test_abstraction_to_py_func_as_param():
         StitchAbstraction(lisp_str, [], "abs0", {})).convert()
     print(py)
     assert py == \
-           'def fn_0(custom_function, y):\n    x = 5\n    custom_function(y)'
+           'def abs0(custom_function, y):\n    x = 5\n    return custom_function(y)'
 
 
 def test_abstraction_to_py_fn_as_kw():
@@ -254,7 +255,7 @@ def test_abstraction_to_py_with_valid_hole():
     ).convert()
     print(py)
     assert py \
-           == """def fn_0():
+           == """def abs0():
     x = 1
     y = -2"""
 
@@ -339,7 +340,7 @@ def test_abstraction_to_py_with_valid_hole_with_uses_multiple_return():
         available_abstractions=[abstraction],
         string_hashmap={}
     ).convert()
-    assert rewritten_py_2 == "from leroy_library import fn_0\n(x, y) = fn_0()\nprint(x, y)"
+    assert rewritten_py_2 == 'from leroy_library import fn_0\n\ndef main():\n    (x, y) = fn_0()\n    print(x, y)'
 
 
 def test_abstraction_to_py_with_invalid_hole():
@@ -365,12 +366,12 @@ def test_abstraction_to_py_with_invalid_hole_in_the_middle():
                '(StatementList #1' \
                '(StatementList (Assign (__list__ y) (UnaryOp USub 2)) EMPTY_Statement)' \
                ')))'
-    # try:
-    py = Abstraction2Py(
-        StitchAbstraction(lisp_str, [], "abs0", {})).convert()
-    # except:
-    #     print("error expected")
-    #     return
+    try:
+        py = Abstraction2Py(
+            StitchAbstraction(lisp_str, [], "abs0", {})).convert()
+    except:
+        print("error expected")
+        return
     raise Exception("Should have failed.")
 
 
@@ -529,3 +530,23 @@ def test_rewrite_to_py_forloop():
     py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
     print(py)
 
+def test_rewrite_to_py_recursive():
+    lisp_str = "(ProgramStatements (StatementList (fn_0 x (arguments (__kw__ args (__list__ (arg x)))) callbefore) (StatementList (Assign (__list__ x) 12) (fn_1 (StatementList (fn_0 x (arguments (__kw__ args (__list__ (arg x)))) callafter) (fn_1 EMPTY_Statement x callafter)) x callbefore))))"
+    py = Rewrite2Py(lisp_str, available_abstractions=[]).convert()
+    print(py)
+
+def test_abstraction_to_py_invalid_holes():
+    lisp_str = "(FunctionDef (__kw__ name #2) (__kw__ args #1) (__kw__ body (#0 EMPTY_Statement)))"
+
+    try:
+        abstraction = StitchAbstraction(
+            lisp_str, [], "fn_7", string_hashmap={})
+        py = Abstraction2Py(abstraction, find_additional_params=False).convert()
+
+        print(py)
+        error = False
+    except:
+        print("Error expected.")
+        error = True
+    if not error:
+        raise Exception("conversion should raise error")
