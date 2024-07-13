@@ -1,3 +1,4 @@
+import ast
 import json
 import click
 import subprocess
@@ -8,6 +9,8 @@ import shutil
 from pybrary_extraction.python2lisp import Py2Lisp
 from pybrary_extraction.lisp2py import Abstraction2Py, Rewrite2Py, Lisp2Py
 from pybrary_extraction.lisp2py.StitchAbstraction import StitchAbstraction
+from pybrary_extraction.ast_utils import find_ast_size_from_files
+from pyparsing import OneOrMore, nestedExpr
 
 
 def try_make_parent_dir(new_file_path):
@@ -39,6 +42,7 @@ class Leroy:
         self.donot_rerun = donot_rerun
         self.mangle_names = mangle_names
         self.stitch_out = self.read_stitch_out()
+        self.rewritten_asts_size = 0
 
     def run(self):
 
@@ -52,6 +56,7 @@ class Leroy:
         if not self.donot_rerun and not self.result_is_cached():
             self.run_stitch()
         self.write_files()
+        self.report_compression()
 
     def run_stitch(self):
         subprocess.run(
@@ -99,16 +104,17 @@ class Leroy:
             print(f"{new_file_path=}")
 
             try:
-                py_code = Rewrite2Py(
+                rewrite_obj = Rewrite2Py(
                     rewrite,
                     library_name=Leroy.LIBRARY_NAME,
                     available_abstractions=stitch_abstractions,
                     string_hashmap=self.string_hashmap
-                ).convert()
+                )
+                py_code = rewrite_obj.convert()
             except:
                 print(f"Failed to rewrite: {rewrite}")
                 raise
-
+            self.rewritten_asts_size += sum([1 for _ in ast.walk(rewrite_obj.converted_ast)])
             print(py_code)
             with open(new_file_path, "w") as f:
                 f.write(py_code)
@@ -140,6 +146,25 @@ class Leroy:
             if set(self.stitch_out['original']) == set(replace_equivalent):
                 return True
         return False
+
+    def report_compression(self):
+
+        original_asts_size, orig_line_count, orig_char_count\
+            = find_ast_size_from_files(*list(self.file_json_map.keys()), count_asts=True)
+        new_files = [file.replace(self.py_files_dir, str(self.temp_dir)) for file in self.file_json_map]
+        new_asts_size, new_line_count, new_char_count\
+            = find_ast_size_from_files(*new_files, count_asts=False)
+        new_asts_size = self.rewritten_asts_size
+
+        print(f"{orig_line_count=}")
+        print(f"{new_line_count=}")
+        print(f"{orig_char_count=}")
+        print(f"{new_char_count=}")
+        print(f"{original_asts_size=}")
+        print(f"{new_asts_size=}")
+        print(f"Compression ratio: f{original_asts_size/new_asts_size}")
+
+
 
 
 @click.command()

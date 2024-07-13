@@ -151,3 +151,18 @@ def expr_is_killed_inside_body(expr: ast.AST, body: ast.Module) -> bool:
     target_vars_finder.visit(body)
     return len(set(target_vars_finder.lhs_vars).intersection(names_in_expr))!=0
 
+
+def find_ast_size_from_files(*files, count_asts=True):
+    total_size = 0
+    line_count = 0
+    character_count = 0
+    for file in files:
+        with open(file) as f:
+            file_contents = f.read()
+
+        if count_asts:
+            file_ast = ast.parse(file_contents)
+            total_size += sum([1 for _ in ast.walk(file_ast)])
+        line_count += len(file_contents.split("\n")) + 1
+        character_count += len(file_contents)
+    return total_size, line_count, character_count
