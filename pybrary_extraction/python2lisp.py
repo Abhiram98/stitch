@@ -14,7 +14,7 @@ class Py2Lisp(ast.NodeVisitor):
     keyword_for_keyword = "__kw__"
 
     def __init__(self, string_hash_map=None,
-                 mangle_names=False):
+                 mangle_names=False, encode_list=True):
         super().__init__()
         self.string_count = 0
         if string_hash_map is None:
@@ -23,6 +23,7 @@ class Py2Lisp(ast.NodeVisitor):
             self.string_hash_map = string_hash_map
             self.string_count += len(string_hash_map)
         self.mangle_names = mangle_names
+        self.encode_list = encode_list
 
     @staticmethod
     def fromDirectoryToJson(
@@ -74,8 +75,9 @@ class Py2Lisp(ast.NodeVisitor):
                                encode_fields_as_constructed_list=None):
         if force_encode_args is None:
             force_encode_args = []
-        if encode_fields_as_constructed_list is None:
+        if not self.encode_list or encode_fields_as_constructed_list is None:
             encode_fields_as_constructed_list = []
+
         params = []
         encoded_field_names = []
         for field, value in ast.iter_fields(node):

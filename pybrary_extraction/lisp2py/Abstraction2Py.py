@@ -14,7 +14,8 @@ class Abstraction2Py:
 
     def __init__(self, abstraction: StitchAbstraction,
                  string_hashmap=None,
-                 find_additional_params=True):
+                 find_additional_params=True,
+                 raise_if_invalid=True):
 
         self.abstraction = abstraction
         self.param_count = 0
@@ -30,6 +31,7 @@ class Abstraction2Py:
 
         self.abstraction_body_as_module = None
         self.abstraction_body_as_fndef = None
+        self.raise_if_invalid = raise_if_invalid
 
     def convert(self,
                 fn_name=None,
@@ -142,7 +144,7 @@ class Abstraction2Py:
 
     def check_valid_abstraction(self, py_ast):
         # check if there are no hole in between.
-        checker = AstValidityChecker(self.args_map.values())
+        checker = AstValidityChecker(self.args_map.values(), self.raise_if_invalid)
         checker.visit(py_ast)
         self.trailing_statement_params = \
             self.trailing_statement_params.union(checker.trailing_statement_params)
@@ -169,10 +171,27 @@ class Abstraction2Py:
 
 
 if __name__ == '__main__':
-    print(
-        Abstraction2Py(
-            StitchAbstraction(sys.argv[1], [], "abs0", {}),
-            find_additional_params=False
+    import pathlib
+    import json
+
+    temp_path = pathlib.Path(__file__).parent.joinpath("../../temp/")
+    try:
+        print(
+            Abstraction2Py(
+                StitchAbstraction(sys.argv[1], [], "abs0", {}),
+                find_additional_params=False
+            )
+            .convert()
         )
-        .convert()
-    )
+    except Exception as e:
+        # outfile = temp_path.joinpath("abstraction_info.json")
+        # try:
+        #     with open(outfile, "r") as f:
+        #         errors = json.load(f)
+        # except FileNotFoundError:
+        #     errors = []
+        # errors.append((sys.argv[1], f"{type(e)}: {str(e)}"))
+        #
+        # with open(outfile, "w") as f:
+        #     json.dump(errors, f)
+        raise

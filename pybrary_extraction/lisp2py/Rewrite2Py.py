@@ -128,7 +128,7 @@ class Rewrite2Py:
                 matches = self.get_matching_abstraction(fn_name)
                 if len(matches) > 0:
                     if (new_lisp[0].is_valid(matches[0], call_lisp=new_lisp)):
-                        additional_params = matches[0].get_additional_params()
+                        additional_params = [i.param_name for i in matches[0].get_additional_params()]
                         if len(additional_params) > 0:
                             args += additional_params
                     else:

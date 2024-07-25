@@ -10,17 +10,22 @@ class InvalidStatement(Exception):
 class InvalidHole(Exception):
     pass
 
+class InvalidParameterFuncCall(Exception):
+    pass
+
 
 class AstValidityChecker(ast.NodeVisitor):
-    def __init__(self, param_names):
+    def __init__(self, param_names, raise_if_invalid=True):
         self.param_names = param_names
         self.trailing_statement_params = set()
+        self.raise_if_invalid = raise_if_invalid
 
     def check_list(self, body_list):
         for ele in body_list:
-            if (isinstance(ele, ast.Name) and
-                    (ele.id in self.param_names or ele.id in p2l.Py2Lisp.empty_statement_keyword)):
-                raise InvalidStatement(ele.id)
+            name_obj = ele.value if isinstance(ele, ast.Expr) else ele # unwrap expr.
+            if (isinstance(name_obj, ast.Name) and
+                    (name_obj.id in self.param_names or name_obj.id in p2l.Py2Lisp.empty_statement_keyword)):
+                raise InvalidStatement(name_obj.id)
 
     def visit_Module(self, node: ast.Module) -> Any:
         self.generic_visit(node)
@@ -30,8 +35,10 @@ class AstValidityChecker(ast.NodeVisitor):
         try:
             self.check_list([last_stmnt])
         except InvalidStatement:
-            assert isinstance(last_stmnt, ast.Name)
-            self.trailing_statement_params.add(last_stmnt.id)
+            assert (isinstance(last_stmnt, ast.Name)
+                    or (isinstance(last_stmnt, ast.Expr) and isinstance(last_stmnt.value, ast.Name)))
+            last_stmnt_unwrapped = last_stmnt if isinstance(last_stmnt, ast.Name) else last_stmnt.value
+            self.trailing_statement_params.add(last_stmnt_unwrapped.id)
             # remove that from the abstraction body
             node.body = node.body[:-1]
 
@@ -60,3 +67,11 @@ class AstValidityChecker(ast.NodeVisitor):
         self.generic_visit(node)
         self.check_list(node.body)
         self.check_list(node.orelse)
+
+    def visit_Call(self, node: ast.Call) -> Any:
+        self.generic_visit(node)
+        if isinstance(node.func, ast.Name) and node.func.id in self.param_names:
+            if self.raise_if_invalid:
+                raise InvalidParameterFuncCall(
+                    "{0} cannot be called safely, "
+                    "as it may induce side-effects".format(node.func.id))

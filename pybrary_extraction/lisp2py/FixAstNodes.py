@@ -13,6 +13,8 @@ class FixAstNodes(ast.NodeVisitor):
     def visit_If(self, node: ast.If) -> Any:
         if getattr(node, 'orelse', None) is None:
             node.orelse = []
+        node.body = FixAstNodes.make_exprs(node.body)
+        node.orelse = FixAstNodes.make_exprs(node.orelse)
         return node
 
     def visit_Call(self, node: ast.Call) -> Any:
@@ -29,6 +31,7 @@ class FixAstNodes(ast.NodeVisitor):
             node.decorator_list = []
         if not isinstance(node.body, list):
             node.body = [node.body]
+        node.body = FixAstNodes.make_exprs(node.body)
         return node
 
     def visit_arguments(self, node: ast.arguments) -> Any:
@@ -68,11 +71,15 @@ class FixAstNodes(ast.NodeVisitor):
     def visit_While(self, node: ast.While) -> Any:
         if not hasattr(node, 'orelse'):
             node.orelse = []
+        node.body = FixAstNodes.make_exprs(node.body)
+        node.orelse = FixAstNodes.make_exprs(node.orelse)
         return node
 
     def visit_For(self, node: ast.For) -> Any:
         if not hasattr(node, 'orelse'):
             node.orelse = []
+        node.body = FixAstNodes.make_exprs(node.body)
+        node.orelse = FixAstNodes.make_exprs(node.orelse)
         return node
 
     def visit_List(self, node: ast.List) -> Any:
@@ -112,6 +119,7 @@ class FixAstNodes(ast.NodeVisitor):
             node.name = node.name.id
         if not isinstance(node.body, list):
             node.body = [node.body]
+        node.body = FixAstNodes.make_exprs(node.body)
         return node
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> Any:
@@ -147,6 +155,10 @@ class FixAstNodes(ast.NodeVisitor):
         FixAstNodes.make_empty_list_fields_if_not_exists(node, 'elts')
         return node
 
+    def visit_Module(self, node):
+        node.body = FixAstNodes.make_exprs(node.body)
+        return node
+
 
     @staticmethod
     def augment_pyast_node(node):
@@ -164,3 +176,13 @@ class FixAstNodes(ast.NodeVisitor):
         for name in field_names:
             if not hasattr(node, name):
                 setattr(node, name, None)
+
+    @staticmethod
+    def make_exprs(body):
+        new_body = []
+        for b in body:
+            if isinstance(b, ast.Call) or isinstance(b, ast.Name):
+                new_body.append(ast.Expr(value=b))
+            else:
+                new_body.append(b)
+        return new_body

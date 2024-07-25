@@ -128,7 +128,7 @@ class StitchAbstraction:
                 live_vars_out = live_vars_out.union(live_vars)
         return live_vars_out
 
-    def get_additional_params(self):
+    def get_additional_params(self) -> list[StitchParam]:
         return [i for i in self.parameters if not i.param_name.startswith(lisp2py.Abstraction2Py.PARAM_KEY)]
 
     def get_trailing_statement_params(self) -> list[StitchParam]:
@@ -140,7 +140,7 @@ class StitchAbstraction:
                 p.is_trailing = True
 
     def compute_body_py(self, stitch_originals):
-        abstraction_py_obj = lisp2py.Abstraction2Py(self, self.string_hashmap)
+        abstraction_py_obj = lisp2py.Abstraction2Py(self, self.string_hashmap, raise_if_invalid=False)
         self.abstraction_body_py = \
             abstraction_py_obj.convert(add_return_value=False)
         self.set_trailing_statement_param(*abstraction_py_obj.trailing_statement_params)
